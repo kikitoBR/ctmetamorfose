@@ -1,0 +1,13 @@
+# Dependências
+node_modules/
+
+# Build output
+dist/
+
+# Sistema operacional & temporários
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.env
+.env.local
