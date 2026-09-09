@@ -442,23 +442,29 @@ function initEspacoShowcase() {
     });
   }
 
-  // 2. Sincronização dos Dots do Carrossel Mobile
+  // 2. Sincronização dos Dots e Auto-Scroll no Carrossel Mobile
   containers.forEach(container => {
     const track = container.querySelector('.dual-photo-track');
     const dots = container.querySelectorAll('.carousel-dots .dot');
     const items = container.querySelectorAll('.photo-item');
+    const parentCard = container.closest('.espaco-card');
 
     if (!track || dots.length === 0 || items.length === 0) return;
 
     let isScrolling = false;
+    let currentSlide = 0;
+    let userInteractedUntil = 0;
 
+    // Atualiza o dot ativo durante o scroll manual ou automático
     track.addEventListener('scroll', () => {
       if (isScrolling) return;
       isScrolling = true;
       requestAnimationFrame(() => {
         const scrollLeft = track.scrollLeft;
-        const itemWidth = items[0].offsetWidth;
-        const activeIndex = Math.round(scrollLeft / (itemWidth + 12));
+        const itemWidth = items[0].offsetWidth || (track.clientWidth * 0.88);
+        const activeIndex = Math.min(items.length - 1, Math.max(0, Math.round(scrollLeft / (itemWidth + 12))));
+
+        currentSlide = activeIndex;
 
         dots.forEach((dot, idx) => {
           if (idx === activeIndex) {
@@ -471,14 +477,45 @@ function initEspacoShowcase() {
       });
     }, { passive: true });
 
-    // Clique no dot para rolar até a foto
+    // Pausa temporariamente o auto-scroll quando o usuário tocar ou arrastar
+    const pauseOnInteraction = () => {
+      userInteractedUntil = Date.now() + 6500; // 6.5s de pausa
+    };
+
+    track.addEventListener('touchstart', pauseOnInteraction, { passive: true });
+    track.addEventListener('pointerdown', pauseOnInteraction, { passive: true });
+
+    // Clique no dot para navegar manualmente
     dots.forEach((dot, idx) => {
       dot.addEventListener('click', () => {
+        pauseOnInteraction();
+        currentSlide = idx;
         if (items[idx]) {
           items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
       });
     });
+
+    // Auto-Scroll no Mobile: alterna fotos a cada 3.5 segundos suavemente
+    setInterval(() => {
+      if (window.innerWidth > 768) return; // apenas na versão mobile
+      if (Date.now() < userInteractedUntil) return; // respeita interação recente do usuário
+      if (parentCard && parentCard.classList.contains('filtered-out')) return;
+
+      // Executa apenas se o carrossel estiver visível no viewport (poupa CPU/bateria)
+      const rect = container.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+      if (!inView) return;
+
+      currentSlide = (currentSlide + 1) % items.length;
+      const targetItem = items[currentSlide];
+      if (targetItem) {
+        track.scrollTo({
+          left: targetItem.offsetLeft - track.offsetLeft,
+          behavior: 'smooth'
+        });
+      }
+    }, 3500);
   });
 
   // 3. Lightbox Modal Zoom
