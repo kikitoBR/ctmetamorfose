@@ -442,7 +442,7 @@ function initEspacoShowcase() {
     });
   }
 
-  // 2. Sincronização dos Dots e Auto-Scroll no Carrossel Mobile
+  // 2. Sincronização dos Dots e Auto-Scroll Fluido no Carrossel Mobile
   containers.forEach(container => {
     const track = container.querySelector('.dual-photo-track');
     const dots = container.querySelectorAll('.carousel-dots .dot');
@@ -454,15 +454,17 @@ function initEspacoShowcase() {
     let isScrolling = false;
     let currentSlide = 0;
     let userInteractedUntil = 0;
+    let animFrameId = null;
 
-    // Atualiza o dot ativo durante o scroll manual ou automático
+    // Atualiza o dot ativo durante o scroll manual ou animado
     track.addEventListener('scroll', () => {
       if (isScrolling) return;
       isScrolling = true;
       requestAnimationFrame(() => {
         const scrollLeft = track.scrollLeft;
-        const itemWidth = items[0].offsetWidth || (track.clientWidth * 0.88);
-        const activeIndex = Math.min(items.length - 1, Math.max(0, Math.round(scrollLeft / (itemWidth + 12))));
+        const maxScroll = Math.max(1, track.scrollWidth - track.clientWidth);
+        // Calcula o índice proporcional ao progresso do scroll
+        const activeIndex = scrollLeft > maxScroll * 0.45 ? 1 : 0;
 
         currentSlide = activeIndex;
 
@@ -477,26 +479,80 @@ function initEspacoShowcase() {
       });
     }, { passive: true });
 
-    // Pausa temporariamente o auto-scroll quando o usuário tocar ou arrastar
+    // Cancela animação ativa se o usuário tocar na tela
+    const cancelActiveAnim = () => {
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+        track.style.scrollSnapType = 'x mandatory';
+      }
+    };
+
     const pauseOnInteraction = () => {
-      userInteractedUntil = Date.now() + 6500; // 6.5s de pausa
+      cancelActiveAnim();
+      userInteractedUntil = Date.now() + 6500; // pausa por 6.5s
     };
 
     track.addEventListener('touchstart', pauseOnInteraction, { passive: true });
     track.addEventListener('pointerdown', pauseOnInteraction, { passive: true });
 
-    // Clique no dot para navegar manualmente
+    // Animação fluida com interpolação contínua (desativa snap temporariamente para evitar teleport)
+    function smoothSlideTo(targetScrollLeft, duration = 650) {
+      cancelActiveAnim();
+
+      // Desliga snap durante a animação programática
+      track.style.scrollSnapType = 'none';
+
+      const startLeft = track.scrollLeft;
+      const distance = targetScrollLeft - startLeft;
+
+      if (Math.abs(distance) < 2) {
+        track.style.scrollSnapType = 'x mandatory';
+        return;
+      }
+
+      const startTime = performance.now();
+
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        track.scrollLeft = startLeft + distance * ease;
+
+        if (progress < 1) {
+          animFrameId = requestAnimationFrame(step);
+        } else {
+          track.scrollLeft = targetScrollLeft;
+          track.style.scrollSnapType = 'x mandatory';
+          animFrameId = null;
+        }
+      }
+
+      animFrameId = requestAnimationFrame(step);
+    }
+
+    // Posição de parada exata de cada slide
+    function getSlideScrollPosition(index) {
+      if (index === 0) return 0;
+      return Math.max(0, track.scrollWidth - track.clientWidth);
+    }
+
+    // Clique no dot para navegar manualmente com rolagem animada
     dots.forEach((dot, idx) => {
       dot.addEventListener('click', () => {
         pauseOnInteraction();
         currentSlide = idx;
-        if (items[idx]) {
-          items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
+        const targetX = getSlideScrollPosition(idx);
+        smoothSlideTo(targetX, 550);
       });
     });
 
-    // Auto-Scroll no Mobile: alterna fotos a cada 3.5 segundos suavemente
+    // Auto-Scroll no Mobile: animação de rolagem contínua a cada 3.5 segundos
     setInterval(() => {
       if (window.innerWidth > 768) return; // apenas na versão mobile
       if (Date.now() < userInteractedUntil) return; // respeita interação recente do usuário
@@ -508,13 +564,8 @@ function initEspacoShowcase() {
       if (!inView) return;
 
       currentSlide = (currentSlide + 1) % items.length;
-      const targetItem = items[currentSlide];
-      if (targetItem) {
-        track.scrollTo({
-          left: targetItem.offsetLeft - track.offsetLeft,
-          behavior: 'smooth'
-        });
-      }
+      const targetX = getSlideScrollPosition(currentSlide);
+      smoothSlideTo(targetX, 650);
     }, 3500);
   });
 
