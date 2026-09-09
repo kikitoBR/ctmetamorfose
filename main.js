@@ -379,35 +379,12 @@ function initHeroParallax() {
 }
 
 /* ==========================================================================
-   ESPAÇO SHOWCASE (FILTERS, MOBILE CAROUSEL DOTS & LIGHTBOX ZOOM)
+   ESPAÇO SHOWCASE (MOBILE CAROUSEL DOTS & LIGHTBOX ZOOM)
    ========================================================================== */
 function initEspacoShowcase() {
-  const filterBtns = document.querySelectorAll('.espaco-filter-btn');
-  const cards = document.querySelectorAll('.espaco-card');
   const containers = document.querySelectorAll('.dual-photo-container');
 
-  // 1. Filtros por Categoria
-  if (filterBtns.length > 0 && cards.length > 0) {
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const filter = btn.getAttribute('data-filter');
-
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        cards.forEach(card => {
-          const cat = card.getAttribute('data-category');
-          if (filter === 'all' || cat === filter) {
-            card.classList.remove('filtered-out');
-          } else {
-            card.classList.add('filtered-out');
-          }
-        });
-      });
-    });
-  }
-
-  // 2. Sincronização dos Dots e Auto-Scroll Fluido no Carrossel Mobile
+  // Sincronização dos Dots e Auto-Scroll Fluido no Carrossel Mobile
   containers.forEach(container => {
     const track = container.querySelector('.dual-photo-track');
     const dots = container.querySelectorAll('.carousel-dots .dot');
@@ -521,7 +498,6 @@ function initEspacoShowcase() {
     setInterval(() => {
       if (window.innerWidth > 768) return; // apenas na versão mobile
       if (Date.now() < userInteractedUntil) return; // respeita interação recente do usuário
-      if (parentCard && parentCard.classList.contains('filtered-out')) return;
 
       // Executa apenas se o carrossel estiver visível no viewport (poupa CPU/bateria)
       const rect = container.getBoundingClientRect();
