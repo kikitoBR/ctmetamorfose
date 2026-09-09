@@ -279,10 +279,29 @@ function initFormValidation() {
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
 
-    // Resetar formulário
+    // Resetar formulário mantendo modalidades padrão do plano
     form.reset();
-    document.getElementById('check-musculacao').checked = true;
+    const checkTodas = document.getElementById('check-todas');
+    if (checkTodas) checkTodas.checked = true;
+    const checkMusc = document.getElementById('check-musculacao');
+    if (checkMusc) checkMusc.checked = true;
+    const checkFunc = document.getElementById('check-funcional');
+    if (checkFunc) checkFunc.checked = true;
+    const checkDanc = document.getElementById('check-danca');
+    if (checkDanc) checkDanc.checked = true;
   });
+
+  // Garantir que a opção 'Todas' permaneça sempre marcada e bloqueada
+  const checkTodasEl = document.getElementById('check-todas');
+  if (checkTodasEl) {
+    const parentCard = checkTodasEl.closest('.checkbox-card');
+    if (parentCard) {
+      parentCard.addEventListener('click', (e) => {
+        e.preventDefault();
+        checkTodasEl.checked = true;
+      });
+    }
+  }
 
   // Fechar Modal
   if (closeModalBtn) {

@@ -1852,6 +1852,58 @@ h1, h2, h3, h4 {
   box-shadow: 0 0 12px rgba(255, 0, 0, 0.25);
 }
 
+/* Botão "Todas" Pré-definido e Sem Opção de Mudar (Incluso no Plano) */
+.checkbox-card.checkbox-card-all {
+  grid-column: 1 / -1;
+}
+
+.checkbox-card.locked {
+  cursor: default;
+  user-select: none;
+}
+
+.checkbox-card.checkbox-card-all .card-body {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.18) 0%, rgba(20, 20, 26, 0.95) 100%) !important;
+  border: 1px solid var(--red-light) !important;
+  box-shadow: 0 0 18px rgba(255, 0, 0, 0.3) !important;
+  color: var(--text-white) !important;
+  justify-content: space-between;
+  padding: 0.95rem 1.15rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.checkbox-card-all .check-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: left;
+}
+
+.checkbox-card-all .check-text {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-white);
+}
+
+.checkbox-card-all .check-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.badge-incluso-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--red-gradient);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgba(255, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
 .check-icon {
   font-size: 1.1rem;
 }
