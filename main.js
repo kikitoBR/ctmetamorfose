@@ -57,10 +57,8 @@ function initCountdown() {
 
   if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
 
-  // Data alvo: 14 dias a partir da data atual
-  const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 14);
-  targetDate.setHours(9, 0, 0, 0);
+  // Data alvo: 26 de Setembro de 2026 às 18:00 (Horário de Brasília)
+  const targetDate = new Date('2026-09-26T18:00:00-03:00');
 
   function update() {
     const now = new Date().getTime();
