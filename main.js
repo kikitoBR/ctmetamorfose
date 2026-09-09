@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeroParallax();
   initEspacoShowcase();
   initCountdown();
-  initModalitiesTabs();
+  initModalitySelectors();
   initFaqAccordion();
   initPhoneMask();
   initFormValidation();
@@ -88,32 +88,9 @@ function initCountdown() {
 }
 
 /* ==========================================================================
-   3. MODALIDADES INTERACTIVE TABS
+   3. SELEÇÃO DE MODALIDADES
    ========================================================================== */
-function initModalitiesTabs() {
-  const tabs = document.querySelectorAll('.tab-btn');
-  const panels = document.querySelectorAll('.tab-panel');
-
-  function switchTab(targetId) {
-    tabs.forEach(tab => {
-      const isTarget = tab.getAttribute('data-target') === targetId;
-      tab.classList.toggle('active', isTarget);
-      tab.setAttribute('aria-selected', isTarget);
-    });
-
-    panels.forEach(panel => {
-      const isTarget = panel.id === `panel-${targetId}`;
-      panel.classList.toggle('active', isTarget);
-    });
-  }
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-target');
-      switchTab(target);
-    });
-  });
-
+function initModalitySelectors() {
   // Botões internos dos cards que pré-selecionam no formulário
   document.querySelectorAll('.select-modality-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -122,16 +99,6 @@ function initModalitiesTabs() {
       const formSection = document.getElementById('matricula');
       if (formSection) {
         formSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
-
-  // Links do rodapé para modalidades
-  document.querySelectorAll('.footer-mod-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const mod = link.getAttribute('data-mod');
-      if (mod) {
-        switchTab(mod);
       }
     });
   });

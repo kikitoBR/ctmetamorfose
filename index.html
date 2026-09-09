@@ -41,8 +41,7 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Navegação Principal">
-        <a href="#espaco" class="nav-link">O Espaço</a>
-        <a href="#modalidades" class="nav-link">Modalidades</a>
+        <a href="#espaco" class="nav-link">O Espaço & Modalidades</a>
         <a href="#fundador" class="nav-link">Lote Fundador</a>
         <a href="#localizacao" class="nav-link">Localização</a>
         <a href="#faq" class="nav-link">Dúvidas</a>
@@ -64,8 +63,7 @@
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-drawer" id="mobile-drawer">
       <nav class="mobile-nav">
-        <a href="#espaco" class="mobile-nav-link">O Espaço</a>
-        <a href="#modalidades" class="mobile-nav-link">Modalidades</a>
+        <a href="#espaco" class="mobile-nav-link">O Espaço & Modalidades</a>
         <a href="#fundador" class="mobile-nav-link">Lote Fundador</a>
         <a href="#localizacao" class="mobile-nav-link">Localização</a>
         <a href="#faq" class="mobile-nav-link">Dúvidas Frequentes</a>
@@ -102,7 +100,7 @@
                 <span>Quero Ser Membro Fundador</span>
                 <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
-              <a href="#modalidades" class="btn btn-secondary btn-lg" id="btn-hero-tour">
+              <a href="#modalidades-3em1" class="btn btn-secondary btn-lg" id="btn-hero-tour">
                 <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
                 <span>Conhecer Modalidades</span>
               </a>
@@ -204,6 +202,78 @@
           </p>
         </div>
 
+        <!-- Card Especial: Passe Livre 3 em 1 (Modalidades Integradas) -->
+        <div class="modalidades-highlight-card" id="modalidades-3em1">
+          <div class="modalidades-highlight-header">
+            <div class="modalidades-pill">PASSE LIVRE TOTAL • 3 EM 1</div>
+            <h3 class="modalidades-highlight-title">Você não precisa escolher uma só modalidade</h3>
+            <p class="modalidades-highlight-sub">
+              Na Metamorfose, sua matrícula garante acesso livre e irrestrito a todas as práticas corporais. Construa força, resistência e queima calórica com um único passe:
+            </p>
+          </div>
+
+          <div class="modalidades-3col-grid">
+            <!-- Coluna 1: Musculação -->
+            <div class="modality-feature-box">
+              <div class="modality-icon-wrapper">🏋️</div>
+              <h4 class="modality-box-title">Musculação</h4>
+              <p class="modality-box-desc">Hipertrofia real, densidade e saúde articular com maquinário moderno de alta precisão.</p>
+              <ul class="modality-check-list">
+                <li><span class="m-check">✓</span> <div><strong>+200 Estações de Treino</strong> de alto padrão sem filas</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Maquinário Anatômico</strong> com ângulos que protegem articulações</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Pesos Livres Completos</strong> com halteres de 1kg a 60kg</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Educadores Físicos em Pista</strong> para suporte ativo</div></li>
+              </ul>
+              <button class="btn btn-secondary btn-sm select-modality-btn" data-modality="musculacao">
+                Escolher Musculação
+              </button>
+            </div>
+
+            <!-- Coluna 2: Funcional -->
+            <div class="modality-feature-box">
+              <div class="modality-icon-wrapper">⚡</div>
+              <h4 class="modality-box-title">Treinamento Funcional</h4>
+              <p class="modality-box-desc">Agilidade, queima calórica acelerada e condicionamento metabólico completo.</p>
+              <ul class="modality-check-list">
+                <li><span class="m-check">✓</span> <div><strong>Pista de Grama Sintética</strong> para trenó de peso (sled push)</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Kettlebells & Cordas Navais</strong> com caixas pliométricas</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Efeito EPOC</strong> (acelera a queima de gordura até 48h)</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Circuitos Dinâmicos</strong> em grupo com alta energia</div></li>
+              </ul>
+              <button class="btn btn-secondary btn-sm select-modality-btn" data-modality="funcional">
+                Escolher Funcional
+              </button>
+            </div>
+
+            <!-- Coluna 3: Dança -->
+            <div class="modality-feature-box">
+              <div class="modality-icon-wrapper">🔥</div>
+              <h4 class="modality-box-title">Estúdio de Dança</h4>
+              <p class="modality-box-desc">Energia contagiante, coordenação motora e queima divertida de até 800 kcal por aula.</p>
+              <ul class="modality-check-list">
+                <li><span class="m-check">✓</span> <div><strong>Piso Flutuante Antiderrapante</strong> com amortecimento articular</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Iluminação Cênica</strong> & sonorização acústica imersiva</div></li>
+                <li><span class="m-check">✓</span> <div><strong>FitDance, Ritmos & Zumba</strong> com instrutores renomados</div></li>
+                <li><span class="m-check">✓</span> <div><strong>Ambiente 100% Acolhedor</strong> do iniciante ao avançado</div></li>
+              </ul>
+              <button class="btn btn-secondary btn-sm select-modality-btn" data-modality="danca">
+                Escolher Dança
+              </button>
+            </div>
+          </div>
+
+          <div class="modalidades-highlight-footer">
+            <div class="highlight-callout">
+              <span class="callout-icon">✨</span>
+              <span><strong>Membros Fundadores</strong> garantem acesso irrestrito às 3 modalidades em uma mensalidade única e congelada.</span>
+            </div>
+            <a href="#matricula" class="btn btn-primary btn-sm">
+              <span>Garantir Passe Livre 3 em 1</span>
+              <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
         <!-- Filtro de Ambientes -->
         <div class="espaco-filter-pills" role="tablist" aria-label="Filtrar Ambientes">
           <button class="espaco-filter-btn active" data-filter="all">Todos os Espaços</button>
@@ -225,6 +295,12 @@
               <div class="espaco-badge">ÁREA DE FORÇA & PESOS LIVRES</div>
               <h3 class="espaco-card-title">Salão de Musculação</h3>
               <p class="espaco-card-desc">Mais de 200 estações de treino, maquinário moderno com ângulos ajustáveis que protegem suas articulações e ampla área de pesos livres sem filas.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ +200 Estações de Treino</span>
+                <span class="card-chip">✓ Halteres de 1kg a 60kg</span>
+                <span class="card-chip">✓ Maquinário de Ponta</span>
+                <span class="card-chip">✓ Educadores em Pista</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -247,9 +323,15 @@
           <!-- 2. Fachada & Recepção -->
           <article class="espaco-card" data-category="recepcao">
             <div class="espaco-card-header">
-              <div class="espaco-badge">PRIMEIRA IMPRESSÃO</div>
+              <div class="espaco-badge">PRIMEIRA IMPRESSÃO & SEGURANÇA</div>
               <h3 class="espaco-card-title">Fachada Imponente & Recepção Hotelaria</h3>
               <p class="espaco-card-desc">Arquitetura contemporânea imponente, atendimento acolhedor com padrão de hotelaria, catracas de acesso inteligente sem filas e segurança integrada 24h.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ Catracas Biométricas Rápidas</span>
+                <span class="card-chip">✓ Atendimento Hotelaria</span>
+                <span class="card-chip">✓ Monitoramento 24h</span>
+                <span class="card-chip">✓ Estacionamento Exclusivo</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -275,6 +357,12 @@
               <div class="espaco-badge">PRODUTIVIDADE & CONVENIÊNCIA</div>
               <h3 class="espaco-card-title">Espaço Coworking Integrado</h3>
               <p class="espaco-card-desc">Treine e trabalhe sem perder tempo no trânsito. Bancadas individuais, tomadas dedicadas, Wi-Fi ultrarrápido e ambiente silencioso para suas reuniões e projetos.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ Wi-Fi Ultrarrápido</span>
+                <span class="card-chip">✓ Tomadas Individuais</span>
+                <span class="card-chip">✓ Climatização Silenciosa</span>
+                <span class="card-chip">✓ Conexão & Foco</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -300,6 +388,12 @@
               <div class="espaco-badge">FAMÍLIA & SEGURANÇA</div>
               <h3 class="espaco-card-title">Espaço Kids Climatizado & Seguro</h3>
               <p class="espaco-card-desc">Traga seus filhos com total tranquilidade. Recreação acolhedora com piscina de bolinhas, brinquedos e piso emborrachado com proteção total.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ Monitores Dedicados</span>
+                <span class="card-chip">✓ Brinquedoteca Segura</span>
+                <span class="card-chip">✓ Piso Anti-Impacto</span>
+                <span class="card-chip">✓ Pais Sem Preocupação</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -325,6 +419,12 @@
               <div class="espaco-badge">LIFESTYLE & RECOVERY</div>
               <h3 class="espaco-card-title">Lounge de Convivência & Shake Bar</h3>
               <p class="espaco-card-desc">Ambiente acolhedor com sofás e poltronas confortáveis para relaxar antes ou após o treino, tomar um café expresso selecionado e conversar com a comunidade.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ Poltronas de Conforto</span>
+                <span class="card-chip">✓ Iluminação Relaxante</span>
+                <span class="card-chip">✓ Integração com Shake Bar</span>
+                <span class="card-chip">✓ Convivência Social</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -350,6 +450,12 @@
               <div class="espaco-badge">DIVERSÃO & SOCIALIZAÇÃO</div>
               <h3 class="espaco-card-title">Área de Jogos & Descontração</h3>
               <p class="espaco-card-desc">Momento de descompressão real. Mesas de jogos, sinuca e área recreativa com iluminação dinâmica para descontrair a mente depois de um treino intenso.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ Mesas de Bilhar Oficiais</span>
+                <span class="card-chip">✓ Pebolim & Jogos de Mesa</span>
+                <span class="card-chip">✓ Ambiente Dinâmico</span>
+                <span class="card-chip">✓ Lazer Pré e Pós-Treino</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -375,6 +481,12 @@
               <div class="espaco-badge">CONFORTO & PRIVACIDADE</div>
               <h3 class="espaco-card-title">Vestiários com Padrão de Hotelaria</h3>
               <p class="espaco-card-desc">Duchas pressurizadas de alta vazão aquecidas, bancadas iluminadas com espelhos camarim, secadores de cabelo e armários privativos amplos.</p>
+              <div class="card-chips-list">
+                <span class="card-chip">✓ Duchas Pressurizadas Aquecidas</span>
+                <span class="card-chip">✓ Espelhos Camarim Iluminados</span>
+                <span class="card-chip">✓ Secadores de Cabelo</span>
+                <span class="card-chip">✓ Armários Privativos</span>
+              </div>
             </div>
             <div class="dual-photo-container">
               <div class="dual-photo-track">
@@ -398,227 +510,7 @@
       </div>
     </section>
 
-    <!-- MODALIDADES SECTION (Interactive Tabs Showcase) -->
-    <section class="section modalidades-section" id="modalidades">
-      <div class="container">
-        <div class="section-header text-center">
-          <span class="section-pill">4 PILARES INTEGRADOS</span>
-          <h2 class="section-title">TODAS AS FORMAS DE EVOLUIR EM UM <span class="highlight-gradient">SÓ LUGAR</span></h2>
-          <p class="section-subtitle">
-            Você não precisa escolher uma só modalidade. Na Metamorfose, você tem um ecossistema completo para construir força, resistência, queima calórica e disciplina.
-          </p>
-        </div>
 
-        <!-- Tabs Navigation -->
-        <div class="modalidades-tabs" role="tablist" aria-label="Modalidades da Academia">
-          <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-musculacao" id="tab-musculacao" data-target="musculacao">
-            <span class="tab-icon">🏋️</span>
-            <span class="tab-name">Musculação</span>
-          </button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-funcional" id="tab-funcional" data-target="funcional">
-            <span class="tab-icon">⚡</span>
-            <span class="tab-name">Funcional</span>
-          </button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-danca" id="tab-danca" data-target="danca">
-            <span class="tab-icon">🔥</span>
-            <span class="tab-name">Dança</span>
-          </button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-luta" id="tab-luta" data-target="luta">
-            <span class="tab-icon">🥊</span>
-            <span class="tab-name">Luta</span>
-          </button>
-        </div>
-
-        <!-- Panels Showcase Container -->
-        <div class="tabs-display-card">
-          
-          <!-- Panel 1: Musculação -->
-          <div class="tab-panel active" id="panel-musculacao" role="tabpanel" aria-labelledby="tab-musculacao">
-            <div class="panel-grid">
-              <div class="panel-image-wrapper">
-                <img src="/images/musculacao.jpg" alt="Área de Musculação de Alta Performance da Academia Metamorfose" class="panel-img" loading="lazy">
-                <div class="panel-image-badge">Área de Musculação</div>
-              </div>
-              <div class="panel-content">
-                <div class="panel-tag">MUSCULAÇÃO & FORÇA</div>
-                <h3 class="panel-title">Musculação de Alta Performance & Pesos Livres</h3>
-                <p class="panel-desc">
-                  Projetada para quem busca hipertrofia real, saúde articular e máxima eficiência em cada repetição. Esqueça filas de aparelhos: são mais de 200 estações de treino de alto padrão.
-                </p>
-                <ul class="panel-features">
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Maquinário Importado de Ponta:</strong> Ângulos ajustáveis que reduzem o estresse articular e maximizam o estímulo muscular.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Área de Pesos Livres Completa:</strong> Halteres de 1kg a 60kg, barras olímpicas oficiais e plataformas emborrachadas.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Acompanhamento Técnico em Pista:</strong> Educadores físicos dedicados para correção de postura e orientação segura.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Acústica e Som Imersivo:</strong> Playlist energética desenvolvida para manter seu foco no treino sem dispersão.
-                    </div>
-                  </li>
-                </ul>
-                <button class="btn btn-primary select-modality-btn" data-modality="musculacao">
-                  Quero Pré-Matrícula com Foco em Musculação
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel 2: Funcional -->
-          <div class="tab-panel" id="panel-funcional" role="tabpanel" aria-labelledby="tab-funcional">
-            <div class="panel-grid">
-              <div class="panel-image-wrapper">
-                <img src="/images/funcional.jpg" alt="Área de Treinamento Funcional e Cross Training Metamorfose" class="panel-img" loading="lazy">
-                <div class="panel-image-badge">Condicionamento Metabólico</div>
-              </div>
-              <div class="panel-content">
-                <div class="panel-tag">ALTA INTENSIDADE & AGILIDADE</div>
-                <h3 class="panel-title">Treinamento Funcional & Cross Performance</h3>
-                <p class="panel-desc">
-                  Construa um corpo ágil, resistente e com queima calórica prolongada (efeito EPOC). Uma pista com grama sintética dedicada para sprints, trenós e circuitos metabólicos dinâmicos.
-                </p>
-                <ul class="panel-features">
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Pista de Grama Sintética Oficial:</strong> Com marcações métricas para trenó de peso (sled push), saltos e tiros de aceleração.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Arsenal Completo de Equipamentos:</strong> Kettlebells calibrados, cordas navais, caixas pliométricas e esteiras curvas sem motor.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Aulas em Grupo Dinâmicas:</strong> Desafie seus limites em circuitos colaborativos que aceleram o metabolismo em até 48h.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Monitoramento Cardíaco:</strong> Telas integradas para você acompanhar sua zona de frequência cardíaca ao vivo.
-                    </div>
-                  </li>
-                </ul>
-                <button class="btn btn-primary select-modality-btn" data-modality="funcional">
-                  Quero Pré-Matrícula com Foco em Funcional
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel 3: Dança -->
-          <div class="tab-panel" id="panel-danca" role="tabpanel" aria-labelledby="tab-danca">
-            <div class="panel-grid">
-              <div class="panel-image-wrapper">
-                <img src="/images/danca.jpg" alt="Estúdio de Dança e Aulas Coletivas da Academia Metamorfose" class="panel-img" loading="lazy">
-                <div class="panel-image-badge">Energia, Ritmo & Bem-estar</div>
-              </div>
-              <div class="panel-content">
-                <div class="panel-tag">EXPERIÊNCIA CONTAGIANTE</div>
-                <h3 class="panel-title">Estúdio de Dança, FitDance & Ritmos</h3>
-                <p class="panel-desc">
-                  Treinar não precisa ser monótono. Nosso estúdio acústico é uma verdadeira balada fitness com jogos de luzes inteligentes, piso especial com amortecimento e os melhores instrutores da região.
-                </p>
-                <ul class="panel-features">
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Piso Flutuante Antiderrapante:</strong> Projetado especificamente para absorver impactos e proteger joelhos e tornozelos.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Iluminação Cênica Inteligente:</strong> LED strips e efeitos sincronizados com as batidas da música para uma vibe contagiante.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>FitDance, Ritmos & Zumba:</strong> Grade de horários com coreografias que queimam até 800 calorias por aula de forma divertida.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Ambiente 100% Acolhedor:</strong> Para todos os níveis, desde quem nunca dançou na vida até praticantes experientes.
-                    </div>
-                  </li>
-                </ul>
-                <button class="btn btn-primary select-modality-btn" data-modality="danca">
-                  Quero Pré-Matrícula com Foco em Dança
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel 4: Luta -->
-          <div class="tab-panel" id="panel-luta" role="tabpanel" aria-labelledby="tab-luta">
-            <div class="panel-grid">
-              <div class="panel-image-wrapper">
-                <img src="/images/luta.jpg" alt="Arena de Lutas e Artes Marciais da Academia Metamorfose" class="panel-img" loading="lazy">
-                <div class="panel-image-badge">Arena de Combate Marcial</div>
-              </div>
-              <div class="panel-content">
-                <div class="panel-tag">FORÇA, DISCIPLINA & DEFESA</div>
-                <h3 class="panel-title">Arena de Lutas: Boxe, Muay Thai & Jiu-Jitsu</h3>
-                <p class="panel-desc">
-                  Canalize o estresse do dia a dia, aprenda autodefesa e desenvolva condicionamento mental e físico inabalável. Um espaço marcial legítimo, seguro e com metodologia respeitada.
-                </p>
-                <ul class="panel-features">
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Tatame Profissional de Alta Densidade:</strong> Amortecimento cirúrgico para quedas, rolamentos e treinos de solo com máxima segurança.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Bateria de Sacos de Pancada Pesados:</strong> Sacos de couro legítimo de 40kg a 70kg para trabalho de potência e combinações.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Mestres e Professores Federados:</strong> Aulas com didática estruturada, desde fundamentos básicos até treinamento avançado.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feature-bullet">✓</span>
-                    <div>
-                      <strong>Vestiário Exclusivo de Transição:</strong> Facilidade para troca de quimonos e equipamentos de proteção sem tumulto.
-                    </div>
-                  </li>
-                </ul>
-                <button class="btn btn-primary select-modality-btn" data-modality="luta">
-                  Quero Pré-Matrícula com Foco em Lutas
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
 
     <!-- LOTE FUNDADOR / OFERTA SECTION -->
     <section class="section fundador-section" id="fundador">
@@ -648,7 +540,7 @@
               <li class="perk-item"><span class="perk-cross">✕</span> Taxa de matrícula obrigatória</li>
               <li class="perk-item"><span class="perk-cross">✕</span> Sem kit de boas-vindas</li>
               <li class="perk-item"><span class="perk-cross">✕</span> Mensalidade sujeita a reajustes normais</li>
-              <li class="perk-item"><span class="perk-check">✓</span> Acesso às 4 modalidades</li>
+              <li class="perk-item"><span class="perk-check">✓</span> Acesso às 3 modalidades</li>
               <li class="perk-item"><span class="perk-check">✓</span> Acesso aos vestiários e app</li>
             </ul>
             <div class="plan-footer">
@@ -792,14 +684,6 @@
                         <span class="check-text">Dança</span>
                       </span>
                     </label>
-
-                    <label class="checkbox-card">
-                      <input type="checkbox" name="modalidades" value="Luta" id="check-luta">
-                      <span class="card-body">
-                        <span class="check-icon">🥊</span>
-                        <span class="check-text">Luta</span>
-                      </span>
-                    </label>
                   </div>
                   <span class="field-error" id="error-modalidades"></span>
                 </div>
@@ -930,11 +814,11 @@
 
           <div class="faq-item">
             <button class="faq-trigger" aria-expanded="false">
-              <span class="faq-question">O plano dá acesso a todas as modalidades (Musculação, Funcional, Dança e Luta)?</span>
+              <span class="faq-question">O plano dá acesso a todas as modalidades (Musculação, Funcional e Dança)?</span>
               <span class="faq-chevron"></span>
             </button>
             <div class="faq-answer">
-              <p><strong>Sim!</strong> O plano Membro Fundador garante passe livre e irrestrito a todas as 4 modalidades da Metamorfose, sem custo adicional por aula de dança ou artes marciais. Você pode treinar musculação pela manhã e participar do funcional ou luta à noite.</p>
+              <p><strong>Sim!</strong> O plano Membro Fundador garante passe livre e irrestrito às 3 modalidades da Metamorfose, sem custo adicional por aula de dança ou funcional. Você pode treinar musculação pela manhã e participar do funcional ou dança à noite em uma única assinatura.</p>
             </div>
           </div>
 
@@ -985,7 +869,7 @@
           <span class="footer-brand-title">METAMORFOSE</span>
         </div>
         <p class="footer-slogan">
-          Musculação • Funcional • Dança • Luta.<br>
+          Musculação • Funcional • Dança.<br>
           O novo padrão em saúde, movimento e bem-estar.
         </p>
       </div>
@@ -993,8 +877,7 @@
       <div class="footer-col">
         <h4>Navegação</h4>
         <ul class="footer-links">
-          <li><a href="#modalidades">Modalidades</a></li>
-          <li><a href="#estrutura">O Espaço</a></li>
+          <li><a href="#espaco">O Espaço & Modalidades</a></li>
           <li><a href="#fundador">Lote Fundador</a></li>
           <li><a href="#localizacao">Onde Fica</a></li>
           <li><a href="#faq">Dúvidas Frequentes</a></li>
@@ -1002,12 +885,11 @@
       </div>
 
       <div class="footer-col">
-        <h4>Modalidades</h4>
+        <h4>Modalidades Inclusas</h4>
         <ul class="footer-links">
-          <li><a href="#modalidades" class="footer-mod-link" data-mod="musculacao">Musculação de Elite</a></li>
-          <li><a href="#modalidades" class="footer-mod-link" data-mod="funcional">Treinamento Funcional</a></li>
-          <li><a href="#modalidades" class="footer-mod-link" data-mod="danca">Estúdio de Dança</a></li>
-          <li><a href="#modalidades" class="footer-mod-link" data-mod="luta">Arena de Lutas</a></li>
+          <li><a href="#modalidades-3em1" class="footer-mod-link" data-mod="musculacao">Musculação</a></li>
+          <li><a href="#modalidades-3em1" class="footer-mod-link" data-mod="funcional">Treinamento Funcional</a></li>
+          <li><a href="#modalidades-3em1" class="footer-mod-link" data-mod="danca">Estúdio de Dança</a></li>
         </ul>
       </div>
 
