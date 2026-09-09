@@ -1820,14 +1820,25 @@ h1, h2, h3, h4 {
 }
 
 /* Checkbox Cards for Modalities */
-.modalities-checkbox-grid {
+.modalidades-included-note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: -0.25rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.modalidades-checkbox-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.65rem;
 }
 
 .checkbox-card {
-  cursor: pointer;
+  cursor: default;
+  user-select: none;
+  pointer-events: none;
 }
 
 .checkbox-card input {
@@ -1837,71 +1848,109 @@ h1, h2, h3, h4 {
 .checkbox-card .card-body {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.6rem;
-  padding: 0.75rem 1rem;
-  background: var(--bg-card-subtle);
-  border: 1px solid var(--border-subtle);
+  padding: 0.8rem 1rem;
+  background: rgba(255, 0, 0, 0.1) !important;
+  border: 1px solid var(--red-light) !important;
   border-radius: var(--radius-sm);
+  color: var(--text-white) !important;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.22) !important;
   transition: var(--transition);
 }
 
-.checkbox-card input:checked + .card-body {
-  background: rgba(255, 0, 0, 0.12);
-  border-color: var(--red-light);
-  color: var(--text-white);
-  box-shadow: 0 0 12px rgba(255, 0, 0, 0.25);
+.card-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 
-/* Botão "Todas" Pré-definido e Sem Opção de Mudar (Incluso no Plano) */
+.check-status-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--red-light);
+  background: rgba(255, 0, 0, 0.16);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* Botão "Todas" Pré-definido e Bloqueado */
 .checkbox-card.checkbox-card-all {
   grid-column: 1 / -1;
 }
 
-.checkbox-card.locked {
-  cursor: default;
-  user-select: none;
-}
-
 .checkbox-card.checkbox-card-all .card-body {
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.18) 0%, rgba(20, 20, 26, 0.95) 100%) !important;
-  border: 1px solid var(--red-light) !important;
-  box-shadow: 0 0 18px rgba(255, 0, 0, 0.3) !important;
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.22) 0%, rgba(20, 20, 26, 0.96) 100%) !important;
+  border: 1.5px solid var(--red-light) !important;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.32) !important;
   color: var(--text-white) !important;
-  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
   padding: 0.95rem 1.15rem;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  justify-content: flex-start;
 }
 
-.checkbox-card-all .check-text-group {
+.check-icon-all {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: var(--red-gradient);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+}
+
+.check-text-group {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.25rem;
   text-align: left;
+  flex-grow: 1;
+  min-width: 0;
 }
 
-.checkbox-card-all .check-text {
-  font-size: 0.95rem;
+.check-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.check-title {
+  font-size: 0.96rem;
   font-weight: 800;
   color: var(--text-white);
+  line-height: 1.25;
 }
 
-.checkbox-card-all .check-sub {
-  font-size: 0.75rem;
+.check-sub {
+  font-size: 0.76rem;
   color: var(--text-muted);
+  line-height: 1.25;
 }
 
 .badge-incluso-tag {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #ffffff;
   background: var(--red-gradient);
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  box-shadow: 0 2px 10px rgba(255, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .check-icon {
@@ -1909,7 +1958,7 @@ h1, h2, h3, h4 {
 }
 
 .check-text {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
@@ -2798,10 +2847,23 @@ select option {
   }
   .modalities-checkbox-grid {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 0.55rem;
   }
   .checkbox-card .card-body {
-    padding: 0.65rem 0.85rem;
+    padding: 0.75rem 0.9rem;
+  }
+  .checkbox-card.checkbox-card-all .card-body {
+    padding: 0.85rem 0.95rem;
+    gap: 0.75rem;
+  }
+  .check-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .badge-incluso-tag {
+    font-size: 0.64rem;
+    padding: 0.2rem 0.55rem;
   }
   .input-wrapper input,
   .input-wrapper select {

@@ -291,17 +291,18 @@ function initFormValidation() {
     if (checkDanc) checkDanc.checked = true;
   });
 
-  // Garantir que a opção 'Todas' permaneça sempre marcada e bloqueada
-  const checkTodasEl = document.getElementById('check-todas');
-  if (checkTodasEl) {
-    const parentCard = checkTodasEl.closest('.checkbox-card');
+  // Garantir que nenhuma modalidade possa ser desmarcada (todas inclusas no Passe Livre)
+  const modalityInputs = form.querySelectorAll('input[name="modalidades"]');
+  modalityInputs.forEach(input => {
+    input.checked = true;
+    const parentCard = input.closest('.checkbox-card');
     if (parentCard) {
       parentCard.addEventListener('click', (e) => {
         e.preventDefault();
-        checkTodasEl.checked = true;
+        input.checked = true;
       });
     }
-  }
+  });
 
   // Fechar Modal
   if (closeModalBtn) {

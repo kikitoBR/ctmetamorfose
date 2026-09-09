@@ -563,44 +563,56 @@
 
                 <!-- Modalidades de Interesse -->
                 <div class="form-group">
-                  <label id="label-modalidades">Quais modalidades você mais quer praticar? <span class="req">*</span></label>
+                  <label id="label-modalidades">Modalidades Inclusas no seu Passe Livre <span class="req">*</span></label>
+                  <span class="modalidades-included-note">✓ Todas as modalidades abaixo já estão 100% inclusas e ativas na sua matrícula:</span>
                   <div class="modalities-checkbox-grid" role="group" aria-labelledby="label-modalidades">
                     <!-- Botão Todas Pré-definido e Sem Opção de Mudar -->
-                    <label class="checkbox-card checkbox-card-all locked active" title="Todas as modalidades estão inclusas no Plano Membro Fundador">
+                    <div class="checkbox-card checkbox-card-all locked active" title="Todas as modalidades estão inclusas no Plano Membro Fundador">
                       <input type="checkbox" name="modalidades" value="Todas as Modalidades (Musculação, Funcional e Dança)" id="check-todas" checked onclick="return false;">
-                      <span class="card-body">
-                        <span class="check-icon">✓</span>
+                      <div class="card-body">
+                        <span class="check-icon-all">✓</span>
                         <div class="check-text-group">
-                          <span class="check-text">Todas as Modalidades</span>
+                          <div class="check-title-row">
+                            <span class="check-title">Todas as Modalidades</span>
+                            <span class="badge-incluso-tag">🔒 INCLUSO NO PLANO</span>
+                          </div>
                           <span class="check-sub">Musculação • Funcional • Dança</span>
                         </div>
-                        <span class="badge-incluso-tag">🔒 Incluso no Plano</span>
-                      </span>
-                    </label>
+                      </div>
+                    </div>
 
-                    <label class="checkbox-card">
-                      <input type="checkbox" name="modalidades" value="Musculação" id="check-musculacao" checked>
-                      <span class="card-body">
-                        <span class="check-icon">🏋️</span>
-                        <span class="check-text">Musculação</span>
-                      </span>
-                    </label>
+                    <div class="checkbox-card locked active">
+                      <input type="checkbox" name="modalidades" value="Musculação" id="check-musculacao" checked onclick="return false;">
+                      <div class="card-body">
+                        <div class="card-item-left">
+                          <span class="check-icon">🏋️</span>
+                          <span class="check-text">Musculação</span>
+                        </div>
+                        <span class="check-status-pill">✓ Incluso</span>
+                      </div>
+                    </div>
 
-                    <label class="checkbox-card">
-                      <input type="checkbox" name="modalidades" value="Funcional" id="check-funcional" checked>
-                      <span class="card-body">
-                        <span class="check-icon">⚡</span>
-                        <span class="check-text">Funcional</span>
-                      </span>
-                    </label>
+                    <div class="checkbox-card locked active">
+                      <input type="checkbox" name="modalidades" value="Funcional" id="check-funcional" checked onclick="return false;">
+                      <div class="card-body">
+                        <div class="card-item-left">
+                          <span class="check-icon">⚡</span>
+                          <span class="check-text">Funcional</span>
+                        </div>
+                        <span class="check-status-pill">✓ Incluso</span>
+                      </div>
+                    </div>
 
-                    <label class="checkbox-card">
-                      <input type="checkbox" name="modalidades" value="Dança" id="check-danca" checked>
-                      <span class="card-body">
-                        <span class="check-icon">🔥</span>
-                        <span class="check-text">Dança</span>
-                      </span>
-                    </label>
+                    <div class="checkbox-card locked active">
+                      <input type="checkbox" name="modalidades" value="Dança" id="check-danca" checked onclick="return false;">
+                      <div class="card-body">
+                        <div class="card-item-left">
+                          <span class="check-icon">🔥</span>
+                          <span class="check-text">Dança</span>
+                        </div>
+                        <span class="check-status-pill">✓ Incluso</span>
+                      </div>
+                    </div>
                   </div>
                   <span class="field-error" id="error-modalidades"></span>
                 </div>
