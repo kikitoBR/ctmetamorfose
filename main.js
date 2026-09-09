@@ -290,6 +290,48 @@ function validarDataNascimento(dataStr) {
   return { valid: true };
 }
 
+/**
+ * Validação rigorosa de Nome e Sobrenome Completos
+ * Exige pelo menos nome e um sobrenome (mínimo 2 palavras),
+ * cada uma com pelo menos 2 letras, sem números ou caracteres especiais indevidos.
+ */
+function validarNomeCompleto(nomeStr) {
+  if (!nomeStr) {
+    return { valid: false, message: 'Por favor, informe seu nome e sobrenome completos.' };
+  }
+
+  const limpo = nomeStr.trim().replace(/\s+/g, ' ');
+
+  // Apenas letras (incluindo acentos PT-BR), espaços, apóstrofos e hífens
+  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/.test(limpo)) {
+    return { valid: false, message: 'O nome não deve conter números ou caracteres especiais.' };
+  }
+
+  const partes = limpo.split(' ').filter(p => p.length > 0);
+
+  if (partes.length < 2) {
+    return { valid: false, message: 'Informe seu nome e sobrenome completos (ex: Carlos Silva).' };
+  }
+
+  const primeiroNome = partes[0];
+  const ultimoNome = partes[partes.length - 1];
+
+  if (primeiroNome.length < 2) {
+    return { valid: false, message: 'O primeiro nome deve conter pelo menos 2 letras.' };
+  }
+
+  if (ultimoNome.length < 2) {
+    return { valid: false, message: 'O sobrenome deve conter pelo menos 2 letras.' };
+  }
+
+  const partesSignificativas = partes.filter(p => p.length >= 2);
+  if (partesSignificativas.length < 2) {
+    return { valid: false, message: 'Por favor, informe seu sobrenome completo.' };
+  }
+
+  return { valid: true };
+}
+
 /* ==========================================================================
    6. VALIDAÇÃO ROBUSTA & REDIRECIONAMENTO WHATSAPP
    ========================================================================== */
@@ -315,11 +357,12 @@ function initFormValidation() {
 
     let isValid = true;
 
-    // 1. Validação de Nome
+    // 1. Validação de Nome e Sobrenome Completos
     const errorNome = document.getElementById('error-nome');
     const nomeVal = nomeInput ? nomeInput.value.trim() : '';
-    if (!nomeVal || nomeVal.length < 3) {
-      errorNome.textContent = 'Por favor, informe seu nome completo.';
+    const nomeRes = validarNomeCompleto(nomeVal);
+    if (!nomeRes.valid) {
+      errorNome.textContent = nomeRes.message;
       isValid = false;
     } else {
       errorNome.textContent = '';
@@ -452,6 +495,37 @@ function initFormValidation() {
       });
     }
   });
+
+  // Limpeza de erros em tempo real ao digitar
+  const nomeInput = document.getElementById('lead-nome');
+  if (nomeInput) {
+    nomeInput.addEventListener('input', () => {
+      const err = document.getElementById('error-nome');
+      if (err && err.textContent && validarNomeCompleto(nomeInput.value).valid) {
+        err.textContent = '';
+      }
+    });
+  }
+
+  const cpfInput = document.getElementById('lead-cpf');
+  if (cpfInput) {
+    cpfInput.addEventListener('input', () => {
+      const err = document.getElementById('error-cpf');
+      if (err && err.textContent && validarCPF(cpfInput.value)) {
+        err.textContent = '';
+      }
+    });
+  }
+
+  const nascInput = document.getElementById('lead-nascimento');
+  if (nascInput) {
+    nascInput.addEventListener('input', () => {
+      const err = document.getElementById('error-nascimento');
+      if (err && err.textContent && validarDataNascimento(nascInput.value).valid) {
+        err.textContent = '';
+      }
+    });
+  }
 
   // Fechar Modal
   if (closeModalBtn) {
