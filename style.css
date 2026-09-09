@@ -1358,12 +1358,11 @@ h1, h2, h3, h4 {
    LOTE FUNDADOR / PRICING SECTION
    ========================================================================== */
 .pricing-comparison-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 2rem;
-  max-width: 980px;
+  display: flex;
+  justify-content: center;
+  max-width: 720px;
   margin: 0 auto;
-  align-items: center;
+  width: 100%;
 }
 
 .plan-card {
@@ -1375,15 +1374,15 @@ h1, h2, h3, h4 {
   transition: var(--transition);
 }
 
-.regular-card {
-  opacity: 0.85;
-}
-
 .founder-card {
-  background: linear-gradient(180deg, #1a1012 0%, #101014 100%);
-  border: 1px solid rgba(255, 0, 0, 0.5);
-  box-shadow: 0 20px 60px rgba(255, 0, 0, 0.2);
-  transform: scale(1.02);
+  width: 100%;
+  background: linear-gradient(180deg, #1e1215 0%, #111116 100%);
+  border: 1px solid rgba(255, 0, 0, 0.45);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 0, 0, 0.15);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.75rem 2.5rem;
+  position: relative;
+  transition: var(--transition);
 }
 
 .founder-ribbon {
@@ -1392,16 +1391,16 @@ h1, h2, h3, h4 {
   right: 24px;
   background: var(--red-gradient);
   color: #ffffff;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  padding: 0.35rem 1rem;
+  padding: 0.4rem 1.15rem;
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 14px var(--red-glow);
+  box-shadow: 0 4px 16px var(--red-glow);
 }
 
 .plan-type {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   color: var(--text-dark);
@@ -1414,45 +1413,107 @@ h1, h2, h3, h4 {
 }
 
 .plan-name {
-  font-size: 1.6rem;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  font-weight: 900;
+  color: var(--text-white);
   margin-bottom: 0.5rem;
 }
 
 .plan-desc {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   margin-bottom: 1.5rem;
+  max-width: 580px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .plan-price-box {
-  padding: 1.25rem 0;
-  border-top: 1px solid var(--border-subtle);
-  border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 1.75rem;
-}
-
-.price-strikethrough {
-  font-size: 0.8rem;
-  color: var(--text-dark);
-  text-transform: uppercase;
-  font-weight: 700;
+  padding: 1.5rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-md);
 }
 
 .price-badge-saving {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  color: var(--green-accent);
-  background: rgba(16, 185, 129, 0.12);
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-sm);
-  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+
+.price-flex-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 0.5rem 0;
+  flex-wrap: wrap;
+}
+
+.price-old-strikethrough {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.price-old-strikethrough .old-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-transform: uppercase;
+}
+
+.price-old-strikethrough .old-value {
+  font-family: var(--font-heading);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #71717a;
+  text-decoration: line-through;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 3px;
+}
+
+.price-old-strikethrough .old-period {
+  font-size: 0.85rem;
+  color: #71717a;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+.price-arrow-divider {
+  color: var(--red-light);
+  font-size: 1.3rem;
+  font-weight: 800;
+  opacity: 0.85;
+  user-select: none;
+}
+
+.price-promo-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.price-promo-wrap .promo-label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-light);
+  text-transform: uppercase;
 }
 
 .price-amount {
   font-family: var(--font-heading);
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  font-weight: 900;
   color: var(--text-white);
   line-height: 1;
 }
@@ -1468,70 +1529,58 @@ h1, h2, h3, h4 {
 }
 
 .price-amount .period {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--text-muted);
   font-family: var(--font-body);
-  font-weight: 500;
-}
-
-.price-note {
-  font-size: 0.8rem;
-  color: var(--text-dark);
-  margin-top: 0.35rem;
+  font-weight: 600;
 }
 
 .price-lock-tag {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--red-light);
-  margin-top: 0.4rem;
+  letter-spacing: 0.04em;
+  margin-top: 0.75rem;
 }
 
 .plan-perks {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  margin-bottom: 2rem;
+  gap: 0.95rem;
+  margin-bottom: 2.25rem;
+  text-align: left;
 }
 
 .perk-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-light);
-}
-
-.perk-cross {
-  color: #ef4444;
-  font-weight: 800;
-}
-
-.perk-check {
-  color: var(--text-muted);
+  line-height: 1.45;
 }
 
 .perk-star {
   color: var(--red-light);
-  font-size: 1rem;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.perk-item strong {
+  color: var(--text-white);
 }
 
 .plan-footer {
   text-align: center;
 }
 
-.disabled-hint {
-  font-size: 0.8rem;
-  color: var(--text-dark);
-  font-weight: 600;
-}
-
 .safe-tag {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   display: block;
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
 }
 
 /* ==========================================================================
@@ -2662,14 +2711,23 @@ select option {
     font-size: 1.35rem;
   }
   .price-amount {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
+  }
+  .price-flex-row {
+    gap: 0.65rem;
+  }
+  .price-old-strikethrough .old-value {
+    font-size: 1.3rem;
+  }
+  .price-arrow-divider {
+    font-size: 1.05rem;
   }
   .plan-perks {
     margin-bottom: 1.5rem;
     gap: 0.75rem;
   }
   .perk-item {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
   }
 
   /* Formulário de Pré-Matrícula */
