@@ -6,6 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initHeader();
   initHeroParallax();
+  initEspacoShowcase();
   initCountdown();
   initModalitiesTabs();
   initFaqAccordion();
@@ -409,6 +410,126 @@ function initHeroParallax() {
 
   if (isMobile()) {
     update();
+  }
+}
+
+/* ==========================================================================
+   ESPAÇO SHOWCASE (FILTERS, MOBILE CAROUSEL DOTS & LIGHTBOX ZOOM)
+   ========================================================================== */
+function initEspacoShowcase() {
+  const filterBtns = document.querySelectorAll('.espaco-filter-btn');
+  const cards = document.querySelectorAll('.espaco-card');
+  const containers = document.querySelectorAll('.dual-photo-container');
+
+  // 1. Filtros por Categoria
+  if (filterBtns.length > 0 && cards.length > 0) {
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        cards.forEach(card => {
+          const cat = card.getAttribute('data-category');
+          if (filter === 'all' || cat === filter) {
+            card.classList.remove('filtered-out');
+          } else {
+            card.classList.add('filtered-out');
+          }
+        });
+      });
+    });
+  }
+
+  // 2. Sincronização dos Dots do Carrossel Mobile
+  containers.forEach(container => {
+    const track = container.querySelector('.dual-photo-track');
+    const dots = container.querySelectorAll('.carousel-dots .dot');
+    const items = container.querySelectorAll('.photo-item');
+
+    if (!track || dots.length === 0 || items.length === 0) return;
+
+    let isScrolling = false;
+
+    track.addEventListener('scroll', () => {
+      if (isScrolling) return;
+      isScrolling = true;
+      requestAnimationFrame(() => {
+        const scrollLeft = track.scrollLeft;
+        const itemWidth = items[0].offsetWidth;
+        const activeIndex = Math.round(scrollLeft / (itemWidth + 12));
+
+        dots.forEach((dot, idx) => {
+          if (idx === activeIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+        isScrolling = false;
+      });
+    }, { passive: true });
+
+    // Clique no dot para rolar até a foto
+    dots.forEach((dot, idx) => {
+      dot.addEventListener('click', () => {
+        if (items[idx]) {
+          items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      });
+    });
+  });
+
+  // 3. Lightbox Modal Zoom
+  const lightboxModal = document.getElementById('lightbox-modal');
+  const lightboxOverlay = document.getElementById('lightbox-overlay');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+
+  if (lightboxModal && lightboxImg) {
+    function openLightbox(imgSrc, captionText) {
+      lightboxImg.src = imgSrc;
+      if (lightboxCaption) {
+        lightboxCaption.textContent = captionText || 'Espaço Academia Metamorfose';
+      }
+      lightboxModal.classList.add('active');
+      lightboxModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightboxModal.classList.remove('active');
+      lightboxModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        if (!lightboxModal.classList.contains('active')) {
+          lightboxImg.src = '';
+        }
+      }, 300);
+    }
+
+    // Clique nos photo-items para abrir zoom
+    document.querySelectorAll('.photo-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const img = item.querySelector('img');
+        const tag = item.querySelector('.photo-tag');
+        if (img) {
+          const caption = tag ? tag.textContent.trim() : (img.alt || '');
+          openLightbox(img.src, caption);
+        }
+      });
+    });
+
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxOverlay) lightboxOverlay.addEventListener('click', closeLightbox);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+        closeLightbox();
+      }
+    });
   }
 }
 

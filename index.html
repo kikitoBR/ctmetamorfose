@@ -41,8 +41,8 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Navegação Principal">
+        <a href="#espaco" class="nav-link">O Espaço</a>
         <a href="#modalidades" class="nav-link">Modalidades</a>
-        <a href="#estrutura" class="nav-link">O Espaço</a>
         <a href="#fundador" class="nav-link">Lote Fundador</a>
         <a href="#localizacao" class="nav-link">Localização</a>
         <a href="#faq" class="nav-link">Dúvidas</a>
@@ -64,8 +64,8 @@
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-drawer" id="mobile-drawer">
       <nav class="mobile-nav">
+        <a href="#espaco" class="mobile-nav-link">O Espaço</a>
         <a href="#modalidades" class="mobile-nav-link">Modalidades</a>
-        <a href="#estrutura" class="mobile-nav-link">O Espaço</a>
         <a href="#fundador" class="mobile-nav-link">Lote Fundador</a>
         <a href="#localizacao" class="mobile-nav-link">Localização</a>
         <a href="#faq" class="mobile-nav-link">Dúvidas Frequentes</a>
@@ -183,13 +183,218 @@
         </div>
 
         <!-- Indicador Animado de Scroll -->
-        <a href="#modalidades" class="scroll-down-indicator" aria-label="Rolar para explorar o conteúdo da academia">
+        <a href="#espaco" class="scroll-down-indicator" aria-label="Rolar para explorar o espaço da academia">
           <span class="scroll-text">EXPLORAR A ACADEMIA</span>
           <div class="scroll-mouse">
             <div class="scroll-dot"></div>
           </div>
           <svg class="scroll-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </a>
+      </div>
+    </section>
+
+    <!-- O ESPAÇO SECTION (Dual Photo Showcase & Mobile Carousel) -->
+    <section class="section espaco-section" id="espaco">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-pill">TOUR VIRTUAL EXCLUSIVO</span>
+          <h2 class="section-title">CONHEÇA CADA DETALHE DO <span class="highlight-gradient">CENTRO DE TREINAMENTO</span></h2>
+          <p class="section-subtitle">
+            Muito mais que uma academia: um complexo de 15.000m² projetado para unir treino de alta performance, convivência e conveniência para você e sua família.
+          </p>
+        </div>
+
+        <!-- Filtro de Ambientes -->
+        <div class="espaco-filter-pills" role="tablist" aria-label="Filtrar Ambientes">
+          <button class="espaco-filter-btn active" data-filter="all">Todos os Espaços</button>
+          <button class="espaco-filter-btn" data-filter="musculacao">Musculação</button>
+          <button class="espaco-filter-btn" data-filter="recepcao">Fachada & Recepção</button>
+          <button class="espaco-filter-btn" data-filter="cowork">Coworking</button>
+          <button class="espaco-filter-btn" data-filter="kids">Área Kids</button>
+          <button class="espaco-filter-btn" data-filter="lounge">Lounge & Relax</button>
+          <button class="espaco-filter-btn" data-filter="jogos">Área de Jogos</button>
+          <button class="espaco-filter-btn" data-filter="vestiarios">Vestiários</button>
+        </div>
+
+        <!-- Lista de Cards com Fotos Duplas -->
+        <div class="espaco-showcase-list">
+
+          <!-- 1. Musculação -->
+          <article class="espaco-card" data-category="musculacao">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">ÁREA DE FORÇA & BIOMECÂNICA</div>
+              <h3 class="espaco-card-title">Salão de Musculação Biomecânica</h3>
+              <p class="espaco-card-desc">Mais de 90 estações de treino, maquinário biomecânico com ângulos ajustáveis que protegem suas articulações e ampla área de pesos livres sem filas.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/interior1.jpeg" alt="Salão de musculação e aparelhos biomecânicos da Academia Metamorfose" loading="lazy">
+                  <div class="photo-tag">Equipamentos Biomecânicos</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/interior2.jpeg" alt="Área de pesos livres, esteiras e iluminação esportiva" loading="lazy">
+                  <div class="photo-tag">Pesos Livres & Cardio</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2. Fachada & Recepção -->
+          <article class="espaco-card" data-category="recepcao">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">PRIMEIRA IMPRESSÃO</div>
+              <h3 class="espaco-card-title">Fachada Imponente & Recepção Hotelaria</h3>
+              <p class="espaco-card-desc">Arquitetura contemporânea imponente, atendimento acolhedor com padrão de hotelaria, catracas de acesso inteligente sem filas e segurança integrada 24h.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/faixada1.jpeg" alt="Fachada moderna e entrada da Academia Metamorfose" loading="lazy">
+                  <div class="photo-tag">Acesso Principal</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/recepcao.jpeg" alt="Lobby de atendimento e recepção da Metamorfose" loading="lazy">
+                  <div class="photo-tag">Lobby de Entrada</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3. Coworking -->
+          <article class="espaco-card" data-category="cowork">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">PRODUTIVIDADE & CONVENIÊNCIA</div>
+              <h3 class="espaco-card-title">Espaço Coworking Integrado</h3>
+              <p class="espaco-card-desc">Treine e trabalhe sem perder tempo no trânsito. Bancadas individuais, tomadas dedicadas, Wi-Fi ultrarrápido e ambiente silencioso para suas reuniões e projetos.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/cowork1.jpeg" alt="Bancadas de trabalho do Coworking da Academia Metamorfose" loading="lazy">
+                  <div class="photo-tag">Estações de Trabalho</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/cowork2.jpeg" alt="Ambiente integrado de coworking e convivência" loading="lazy">
+                  <div class="photo-tag">Conectividade & Foco</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4. Área Kids -->
+          <article class="espaco-card" data-category="kids">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">FAMÍLIA & SEGURANÇA</div>
+              <h3 class="espaco-card-title">Espaço Kids Climatizado & Seguro</h3>
+              <p class="espaco-card-desc">Traga seus filhos com total tranquilidade. Recreação acolhedora com piscina de bolinhas, brinquedos e piso emborrachado com proteção total.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/areakids1.jpeg" alt="Brinquedos lúdicos e piscina de bolinhas na área kids" loading="lazy">
+                  <div class="photo-tag">Brinquedoteca & Lazer</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/areakids2.jpeg" alt="Espaço seguro e acolhedor para as crianças" loading="lazy">
+                  <div class="photo-tag">Segurança Infantil</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5. Lounge -->
+          <article class="espaco-card" data-category="lounge">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">LIFESTYLE & RECOVERY</div>
+              <h3 class="espaco-card-title">Lounge de Convivência & Shake Bar</h3>
+              <p class="espaco-card-desc">Ambiente acolhedor com sofás e poltronas confortáveis para relaxar antes ou após o treino, tomar um café expresso selecionado e conversar com a comunidade.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/lounge1.jpeg" alt="Sofás aconchegantes no lounge de convivência" loading="lazy">
+                  <div class="photo-tag">Ambiente de Descompressão</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/lounge2.jpeg" alt="Área de cafeteria e cafeteria da Metamorfose" loading="lazy">
+                  <div class="photo-tag">Café & Shake Bar</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 6. Jogos -->
+          <article class="espaco-card" data-category="jogos">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">DIVERSÃO & SOCIALIZAÇÃO</div>
+              <h3 class="espaco-card-title">Área de Jogos & Descontração</h3>
+              <p class="espaco-card-desc">Momento de descompressão real. Mesas de jogos, sinuca e área recreativa com iluminação dinâmica para descontrair a mente depois de um treino intenso.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/jogos1.jpeg" alt="Mesa de jogos e sinuca na academia Metamorfose" loading="lazy">
+                  <div class="photo-tag">Mesa de Sinuca</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/jogos2.jpeg" alt="Espaço de lazer e entretenimento esportivo" loading="lazy">
+                  <div class="photo-tag">Área Recreativa</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+          <!-- 7. Vestiários -->
+          <article class="espaco-card" data-category="vestiarios">
+            <div class="espaco-card-header">
+              <div class="espaco-badge">CONFORTO & PRIVACIDADE</div>
+              <h3 class="espaco-card-title">Vestiários com Padrão de Hotelaria</h3>
+              <p class="espaco-card-desc">Duchas pressurizadas de alta vazão aquecidas a gás, bancadas iluminadas com espelhos camarim, secadores de cabelo e armários privativos amplos.</p>
+            </div>
+            <div class="dual-photo-container">
+              <div class="dual-photo-track">
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/banheirofeminino1.jpeg" alt="Vestiário feminino com bancadas de granito e espelhos iluminados" loading="lazy">
+                  <div class="photo-tag">Bancadas Camarim</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/banheiromasculino1.jpeg" alt="Vestiário com duchas pressurizadas e armários" loading="lazy">
+                  <div class="photo-tag">Duchas & Armários</div>
+                </div>
+              </div>
+              <div class="carousel-dots" aria-hidden="true">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+              </div>
+            </div>
+          </article>
+
+        </div>
       </div>
     </section>
 
@@ -411,70 +616,6 @@
             </div>
           </div>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- ESTRUTURA / O ESPAÇO SECTION -->
-    <section class="section estrutura-section" id="estrutura">
-      <div class="container">
-        <div class="section-header text-center">
-          <span class="section-pill">PADRÃO SUPERIOR</span>
-          <h2 class="section-title">UMA ESTRUTURA PLANEJADA PARA O SEU <span class="highlight-gradient">MÁXIMO CONFORTO</span></h2>
-          <p class="section-subtitle">
-            Cada metro quadrado da Metamorfose foi desenhado para eliminar os atritos clássicos das academias convencionais. Veja os bastidores do que estamos preparando:
-          </p>
-        </div>
-
-        <!-- Featured Banner -->
-        <div class="featured-structure-card">
-          <div class="featured-img-container">
-            <img src="/images/estrutura.jpg" alt="Lobby e Recepção da Academia Metamorfose" class="featured-img" loading="lazy">
-            <div class="featured-overlay">
-              <div class="featured-badge">RECEPÇÃO & LOUNGE RECOVERY</div>
-              <h3 class="featured-headline">Atendimento com padrão de hotelaria e convivência premium</h3>
-              <p class="featured-sub">Ambiente climatizado, café expresso, área de descanso pós-treino e integração total com as áreas de exercício.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Grid of Structure Highlights -->
-        <div class="structure-grid">
-          <div class="structure-card">
-            <div class="card-icon">🚿</div>
-            <h4 class="card-title">Vestiários Hotelaria</h4>
-            <p class="card-text">Duchas de alta pressão aquecidas a gás, bancadas de granito com espelhos iluminados, secadores de cabelo e armários inteligentes com biometria.</p>
-          </div>
-
-          <div class="structure-card">
-            <div class="card-icon">❄️</div>
-            <h4 class="card-title">Ar Climatizado 100% Filtrado</h4>
-            <p class="card-text">Sistema central de ar-condicionado com renovação constante e filtros hospitalares. O ar que você respira durante o treino é sempre limpo e fresco.</p>
-          </div>
-
-          <div class="structure-card">
-            <div class="card-icon">🚗</div>
-            <h4 class="card-title">Estacionamento Próprio</h4>
-            <p class="card-text">Vagas demarcadas e gratuitas para alunos, monitoramento por câmeras 24 horas e acesso facilitado com controle automatizado.</p>
-          </div>
-
-          <div class="structure-card">
-            <div class="card-icon">📱</div>
-            <h4 class="card-title">App Metamorfose</h4>
-            <p class="card-text">Ficha de treino digital com vídeos em alta definição de cada exercício, gráficos de evolução de carga, frequência e agendamento de aulas.</p>
-          </div>
-
-          <div class="structure-card">
-            <div class="card-icon">☕</div>
-            <h4 class="card-title">Espaço Coffee & Shake Bar</h4>
-            <p class="card-text">Lounge aconchegante com shakes proteicos, café de grão selecionado, bebidas isotônicas e lanches saudáveis para antes ou depois do treino.</p>
-          </div>
-
-          <div class="structure-card">
-            <div class="card-icon">🔒</div>
-            <h4 class="card-title">Segurança & Acesso Facial</h4>
-            <p class="card-text">Catracas ultra-rápidas com reconhecimento facial sem toque. Entrada instantânea e segurança absoluta para você e seus pertences.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -918,6 +1059,18 @@
       </a>
 
       <button class="btn-modal-close" id="btn-close-modal">Fechar Janela</button>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX MODAL PARA FOTOS DO ESPAÇO -->
+  <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog" aria-label="Visualizador de Foto em Alta Resolução">
+    <div class="lightbox-overlay" id="lightbox-overlay"></div>
+    <div class="lightbox-wrapper">
+      <button class="lightbox-close" id="lightbox-close" aria-label="Fechar visualizador">✕</button>
+      <div class="lightbox-content">
+        <img id="lightbox-img" src="" alt="Foto ampliada do espaço">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+      </div>
     </div>
   </div>
 
