@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountdown();
   initModalitySelectors();
   initFaqAccordion();
-  initPhoneMask();
+  initInputMasks();
   initFormValidation();
   initSmoothScroll();
 });
@@ -152,26 +152,142 @@ function initFaqAccordion() {
 }
 
 /* ==========================================================================
-   5. MÁSCARA INTELIGENTE DE TELEFONE (DDD + 9 DÍGITOS)
+   5. MÁSCARAS INTELIGENTES (TELEFONE, CPF E DATA DE NASCIMENTO)
    ========================================================================== */
-function initPhoneMask() {
+function initInputMasks() {
+  // Telefone (DDD + 9 dígitos)
   const phoneInput = document.getElementById('lead-telefone');
-  if (!phoneInput) return;
+  if (phoneInput) {
+    phoneInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 11) val = val.substring(0, 11);
 
-  phoneInput.addEventListener('input', (e) => {
-    let val = e.target.value.replace(/\D/g, '');
-    if (val.length > 11) val = val.substring(0, 11);
+      if (val.length === 0) {
+        e.target.value = '';
+      } else if (val.length <= 2) {
+        e.target.value = `(${val}`;
+      } else if (val.length <= 7) {
+        e.target.value = `(${val.substring(0, 2)}) ${val.substring(2)}`;
+      } else {
+        e.target.value = `(${val.substring(0, 2)}) ${val.substring(2, 7)}-${val.substring(7)}`;
+      }
+    });
+  }
 
-    if (val.length === 0) {
-      e.target.value = '';
-    } else if (val.length <= 2) {
-      e.target.value = `(${val}`;
-    } else if (val.length <= 7) {
-      e.target.value = `(${val.substring(0, 2)}) ${val.substring(2)}`;
-    } else {
-      e.target.value = `(${val.substring(0, 2)}) ${val.substring(2, 7)}-${val.substring(7)}`;
-    }
-  });
+  // CPF (000.000.000-00)
+  const cpfInput = document.getElementById('lead-cpf');
+  if (cpfInput) {
+    cpfInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 11) val = val.substring(0, 11);
+
+      if (val.length === 0) {
+        e.target.value = '';
+      } else if (val.length <= 3) {
+        e.target.value = val;
+      } else if (val.length <= 6) {
+        e.target.value = `${val.substring(0, 3)}.${val.substring(3)}`;
+      } else if (val.length <= 9) {
+        e.target.value = `${val.substring(0, 3)}.${val.substring(3, 6)}.${val.substring(6)}`;
+      } else {
+        e.target.value = `${val.substring(0, 3)}.${val.substring(3, 6)}.${val.substring(6, 9)}-${val.substring(9)}`;
+      }
+    });
+  }
+
+  // Data de Nascimento (DD/MM/AAAA)
+  const nascInput = document.getElementById('lead-nascimento');
+  if (nascInput) {
+    nascInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 8) val = val.substring(0, 8);
+
+      if (val.length === 0) {
+        e.target.value = '';
+      } else if (val.length <= 2) {
+        e.target.value = val;
+      } else if (val.length <= 4) {
+        e.target.value = `${val.substring(0, 2)}/${val.substring(2)}`;
+      } else {
+        e.target.value = `${val.substring(0, 2)}/${val.substring(2, 4)}/${val.substring(4)}`;
+      }
+    });
+  }
+}
+
+/**
+ * Validação do Algoritmo Oficial de CPF da Receita Federal
+ */
+function validarCPF(cpfStr) {
+  const cpf = cpfStr.replace(/\D/g, '');
+  if (cpf.length !== 11) return false;
+  // Rejeita sequências com todos os números iguais (ex: 111.111.111-11)
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+  // Primeiro dígito verificador
+  let soma = 0;
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cpf.charAt(i), 10) * (10 - i);
+  }
+  let resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf.charAt(9), 10)) return false;
+
+  // Segundo dígito verificador
+  soma = 0;
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cpf.charAt(i), 10) * (11 - i);
+  }
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf.charAt(10), 10)) return false;
+
+  return true;
+}
+
+/**
+ * Validação de Data de Nascimento (Dia, Mês, Ano e Idade mínima de 12 anos)
+ */
+function validarDataNascimento(dataStr) {
+  const clean = dataStr.replace(/\D/g, '');
+  if (clean.length !== 8) {
+    return { valid: false, message: 'Digite a data completa no formato DD/MM/AAAA.' };
+  }
+
+  const dia = parseInt(clean.substring(0, 2), 10);
+  const mes = parseInt(clean.substring(2, 4), 10);
+  const ano = parseInt(clean.substring(4, 8), 10);
+
+  if (mes < 1 || mes > 12) {
+    return { valid: false, message: 'Mês inválido (deve ser entre 01 e 12).' };
+  }
+
+  const diasNoMes = new Date(ano, mes, 0).getDate();
+  if (dia < 1 || dia > diasNoMes) {
+    return { valid: false, message: `Dia inválido para o mês informado (máximo: ${diasNoMes}).` };
+  }
+
+  const data = new Date(ano, mes - 1, dia);
+  const hoje = new Date();
+
+  if (data > hoje) {
+    return { valid: false, message: 'Data de nascimento não pode ser no futuro.' };
+  }
+
+  let idade = hoje.getFullYear() - ano;
+  const m = hoje.getMonth() - (mes - 1);
+  if (m < 0 || (m === 0 && hoje.getDate() < dia)) {
+    idade--;
+  }
+
+  if (idade < 12) {
+    return { valid: false, message: 'É necessário ter no mínimo 12 anos para a pré-matrícula.' };
+  }
+  if (idade > 110) {
+    return { valid: false, message: 'Por favor, informe um ano de nascimento válido.' };
+  }
+
+  return { valid: true };
 }
 
 /* ==========================================================================
@@ -190,6 +306,8 @@ function initFormValidation() {
     e.preventDefault();
 
     const nomeInput = document.getElementById('lead-nome');
+    const cpfInput = document.getElementById('lead-cpf');
+    const nascInput = document.getElementById('lead-nascimento');
     const telInput = document.getElementById('lead-telefone');
     const emailInput = document.getElementById('lead-email');
     const periodoSelect = document.getElementById('lead-periodo');
@@ -199,7 +317,7 @@ function initFormValidation() {
 
     // 1. Validação de Nome
     const errorNome = document.getElementById('error-nome');
-    const nomeVal = nomeInput.value.trim();
+    const nomeVal = nomeInput ? nomeInput.value.trim() : '';
     if (!nomeVal || nomeVal.length < 3) {
       errorNome.textContent = 'Por favor, informe seu nome completo.';
       isValid = false;
@@ -207,9 +325,38 @@ function initFormValidation() {
       errorNome.textContent = '';
     }
 
-    // 2. Validação de Telefone/WhatsApp (DDD + 9 dígitos)
+    // 2. Validação de CPF
+    const errorCpf = document.getElementById('error-cpf');
+    const cpfVal = cpfInput ? cpfInput.value.trim() : '';
+    if (!cpfVal) {
+      errorCpf.textContent = 'Por favor, informe seu CPF.';
+      isValid = false;
+    } else if (!validarCPF(cpfVal)) {
+      errorCpf.textContent = 'CPF inválido. Verifique os números digitados.';
+      isValid = false;
+    } else {
+      errorCpf.textContent = '';
+    }
+
+    // 3. Validação de Data de Nascimento
+    const errorNasc = document.getElementById('error-nascimento');
+    const nascVal = nascInput ? nascInput.value.trim() : '';
+    if (!nascVal) {
+      errorNasc.textContent = 'Por favor, informe sua data de nascimento.';
+      isValid = false;
+    } else {
+      const nascRes = validarDataNascimento(nascVal);
+      if (!nascRes.valid) {
+        errorNasc.textContent = nascRes.message;
+        isValid = false;
+      } else {
+        errorNasc.textContent = '';
+      }
+    }
+
+    // 4. Validação de Telefone/WhatsApp (DDD + 9 dígitos)
     const errorTel = document.getElementById('error-telefone');
-    const rawTel = telInput.value.replace(/\D/g, '');
+    const rawTel = telInput ? telInput.value.replace(/\D/g, '') : '';
     if (rawTel.length < 10 || rawTel.length > 11) {
       errorTel.textContent = 'Digite um número de WhatsApp válido com DDD (11 dígitos).';
       isValid = false;
@@ -220,9 +367,9 @@ function initFormValidation() {
       errorTel.textContent = '';
     }
 
-    // 3. Validação de E-mail
+    // 5. Validação de E-mail
     const errorEmail = document.getElementById('error-email');
-    const emailVal = emailInput.value.trim();
+    const emailVal = emailInput ? emailInput.value.trim() : '';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailVal || !emailRegex.test(emailVal)) {
       errorEmail.textContent = 'Digite um endereço de e-mail válido.';
@@ -231,7 +378,7 @@ function initFormValidation() {
       errorEmail.textContent = '';
     }
 
-    // 4. Validação de Modalidades
+    // 6. Validação de Modalidades
     const errorMod = document.getElementById('error-modalidades');
     if (modalidadesChecked.length === 0) {
       errorMod.textContent = 'Selecione pelo menos uma modalidade de seu interesse.';
@@ -245,10 +392,12 @@ function initFormValidation() {
     // Lead Válido! Salvar no localStorage
     const leadData = {
       nome: nomeVal,
+      cpf: cpfVal,
+      dataNascimento: nascVal,
       telefone: rawTel,
       email: emailVal,
       modalidades: modalidadesChecked,
-      periodo: periodoSelect.value,
+      periodo: periodoSelect ? periodoSelect.value : '',
       timestamp: new Date().toISOString()
     };
 

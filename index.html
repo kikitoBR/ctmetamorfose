@@ -306,12 +306,12 @@
             <div class="dual-photo-container">
               <div class="dual-photo-track">
                 <div class="photo-item" title="Clique para ampliar">
-                  <img src="/images/espaco/areakids2.png" alt="Espaço seguro e acolhedor para as crianças" loading="lazy">
-                  <div class="photo-tag">Segurança Infantil</div>
-                </div>
-                <div class="photo-item" title="Clique para ampliar">
                   <img src="/images/espaco/areakids1.jpeg" alt="Brinquedos lúdicos e piscina de bolinhas na área kids" loading="lazy">
                   <div class="photo-tag">Brinquedoteca & Lazer</div>
+                </div>
+                <div class="photo-item" title="Clique para ampliar">
+                  <img src="/images/espaco/areakids2.png" alt="Espaço seguro e acolhedor para as crianças" loading="lazy">
+                  <div class="photo-tag">Segurança Infantil</div>
                 </div>
               </div>
               <div class="carousel-dots" aria-hidden="true">
@@ -454,18 +454,18 @@
               <div class="price-flex-row">
                 <div class="price-old-strikethrough">
                   <span class="old-label">De:</span>
-                  <span class="old-value">R$ 229<span class="old-period">/mês</span></span>
+                  <span class="old-value">R$ 229,90<span class="old-period">/mês</span></span>
                 </div>
                 <div class="price-arrow-divider">➔</div>
                 <div class="price-promo-wrap">
                   <span class="promo-label">Por:</span>
-                  <div class="price-amount red-price"><span class="currency">R$</span> 129<span class="period">/mês</span></div>
+                  <div class="price-amount red-price"><span class="currency">R$</span> 129,90<span class="period">/mês</span></div>
                 </div>
               </div>
               <div class="price-lock-tag">🔒 PLANO VITALÍCIO ENQUANTO ATIVO (SEM INATIVIDADE POR 30 DIAS) • MATRÍCULA ISENTA (R$ 0,00)</div>
             </div>
             <ul class="plan-perks">
-              <li class="perk-item"><span class="perk-star">★</span> <div><strong>Taxa de Matrícula R$ 0,00</strong></div></li>
+              <li class="perk-item"><span class="perk-star">★</span> <div><strong>Taxa de Matrícula R$ 0,00</strong>: Pague apenas a mensalidade</div></li>
               <li class="perk-item"><span class="perk-star">★</span> <div><strong>Passe Livre Total:</strong> Musculação, Treinamento Funcional e Estúdio de Dança</div></li>
               <li class="perk-item"><span class="perk-star">★</span> <div><strong>Plano Vitalício:</strong> R$ 129/mês garantido enquanto sua assinatura permanecer ativa (sem inatividade por 30 dias)</div></li>
               <li class="perk-item"><span class="perk-star">★</span> <div><strong>Acesso Exclusivo 3 Dias Antes:</strong> Soft Opening VIP para os primeiros pioneiros</div></li>
@@ -477,7 +477,6 @@
                 <span>Garantir Meu Lote Fundador Agora</span>
                 <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
-              <span class="safe-tag">Sem cobrança antecipada agora. Reserva imediata da condição.</span>
             </div>
           </div>
         </div>
@@ -524,7 +523,6 @@
             <div class="form-card">
               <div class="form-card-header">
                 <h3>Formulário de Pré-Matrícula</h3>
-                <span class="step-badge">Etapa Única • 45 Segundos</span>
               </div>
 
               <form id="pre-matricula-form" novalidate>
@@ -536,6 +534,29 @@
                     <input type="text" id="lead-nome" name="nome" placeholder="Digite seu nome completo" required autocomplete="name">
                   </div>
                   <span class="field-error" id="error-nome"></span>
+                </div>
+
+                <!-- CPF e Data de Nascimento -->
+                <div class="form-row-2col">
+                  <!-- CPF -->
+                  <div class="form-group">
+                    <label for="lead-cpf">CPF <span class="req">*</span></label>
+                    <div class="input-wrapper">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><line x1="6" x2="10" y1="15" y2="15"/></svg>
+                      <input type="tel" id="lead-cpf" name="cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" required autocomplete="off">
+                    </div>
+                    <span class="field-error" id="error-cpf"></span>
+                  </div>
+
+                  <!-- Data de Nascimento -->
+                  <div class="form-group">
+                    <label for="lead-nascimento">Data de Nascimento <span class="req">*</span></label>
+                    <div class="input-wrapper">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                      <input type="tel" id="lead-nascimento" name="nascimento" inputmode="numeric" placeholder="DD/MM/AAAA" maxlength="10" required autocomplete="bday">
+                    </div>
+                    <span class="field-error" id="error-nascimento"></span>
+                  </div>
                 </div>
 
                 <!-- WhatsApp -->

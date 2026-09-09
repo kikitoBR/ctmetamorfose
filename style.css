@@ -1738,6 +1738,19 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-full);
 }
 
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 .form-group {
   margin-bottom: 1.35rem;
 }
