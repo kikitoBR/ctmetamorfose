@@ -65,6 +65,34 @@ html {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   max-width: 100%;
+  scroll-behavior: smooth;
+}
+
+/* Compensação de scroll para âncoras com Header Fixo */
+#inicio,
+#espaco,
+#fundador,
+#localizacao,
+#faq,
+#matricula {
+  scroll-margin-top: 85px;
+}
+
+@media (max-width: 992px) {
+  #inicio,
+  #espaco,
+  #fundador,
+  #localizacao,
+  #faq {
+    scroll-margin-top: 75px;
+  }
+
+  #matricula,
+  #formulario,
+  .form-card,
+  #form-card-box {
+    scroll-margin-top: 75px;
+  }
 }
 
 body {

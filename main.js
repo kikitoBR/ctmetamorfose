@@ -98,7 +98,7 @@ function initModalitySelectors() {
       selectModalityInForm(modality);
       const formSection = document.getElementById('matricula');
       if (formSection) {
-        formSection.scrollIntoView({ behavior: 'smooth' });
+        smoothScrollToTarget('#matricula', formSection);
       }
     });
   });
@@ -544,25 +544,85 @@ function initFormValidation() {
   });
 }
 
-/* ==========================================================================
-   7. SMOOTH SCROLL PARA ÂNCORAS
-   ========================================================================== */
+/**
+ * Rolagem inteligente e precisa para links âncoras.
+ * No Desktop: Mantém o comportamento nativo (scrollIntoView), confirmado como perfeito.
+ * No Mobile: Se o destino for a matrícula/formulário (#matricula, #formulario),
+ * navega cirurgicamente para o card do formulário (.form-card), compensando o cabeçalho fixo (65px)
+ * e evitando que o usuário precise rolar mais de 500px de conteúdo descritivo no mobile.
+ */
+function smoothScrollToTarget(targetId, targetEl) {
+  const isMobile = window.innerWidth <= 992;
+
+  // No Desktop: Mantém o comportamento original inalterado
+  if (!isMobile) {
+    if (targetEl) {
+      targetEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    return;
+  }
+
+  // No Mobile: Otimização precisa de destino e offset
+  let finalTarget = targetEl;
+
+  if (targetId === '#matricula' || targetId === '#formulario' || targetId === '#pre-matricula-form') {
+    const formCard = document.querySelector('.form-card') || document.getElementById('pre-matricula-form');
+    if (formCard) {
+      finalTarget = formCard;
+    }
+  }
+
+  if (!finalTarget) return;
+
+  const mobileHeader = document.getElementById('site-header');
+  const headerHeight = mobileHeader ? mobileHeader.offsetHeight : 65;
+  const breathingRoom = 12;
+  const totalOffset = headerHeight + breathingRoom;
+
+  const elementPosition = finalTarget.getBoundingClientRect().top;
+  const offsetPosition = elementPosition + window.pageYOffset - totalOffset;
+
+  window.scrollTo({
+    top: Math.max(0, offsetPosition),
+    behavior: 'smooth'
+  });
+}
+
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
+      if (targetId === '#' || !targetId) return;
 
       const targetEl = document.querySelector(targetId);
       if (targetEl) {
         e.preventDefault();
-        targetEl.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+
+        // Fecha o drawer mobile caso esteja aberto
+        const drawer = document.getElementById('mobile-drawer');
+        const toggle = document.getElementById('mobile-toggle');
+        if (drawer && drawer.classList.contains('open')) {
+          drawer.classList.remove('open');
+          if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        smoothScrollToTarget(targetId, targetEl);
       }
     });
   });
+
+  // Se a página for aberta diretamente com a âncora #matricula no mobile, ajusta o foco no card do formulário
+  if (window.location.hash === '#matricula' && window.innerWidth <= 992) {
+    setTimeout(() => {
+      const formCard = document.querySelector('.form-card');
+      if (formCard) {
+        smoothScrollToTarget('#matricula', formCard);
+      }
+    }, 350);
+  }
 }
 
 /* ==========================================================================
