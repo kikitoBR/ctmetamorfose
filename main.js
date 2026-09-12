@@ -1,5 +1,5 @@
 /**
- * ACADEMIA METAMORFOSE — CORE SCRIPTS
+ * CT METAMORFOSE — CORE SCRIPTS
  * Interações, Tabs das Modalidades, Contador Regressivo, Validação e WhatsApp Link
  */
 
@@ -456,7 +456,7 @@ function initFormValidation() {
     displayNameEl.textContent = firstName.toUpperCase();
 
     const modsText = modalidadesChecked.join(', ');
-    const whatsMessage = `Olá! Meu nome é ${nomeVal} e acabei de me cadastrar na pré-matrícula VIP da Academia Metamorfose.\n\n` +
+    const whatsMessage = `Olá! Meu nome é ${nomeVal} e acabei de me cadastrar na pré-matrícula VIP do CT Metamorfose.\n\n` +
       `🔥 *Modalidades de Interesse:* ${modsText}\n` +
       `⏰ *Período Preferido:* ${periodoSelect.value}\n\n` +
       `Gostaria de confirmar minha prioridade no 1º Lote de Membro Fundador e garantir minha matrícula isenta!`;
@@ -823,7 +823,7 @@ function initEspacoShowcase() {
     function openLightbox(imgSrc, captionText) {
       lightboxImg.src = imgSrc;
       if (lightboxCaption) {
-        lightboxCaption.textContent = captionText || 'Espaço Academia Metamorfose';
+        lightboxCaption.textContent = captionText || 'Espaço CT Metamorfose';
       }
       lightboxModal.classList.add('active');
       lightboxModal.setAttribute('aria-hidden', 'false');
