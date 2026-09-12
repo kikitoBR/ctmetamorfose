@@ -1517,13 +1517,41 @@ h1, h2, h3, h4 {
 }
 
 .price-old-strikethrough .old-value {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-heading);
   font-size: 1.65rem;
   font-weight: 800;
-  color: #71717a;
-  text-decoration: line-through;
-  text-decoration-color: #ef4444;
-  text-decoration-thickness: 3px;
+  user-select: none;
+}
+
+.price-old-strikethrough .old-value-blur {
+  color: #a1a1aa;
+  filter: blur(2.2px);
+  opacity: 0.85;
+  letter-spacing: -0.01em;
+  display: inline-block;
+  transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+.price-old-strikethrough:hover .old-value-blur {
+  filter: blur(0.8px);
+  opacity: 0.95;
+}
+
+.price-old-strikethrough .old-value::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 2.5px;
+  background: #ef4444;
+  transform: translateY(-50%) rotate(-2deg);
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+  pointer-events: none;
 }
 
 .price-old-strikethrough .old-period {
@@ -3205,6 +3233,12 @@ select option {
   }
   .price-old-strikethrough .old-value {
     font-size: 1.3rem;
+  }
+  .price-old-strikethrough .old-value-blur {
+    filter: blur(1.8px);
+  }
+  .price-old-strikethrough .old-value::after {
+    height: 2px;
   }
   .price-arrow-divider {
     font-size: 1.05rem;
