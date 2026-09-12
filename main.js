@@ -459,7 +459,7 @@ function initFormValidation() {
     const whatsMessage = `Olá! Meu nome é ${nomeVal} e acabei de me cadastrar na pré-matrícula VIP do CT Metamorfose.\n\n` +
       `🔥 *Modalidades de Interesse:* ${modsText}\n` +
       `⏰ *Período Preferido:* ${periodoSelect.value}\n\n` +
-      `Gostaria de confirmar minha prioridade no 1º Lote de Membro Fundador e garantir minha matrícula isenta!`;
+      `Gostaria de confirmar minha prioridade no 1º Lote de Membro Fundador e travar minha mensalidade promocional vitalícia!`;
 
     const encodedMessage = encodeURIComponent(whatsMessage);
     // Número oficial da academia (padrão de demonstração comercial)
