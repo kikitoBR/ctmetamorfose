@@ -1528,16 +1528,11 @@ h1, h2, h3, h4 {
 
 .price-old-strikethrough .old-value-blur {
   color: #a1a1aa;
-  filter: blur(2.2px);
+  filter: blur(4px);
   opacity: 0.85;
   letter-spacing: -0.01em;
   display: inline-block;
-  transition: filter 0.25s ease, opacity 0.25s ease;
-}
-
-.price-old-strikethrough:hover .old-value-blur {
-  filter: blur(0.8px);
-  opacity: 0.95;
+  user-select: none;
 }
 
 .price-old-strikethrough .old-value::after {
@@ -3235,7 +3230,7 @@ select option {
     font-size: 1.3rem;
   }
   .price-old-strikethrough .old-value-blur {
-    filter: blur(1.8px);
+    filter: blur(3.2px);
   }
   .price-old-strikethrough .old-value::after {
     height: 2px;
