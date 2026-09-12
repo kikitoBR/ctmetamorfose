@@ -108,8 +108,7 @@ function selectModalityInForm(modalityKey) {
   const mapping = {
     'musculacao': 'check-musculacao',
     'funcional': 'check-funcional',
-    'danca': 'check-danca',
-    'luta': 'check-luta'
+    'danca': 'check-danca'
   };
 
   const checkboxId = mapping[modalityKey];
