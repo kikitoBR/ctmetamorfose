@@ -1,7 +1,15 @@
 /**
  * CT METAMORFOSE — CORE SCRIPTS
- * Interações, Tabs das Modalidades, Contador Regressivo, Validação e WhatsApp Link
+ * Interações, Tabs das Modalidades, Contador Regressivo, Validação, Pagamento Sicoob e WhatsApp Link
  */
+
+import { 
+  criarCobrancaPixSandbox, 
+  detectarBandeiraCartao, 
+  validarNumeroCartao, 
+  validarValidadeCartao, 
+  processarCartaoSandbox 
+} from './paymentService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   initHeader();
@@ -12,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqAccordion();
   initInputMasks();
   initFormValidation();
+  initSicoobCheckout();
   initSmoothScroll();
 });
 
@@ -466,9 +475,10 @@ function initFormValidation() {
     const whatsLink = `https://wa.me/5511999999999?text=${encodedMessage}`;
     whatsBtn.setAttribute('href', whatsLink);
 
-    // Abrir Modal de Sucesso VIP
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden', 'false');
+    // Abrir Modal de Checkout Sicoob (Pix e Cartão à Vista)
+    if (typeof window.openSicoobCheckout === 'function') {
+      window.openSicoobCheckout(leadData);
+    }
 
     // Resetar formulário mantendo modalidades padrão do plano
     form.reset();
@@ -525,21 +535,355 @@ function initFormValidation() {
       }
     });
   }
+}
 
-  // Fechar Modal
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden', 'true');
+/* ==========================================================================
+   7. CHECKOUT & PAGAMENTO SICOOB (PIX E CARTÃO À VISTA - SANDBOX)
+   ========================================================================== */
+function initSicoobCheckout() {
+  const modal = document.getElementById('payment-modal');
+  const checkoutView = document.getElementById('checkout-view');
+  const successView = document.getElementById('payment-success-view');
+  const closeBtn = document.getElementById('btn-close-checkout');
+  const finishBtn = document.getElementById('btn-finish-checkout');
+
+  const tabBtnPix = document.getElementById('tab-btn-pix');
+  const tabBtnCard = document.getElementById('tab-btn-card');
+  const tabContentPix = document.getElementById('tab-content-pix');
+  const tabContentCard = document.getElementById('tab-content-card');
+
+  const qrContainer = document.getElementById('pix-qrcode-container');
+  const copiaColaInput = document.getElementById('pix-copia-cola-input');
+  const btnCopyPix = document.getElementById('btn-copy-pix');
+  const btnCopyText = document.getElementById('btn-copy-text');
+  const copyToast = document.getElementById('copy-success-toast');
+  const timerEl = document.getElementById('pix-countdown-timer');
+  const btnPixWhats = document.getElementById('btn-pix-whatsapp');
+  const btnSimulatePix = document.getElementById('btn-simulate-pix');
+
+  const cardForm = document.getElementById('card-checkout-form');
+  const cardNumberInput = document.getElementById('card-number');
+  const cardHolderInput = document.getElementById('card-holder');
+  const cardExpiryInput = document.getElementById('card-expiry');
+  const cardCvvInput = document.getElementById('card-cvv');
+  const cardBrandTag = document.getElementById('card-brand-tag');
+  const btnSubmitCard = document.getElementById('btn-submit-card');
+
+  const receiptNameEl = document.getElementById('receipt-lead-name');
+  const receiptCpfEl = document.getElementById('receipt-lead-cpf');
+  const receiptAuthCodeEl = document.getElementById('receipt-auth-code');
+  const btnSuccessWhats = document.getElementById('btn-success-whatsapp');
+
+  let currentLead = null;
+  let timerInterval = null;
+
+  if (!modal) return;
+
+  // Função Global para abrir o Checkout com os dados do lead
+  window.openSicoobCheckout = async (lead) => {
+    currentLead = lead;
+
+    // Preenche nome
+    const leadNameEl = document.getElementById('checkout-lead-name');
+    if (leadNameEl && lead && lead.nome) {
+      const primeiroNome = lead.nome.split(' ')[0];
+      leadNameEl.textContent = primeiroNome.toUpperCase();
+    }
+
+    // Reseta visualização
+    if (checkoutView) checkoutView.style.display = 'block';
+    if (successView) successView.style.display = 'none';
+
+    // Ativa aba Pix por padrão
+    switchTab('pix');
+
+    // Abre o Modal
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+
+    // Gera cobrança Pix Sandbox
+    try {
+      if (qrContainer) {
+        qrContainer.innerHTML = '<div class="qr-loading-placeholder" style="color: #64748b; font-size: 0.85rem;">Gerando QR Code Sicoob...</div>';
+      }
+
+      const pixData = await criarCobrancaPixSandbox({
+        nome: lead.nome,
+        cpf: lead.cpf,
+        valor: 129.90
+      });
+
+      if (qrContainer && pixData.qrCodeDataUrl) {
+        qrContainer.innerHTML = `<img src="${pixData.qrCodeDataUrl}" alt="QR Code Pix Sicoob" loading="eager">`;
+      }
+
+      if (copiaColaInput) {
+        copiaColaInput.value = pixData.pixCopiaECola;
+      }
+
+      // Inicia contagem regressiva de 15 minutos
+      startPixTimer(15 * 60);
+
+      // Atualiza link de WhatsApp com comprovante Pix
+      if (btnPixWhats) {
+        const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e confirmo o envio do pagamento da 1ª mensalidade de R$ 129,90 via Pix Sicoob para o Lote Fundador do CT Metamorfose.\n\n` +
+          `TXID: ${pixData.txid}\n` +
+          `Segue meu comprovante em anexo:`;
+        btnPixWhats.setAttribute('href', `https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`);
+      }
+    } catch (err) {
+      console.error('Erro ao gerar Pix Sandbox:', err);
+    }
+  };
+
+  // Alternância de Abas
+  function switchTab(tab) {
+    if (tab === 'pix') {
+      if (tabBtnPix) {
+        tabBtnPix.classList.add('active');
+        tabBtnPix.setAttribute('aria-selected', 'true');
+      }
+      if (tabBtnCard) {
+        tabBtnCard.classList.remove('active');
+        tabBtnCard.setAttribute('aria-selected', 'false');
+      }
+      if (tabContentPix) tabContentPix.classList.add('active');
+      if (tabContentCard) tabContentCard.classList.remove('active');
+    } else {
+      if (tabBtnCard) {
+        tabBtnCard.classList.add('active');
+        tabBtnCard.setAttribute('aria-selected', 'true');
+      }
+      if (tabBtnPix) {
+        tabBtnPix.classList.remove('active');
+        tabBtnPix.setAttribute('aria-selected', 'false');
+      }
+      if (tabContentCard) tabContentCard.classList.add('active');
+      if (tabContentPix) tabContentPix.classList.remove('active');
+    }
+  }
+
+  if (tabBtnPix) tabBtnPix.addEventListener('click', () => switchTab('pix'));
+  if (tabBtnCard) tabBtnCard.addEventListener('click', () => switchTab('card'));
+
+  // Copiar Código Pix
+  if (btnCopyPix && copiaColaInput) {
+    btnCopyPix.addEventListener('click', async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(copiaColaInput.value);
+        } else {
+          copiaColaInput.select();
+          document.execCommand('copy');
+        }
+
+        if (btnCopyText) btnCopyText.textContent = '✓ Copiado!';
+        if (copyToast) copyToast.classList.add('show');
+
+        setTimeout(() => {
+          if (btnCopyText) btnCopyText.textContent = 'Copiar';
+          if (copyToast) copyToast.classList.remove('show');
+        }, 3000);
+      } catch (err) {
+        console.warn('Não foi possível copiar automaticamente:', err);
+      }
     });
   }
 
-  // Fechar ao clicar fora
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden', 'true');
+  // Timer Regressivo do Pix
+  function startPixTimer(durationSeconds) {
+    if (timerInterval) clearInterval(timerInterval);
+    let timeLeft = durationSeconds;
+
+    const updateTimer = () => {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      if (timerEl) {
+        timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        if (timerEl) timerEl.textContent = 'Expirado';
+      }
+      timeLeft--;
+    };
+
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  // Simulação de Aprovação Pix (Sandbox)
+  if (btnSimulatePix) {
+    btnSimulatePix.addEventListener('click', () => {
+      const authCode = `SICOOB-PIX-${Math.floor(100000 + Math.random() * 900000)}`;
+      concluirPagamentoSucesso({
+        metodo: 'Pix Instantâneo Sicoob',
+        authCode
+      });
+    });
+  }
+
+  // Máscaras e Validação do Cartão
+  if (cardNumberInput) {
+    cardNumberInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 16) val = val.substring(0, 16);
+
+      // Agrupa de 4 em 4 dígitos
+      const formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+      e.target.value = formatted;
+
+      // Detecta bandeira
+      const bandeira = detectarBandeiraCartao(val);
+      if (cardBrandTag) cardBrandTag.textContent = bandeira;
+    });
+  }
+
+  if (cardExpiryInput) {
+    cardExpiryInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 4) val = val.substring(0, 4);
+
+      if (val.length <= 2) {
+        e.target.value = val;
+      } else {
+        e.target.value = `${val.substring(0, 2)}/${val.substring(2)}`;
+      }
+    });
+  }
+
+  if (cardCvvInput) {
+    cardCvvInput.addEventListener('input', (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      if (val.length > 4) val = val.substring(0, 4);
+      e.target.value = val;
+    });
+  }
+
+  // Submissão do Cartão
+  if (cardForm) {
+    cardForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const numVal = cardNumberInput ? cardNumberInput.value.replace(/\D/g, '') : '';
+      const holderVal = cardHolderInput ? cardHolderInput.value.trim() : '';
+      const expVal = cardExpiryInput ? cardExpiryInput.value.trim() : '';
+      const cvvVal = cardCvvInput ? cardCvvInput.value.replace(/\D/g, '') : '';
+
+      let isValid = true;
+
+      // 1. Número do Cartão
+      const errNum = document.getElementById('error-card-number');
+      if (!numVal || numVal.length < 13) {
+        if (errNum) errNum.textContent = 'Informe o número completo do cartão.';
+        isValid = false;
+      } else if (!validarNumeroCartao(numVal)) {
+        if (errNum) errNum.textContent = 'Número de cartão inválido. Verifique os dígitos.';
+        isValid = false;
+      } else {
+        if (errNum) errNum.textContent = '';
+      }
+
+      // 2. Nome do Titular
+      const errHolder = document.getElementById('error-card-holder');
+      if (!holderVal || holderVal.length < 3) {
+        if (errHolder) errHolder.textContent = 'Informe o nome completo impresso no cartão.';
+        isValid = false;
+      } else {
+        if (errHolder) errHolder.textContent = '';
+      }
+
+      // 3. Validade
+      const errExp = document.getElementById('error-card-expiry');
+      const expRes = validarValidadeCartao(expVal);
+      if (!expRes.valid) {
+        if (errExp) errExp.textContent = expRes.message;
+        isValid = false;
+      } else {
+        if (errExp) errExp.textContent = '';
+      }
+
+      // 4. CVV
+      const errCvv = document.getElementById('error-card-cvv');
+      if (!cvvVal || cvvVal.length < 3) {
+        if (errCvv) errCvv.textContent = 'Código de segurança inválido (3 ou 4 dígitos).';
+        isValid = false;
+      } else {
+        if (errCvv) errCvv.textContent = '';
+      }
+
+      if (!isValid) return;
+
+      // Processando no Sicoob Sandbox
+      if (btnSubmitCard) {
+        btnSubmitCard.disabled = true;
+        btnSubmitCard.innerHTML = '<span class="btn-text">PROCESSANDO COM SICOOB...</span>';
+      }
+
+      try {
+        const resultado = await processarCartaoSandbox({
+          numero: numVal,
+          titular: holderVal,
+          validade: expVal,
+          cvv: cvvVal,
+          valor: 129.90
+        });
+
+        concluirPagamentoSucesso({
+          metodo: `Cartão de Crédito à Vista (${resultado.bandeira})`,
+          authCode: resultado.authCode
+        });
+
+        cardForm.reset();
+        if (cardBrandTag) cardBrandTag.textContent = 'CARTÃO';
+      } catch (err) {
+        alert('Ocorreu um erro ao processar seu cartão. Tente novamente.');
+      } finally {
+        if (btnSubmitCard) {
+          btnSubmitCard.disabled = false;
+          btnSubmitCard.innerHTML = '<span class="btn-text">PAGAR R$ 129,90 À VISTA VIA SICOOB</span><svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+        }
+      }
+    });
+  }
+
+  // Transição para Tela de Sucesso
+  function concluirPagamentoSucesso({ metodo, authCode }) {
+    if (checkoutView) checkoutView.style.display = 'none';
+    if (successView) successView.style.display = 'block';
+
+    const leadNome = currentLead ? currentLead.nome : 'Atleta';
+    const leadCpf = currentLead ? currentLead.cpf : '';
+
+    if (receiptNameEl) receiptNameEl.textContent = leadNome;
+    if (receiptCpfEl) receiptCpfEl.textContent = leadCpf || 'Verificado';
+    if (receiptAuthCodeEl) receiptAuthCodeEl.textContent = authCode;
+
+    // Atualiza botão de WhatsApp com o comprovante aprovado
+    if (btnSuccessWhats) {
+      const msg = `Olá! Meu nome é ${leadNome} (CPF: ${leadCpf}) e meu pagamento da 1ª mensalidade de R$ 129,90 foi APROVADO via ${metodo}!\n\n` +
+        `🛡️ *Autenticação Bancária:* ${authCode}\n` +
+        `🔥 *Plano:* Membro Fundador (Valor Vitalício)\n` +
+        `Gostaria de agendar minha visita VIP e retirar meu passe antecipado!`;
+      btnSuccessWhats.setAttribute('href', `https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`);
     }
+
+    // Rola modal para o topo suavemente
+    modal.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Fechar Modal
+  const closeModal = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    if (timerInterval) clearInterval(timerInterval);
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (finishBtn) finishBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
   });
 }
 

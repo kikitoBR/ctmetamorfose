@@ -994,38 +994,251 @@
     </div>
   </footer>
 
-  <!-- MODAL DE SUCESSO / CONFIRMAÇÃO VIP -->
-  <div class="success-modal-overlay" id="success-modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="success-modal-card">
-      <div class="modal-confetti-badge"><svg class="icon-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div>
-      <h3 class="modal-title">PARABÉNS, <span id="lead-display-name">ATLETA</span>!</h3>
-      <p class="modal-badge-subtitle">SUA PRÉ-MATRÍCULA FOI RESERVADA COM SUCESSO</p>
-      
-      <div class="modal-details-card">
-        <div class="modal-detail-row">
-          <span>Status do Lote:</span>
-          <strong class="text-red">Membro Fundador (Garantido)</strong>
+  <!-- MODAL DE CHECKOUT & PAGAMENTO SICOOB (PIX E CARTÃO À VISTA) -->
+  <div class="checkout-modal-overlay" id="payment-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="checkout-modal-card">
+      <button class="checkout-close-btn" id="btn-close-checkout" aria-label="Fechar janela de pagamento">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <!-- TELA 1: CHECKOUT / ESCOLHA DO PAGAMENTO -->
+      <div class="checkout-view" id="checkout-view">
+        <div class="checkout-header">
+          <div class="checkout-brand-row">
+            <div class="checkout-brand">
+              <img src="/logo-metamorfose.png" alt="CT Metamorfose" class="checkout-logo">
+              <span>CT METAMORFOSE</span>
+            </div>
+            <div class="sicoob-badge">
+              <svg class="sicoob-logo-icon" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="6" fill="#003641"/>
+                <circle cx="12" cy="12" r="5" fill="#00AE9D"/>
+                <circle cx="12" cy="12" r="2.5" fill="#7DB61C"/>
+              </svg>
+              <span>Pagamento Sicoob</span>
+            </div>
+          </div>
+          <h3 class="checkout-title">PAGAMENTO DA PRÉ-MATRÍCULA</h3>
+          <p class="checkout-subtitle">Olá, <span id="checkout-lead-name">Atleta</span>! Complete o pagamento para travar seu <strong>Lote Fundador</strong>.</p>
         </div>
-        <div class="modal-detail-row">
-          <span>Taxa de Matrícula:</span>
-          <strong class="text-green">R$ 0,00 (Taxa Zero Sempre)</strong>
+
+        <!-- RESUMO DO PEDIDO -->
+        <div class="checkout-order-summary">
+          <div class="order-summary-header">
+            <span class="summary-plan-name">Plano Membro Fundador</span>
+            <span class="summary-badge-status">1º LOTE RESERVADO</span>
+          </div>
+          <div class="order-summary-body">
+            <div class="order-summary-row">
+              <span>1ª Mensalidade (Vitalícia enquanto ativo)</span>
+              <strong class="order-price-val">R$ 129,90</strong>
+            </div>
+            <div class="order-summary-row highlight-zero">
+              <span>Taxa de Matrícula (Sempre Zero)</span>
+              <strong class="text-green">R$ 0,00</strong>
+            </div>
+          </div>
+          <div class="order-summary-total">
+            <span>Total a pagar agora:</span>
+            <strong class="total-amount">R$ 129,90</strong>
+          </div>
         </div>
-        <div class="modal-detail-row">
-          <span>Mensalidade Travada:</span>
-          <strong>R$ 129,90/mês (Vitalício enquanto ativo)</strong>
+
+        <!-- SELETOR DE ABAS -->
+        <div class="payment-tabs-nav" role="tablist">
+          <button type="button" class="payment-tab-btn active" id="tab-btn-pix" role="tab" aria-selected="true">
+            <svg class="tab-icon-pix" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.002 4.293a.998.998 0 0 0-.707.293L8.14 7.74a4.484 4.484 0 0 0-1.318 3.182v2.156c0 1.192.474 2.336 1.318 3.18l3.155 3.155a.999.999 0 0 0 1.414 0l3.155-3.155a4.484 4.484 0 0 0 1.318-3.18v-2.156c0-1.192-.474-2.336-1.318-3.182l-3.155-3.154a.998.998 0 0 0-.707-.293zm0 2.414 2.448 2.448a2.49 2.49 0 0 1 .732 1.767v2.156c0 .662-.263 1.298-.732 1.767L12.002 17.29l-2.448-2.447a2.49 2.49 0 0 1-.732-1.767v-2.156c0-.662.263-1.298.732-1.767l2.448-2.448z"/>
+            </svg>
+            <span>Pix Instantâneo</span>
+            <span class="tab-badge-rec">Mais Rápido</span>
+          </button>
+          
+          <button type="button" class="payment-tab-btn" id="tab-btn-card" role="tab" aria-selected="false">
+            <svg class="tab-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+            <span>Cartão à Vista</span>
+          </button>
+        </div>
+
+        <!-- ABA PIX -->
+        <div class="payment-tab-content active" id="tab-content-pix">
+          <div class="pix-checkout-box">
+            <div class="pix-qrcode-wrapper">
+              <div class="pix-qrcode-card">
+                <div id="pix-qrcode-container" class="pix-qr-img-box">
+                  <div class="qr-loading-placeholder">Gerando QR Code Sicoob...</div>
+                </div>
+                <div class="pix-qr-scan-hint">
+                  <svg class="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  <span>Abra o app do banco e aponte a câmera</span>
+                </div>
+              </div>
+
+              <div class="pix-info-side">
+                <div class="pix-timer-alert">
+                  <svg class="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>Expira em <strong id="pix-countdown-timer">15:00</strong></span>
+                </div>
+
+                <label class="pix-copia-cola-label" for="pix-copia-cola-input">Ou copie o código Pix Copia e Cola:</label>
+                <div class="pix-copy-input-group">
+                  <input type="text" id="pix-copia-cola-input" readonly value="">
+                  <button type="button" class="btn-copy-pix" id="btn-copy-pix" title="Copiar código Pix">
+                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span id="btn-copy-text">Copiar</span>
+                  </button>
+                </div>
+                <div class="copy-success-toast" id="copy-success-toast">✓ Código Pix copiado com sucesso!</div>
+
+                <div class="pix-steps-list">
+                  <div class="step-item"><span>1</span> Copie o código ou escaneie o QR Code</div>
+                  <div class="step-item"><span>2</span> No app do seu banco, cole na opção <strong>Pix Copia e Cola</strong></div>
+                  <div class="step-item"><span>3</span> Confirme o valor de <strong>R$ 129,90</strong> para CT Metamorfose</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ações Pix -->
+            <div class="pix-actions-wrapper">
+              <a href="#" id="btn-pix-whatsapp" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block btn-lg">
+                <svg class="icon-whats" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                <span>Já Paguei! Enviar Comprovante no WhatsApp</span>
+              </a>
+
+              <button type="button" class="btn-sandbox-simulate" id="btn-simulate-pix">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                <span>Simular Confirmação Pix (Modo Teste Sandbox)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA CARTÃO À VISTA -->
+        <div class="payment-tab-content" id="tab-content-card">
+          <form id="card-checkout-form" class="card-checkout-form" novalidate>
+            <div class="form-group">
+              <label for="card-number">Número do Cartão <span class="req">*</span></label>
+              <div class="input-wrapper card-input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                <input type="tel" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" required autocomplete="cc-number">
+                <span class="card-brand-tag" id="card-brand-tag">CARTÃO</span>
+              </div>
+              <span class="field-error" id="error-card-number"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="card-holder">Nome Impresso no Cartão <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="card-holder" placeholder="NOME COMO NO CARTÃO" required autocomplete="cc-name" style="text-transform: uppercase;">
+              </div>
+              <span class="field-error" id="error-card-holder"></span>
+            </div>
+
+            <div class="form-row-2col">
+              <div class="form-group">
+                <label for="card-expiry">Validade <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                  <input type="tel" id="card-expiry" placeholder="MM/AA" maxlength="5" required autocomplete="cc-exp">
+                </div>
+                <span class="field-error" id="error-card-expiry"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="card-cvv">CVV <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <input type="tel" id="card-cvv" placeholder="123" maxlength="4" required autocomplete="cc-csc">
+                </div>
+                <span class="field-error" id="error-card-cvv"></span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Condição de Pagamento</label>
+              <div class="installment-badge-locked">
+                <span class="inst-text">1x de R$ 129,90 à vista (Sem juros)</span>
+                <span class="inst-tag">CARTÃO À VISTA</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-red btn-block btn-lg pulse-glow-red" id="btn-submit-card">
+              <span class="btn-text">PAGAR R$ 129,90 À VISTA VIA SICOOB</span>
+              <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- RODAPÉ DE SEGURANÇA -->
+        <div class="checkout-footer-security">
+          <div class="security-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Criptografia SSL 256-bit</span>
+          </div>
+          <div class="security-divider"></div>
+          <div class="security-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Processamento Sicoob</span>
+          </div>
+          <div class="security-divider"></div>
+          <div class="security-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Ambiente Sandbox</span>
+          </div>
         </div>
       </div>
 
-      <p class="modal-instruction">
-        Para confirmar a prioridade do seu lote e falar diretamente com nosso consultor no WhatsApp, clique no botão abaixo:
-      </p>
+      <!-- TELA 2: PAGAMENTO APROVADO -->
+      <div class="payment-success-view" id="payment-success-view" style="display: none;">
+        <div class="success-trophy-ring">
+          <svg class="icon-check-animated" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3 class="success-title">PAGAMENTO CONFIRMADO!</h3>
+        <p class="success-subtitle">PARABÉNS! SUA VAGA DE MEMBRO FUNDADOR ESTÁ OFICIALMENTE TRAVADA</p>
 
-      <a href="#" id="btn-modal-whatsapp" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block btn-lg">
-        <svg class="icon-whats" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-        <span>Confirmar Vaga no WhatsApp</span>
-      </a>
+        <div class="receipt-card">
+          <div class="receipt-row">
+            <span>Titular:</span>
+            <strong id="receipt-lead-name">-</strong>
+          </div>
+          <div class="receipt-row">
+            <span>CPF:</span>
+            <strong id="receipt-lead-cpf">-</strong>
+          </div>
+          <div class="receipt-row">
+            <span>1ª Mensalidade:</span>
+            <strong class="text-green">R$ 129,90 (Pago à vista)</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Taxa de Matrícula:</span>
+            <strong class="text-green">R$ 0,00 (Isento Permanente)</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Status do Plano:</span>
+            <strong class="text-red">Membro Fundador (Vitalício)</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Autenticação Bancária:</span>
+            <span class="auth-code" id="receipt-auth-code">SICOOB-TX-94821</span>
+          </div>
+        </div>
 
-      <button class="btn-modal-close" id="btn-close-modal">Fechar Janela</button>
+        <p class="receipt-instructions">
+          Apresente este comprovante na recepção ou fale agora com nosso consultor no WhatsApp para receber o seu passe VIP:
+        </p>
+
+        <a href="#" id="btn-success-whatsapp" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block btn-lg">
+          <svg class="icon-whats" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Abrir WhatsApp com Comprovante</span>
+        </a>
+
+        <button type="button" class="btn-modal-close" id="btn-finish-checkout">Concluir e Fechar</button>
+      </div>
     </div>
   </div>
 
