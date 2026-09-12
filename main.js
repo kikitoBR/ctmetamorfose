@@ -345,10 +345,6 @@ function validarNomeCompleto(nomeStr) {
    ========================================================================== */
 function initFormValidation() {
   const form = document.getElementById('pre-matricula-form');
-  const modal = document.getElementById('success-modal');
-  const closeModalBtn = document.getElementById('btn-close-modal');
-  const whatsBtn = document.getElementById('btn-modal-whatsapp');
-  const displayNameEl = document.getElementById('lead-display-name');
 
   if (!form) return;
 
@@ -459,21 +455,6 @@ function initFormValidation() {
     } catch (err) {
       console.warn('Não foi possível salvar no localStorage:', err);
     }
-
-    // Montar link oficial de WhatsApp com mensagem personalizada
-    const firstName = nomeVal.split(' ')[0];
-    displayNameEl.textContent = firstName.toUpperCase();
-
-    const modsText = modalidadesChecked.join(', ');
-    const whatsMessage = `Olá! Meu nome é ${nomeVal} e acabei de me cadastrar na pré-matrícula VIP do CT Metamorfose.\n\n` +
-      `🔥 *Modalidades de Interesse:* ${modsText}\n` +
-      `⏰ *Período Preferido:* ${periodoSelect.value}\n\n` +
-      `Gostaria de confirmar minha prioridade no 1º Lote de Membro Fundador e travar minha mensalidade promocional vitalícia!`;
-
-    const encodedMessage = encodeURIComponent(whatsMessage);
-    // Número oficial da academia (padrão de demonstração comercial)
-    const whatsLink = `https://wa.me/5511999999999?text=${encodedMessage}`;
-    whatsBtn.setAttribute('href', whatsLink);
 
     // Abrir Modal de Checkout Sicoob (Pix e Cartão à Vista)
     if (typeof window.openSicoobCheckout === 'function') {
