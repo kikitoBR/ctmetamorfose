@@ -1,14 +1,18 @@
 /**
  * CT METAMORFOSE — CORE SCRIPTS
- * Interações, Tabs das Modalidades, Contador Regressivo, Validação, Pagamento Sicoob e WhatsApp Link
+ * Interações, Tabs das Modalidades, Contador Regressivo, Validação, Pagamento Asaas e WhatsApp Link
  */
 
 import { 
-  criarCobrancaPixSandbox, 
+  criarCobrancaPixAsaas, 
+  criarCobrancaCartaoAsaas,
+  iniciarPollingStatusPix,
+  simularAprovacaoPixLocal,
+  obterConfigPublica,
   detectarBandeiraCartao, 
   validarNumeroCartao, 
   validarValidadeCartao, 
-  processarCartaoSandbox 
+  processarCartaoAsaas 
 } from './paymentService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqAccordion();
   initInputMasks();
   initFormValidation();
-  initSicoobCheckout();
+  initAsaasCheckout();
   initSmoothScroll();
 });
 
@@ -456,8 +460,10 @@ function initFormValidation() {
       console.warn('Não foi possível salvar no localStorage:', err);
     }
 
-    // Abrir Modal de Checkout Sicoob (Pix e Cartão à Vista)
-    if (typeof window.openSicoobCheckout === 'function') {
+    // Abrir Modal de Checkout Asaas (Pix e Cartão à Vista)
+    if (typeof window.openAsaasCheckout === 'function') {
+      window.openAsaasCheckout(leadData);
+    } else if (typeof window.openSicoobCheckout === 'function') {
       window.openSicoobCheckout(leadData);
     }
 
@@ -519,9 +525,9 @@ function initFormValidation() {
 }
 
 /* ==========================================================================
-   7. CHECKOUT & PAGAMENTO SICOOB (PIX E CARTÃO À VISTA - SANDBOX)
+   7. CHECKOUT & PAGAMENTO ASAAS (PIX DIRETO E CARTÃO À VISTA)
    ========================================================================== */
-function initSicoobCheckout() {
+function initAsaasCheckout() {
   const modal = document.getElementById('payment-modal');
   const checkoutView = document.getElementById('checkout-view');
   const successView = document.getElementById('payment-success-view');
@@ -541,14 +547,13 @@ function initSicoobCheckout() {
   const timerEl = document.getElementById('pix-countdown-timer');
   const btnPixWhats = document.getElementById('btn-pix-whatsapp');
   const btnSimulatePix = document.getElementById('btn-simulate-pix');
+  const statusBadgeText = document.getElementById('pix-status-badge-text');
 
-  const cardForm = document.getElementById('card-checkout-form');
-  const cardNumberInput = document.getElementById('card-number');
-  const cardHolderInput = document.getElementById('card-holder');
-  const cardExpiryInput = document.getElementById('card-expiry');
-  const cardCvvInput = document.getElementById('card-cvv');
-  const cardBrandTag = document.getElementById('card-brand-tag');
-  const btnSubmitCard = document.getElementById('btn-submit-card');
+  const cardStatusBadgeText = document.getElementById('card-status-badge-text');
+  const btnOpenCardInvoice = document.getElementById('btn-open-card-invoice');
+  const btnCardText = document.getElementById('btn-card-text');
+  const btnCardWhats = document.getElementById('btn-card-whatsapp');
+  const btnSimulateCard = document.getElementById('btn-simulate-card');
 
   const receiptNameEl = document.getElementById('receipt-lead-name');
   const receiptCpfEl = document.getElementById('receipt-lead-cpf');
@@ -556,15 +561,25 @@ function initSicoobCheckout() {
   const btnSuccessWhats = document.getElementById('btn-success-whatsapp');
 
   let currentLead = null;
+  let currentPixData = null;
+  let currentCardData = null;
+  let isGeneratingCard = false;
   let timerInterval = null;
+  let pollingController = null;
+  let appConfig = { whatsapp: '5511999999999' };
 
   if (!modal) return;
 
+  // Carrega config pública (WhatsApp oficial e status de ambiente)
+  obterConfigPublica().then(cfg => {
+    if (cfg && cfg.whatsapp) appConfig = cfg;
+  });
+
   // Função Global para abrir o Checkout com os dados do lead
-  window.openSicoobCheckout = async (lead) => {
+  window.openAsaasCheckout = window.openSicoobCheckout = async (lead) => {
     currentLead = lead;
 
-    // Preenche nome
+    // Preenche nome no cabeçalho
     const leadNameEl = document.getElementById('checkout-lead-name');
     if (leadNameEl && lead && lead.nome) {
       const primeiroNome = lead.nome.split(' ')[0];
@@ -582,38 +597,103 @@ function initSicoobCheckout() {
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
 
-    // Gera cobrança Pix Sandbox
+    // Reseta estado anterior do polling, timer e dados
+    currentCardData = null;
+    isGeneratingCard = false;
+    if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Pronto para pagamento seguro';
+    if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA NO ASAAS';
+    if (btnOpenCardInvoice) btnOpenCardInvoice.disabled = false;
+
+    if (pollingController) {
+      pollingController.stop();
+      pollingController = null;
+    }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    // Gera cobrança Pix no Asaas
     try {
       if (qrContainer) {
-        qrContainer.innerHTML = '<div class="qr-loading-placeholder" style="color: #64748b; font-size: 0.85rem;">Gerando QR Code Sicoob...</div>';
+        qrContainer.innerHTML = `
+          <div class="qr-loading-placeholder">
+            <div class="spinner-radial"></div>
+            <span>Gerando Pix com Asaas...</span>
+          </div>
+        `;
       }
+      if (copiaColaInput) copiaColaInput.value = '';
+      if (statusBadgeText) statusBadgeText.textContent = 'Gerando cobrança instantânea...';
 
-      const pixData = await criarCobrancaPixSandbox({
+      const pixData = await criarCobrancaPixAsaas({
         nome: lead.nome,
         cpf: lead.cpf,
+        dataNascimento: lead.dataNascimento,
+        email: lead.email,
+        telefone: lead.telefone,
+        modalidades: lead.modalidades,
+        periodo: lead.periodo,
         valor: 129.90
       });
 
+      currentPixData = pixData;
+
       if (qrContainer && pixData.qrCodeDataUrl) {
-        qrContainer.innerHTML = `<img src="${pixData.qrCodeDataUrl}" alt="QR Code Pix Sicoob" loading="eager">`;
+        qrContainer.innerHTML = `<img src="${pixData.qrCodeDataUrl}" alt="QR Code Pix Asaas" loading="eager">`;
       }
 
       if (copiaColaInput) {
-        copiaColaInput.value = pixData.pixCopiaECola;
+        copiaColaInput.value = pixData.pixCopiaECola || '';
+      }
+
+      if (statusBadgeText) {
+        statusBadgeText.textContent = 'Aguardando leitura do QR Code...';
       }
 
       // Inicia contagem regressiva de 15 minutos
       startPixTimer(15 * 60);
 
+      // Inicia Polling em tempo real para detectar quando o aluno pagar no banco
+      pollingController = iniciarPollingStatusPix({
+        paymentId: pixData.id,
+        intervalMs: 3500,
+        onPoll: (statusData) => {
+          if (statusBadgeText) {
+            statusBadgeText.textContent = 'Aguardando confirmação bancária...';
+          }
+        },
+        onConfirmed: (statusData) => {
+          if (statusBadgeText) statusBadgeText.textContent = '✓ Pagamento Confirmado!';
+          concluirPagamentoSucesso({
+            metodo: 'Pix Instantâneo (Asaas)',
+            authCode: pixData.id
+          });
+        },
+        onError: (err) => {
+          console.warn('[Polling Error]:', err.message);
+        }
+      });
+
       // Atualiza link de WhatsApp com comprovante Pix
       if (btnPixWhats) {
-        const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e confirmo o envio do pagamento da 1ª mensalidade de R$ 129,90 via Pix Sicoob para o Lote Fundador do CT Metamorfose.\n\n` +
-          `TXID: ${pixData.txid}\n` +
+        const whatsNum = appConfig.whatsapp || '5511999999999';
+        const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix Asaas para o Lote Fundador do CT Metamorfose.\n\n` +
+          `💳 *ID da Cobrança Asaas:* ${pixData.id}\n` +
           `Segue meu comprovante em anexo:`;
-        btnPixWhats.setAttribute('href', `https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`);
+        btnPixWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
       }
     } catch (err) {
-      console.error('Erro ao gerar Pix Sandbox:', err);
+      console.error('Erro ao gerar Pix no Asaas:', err);
+      if (qrContainer) {
+        qrContainer.innerHTML = `
+          <div class="qr-error-box" style="padding: 1rem; text-align: center; color: #ef4444; font-size: 0.85rem;">
+            <p><strong>Falha ao gerar o Pix</strong></p>
+            <p style="color: #94a3b8; margin-top: 4px;">${err.message}</p>
+          </div>
+        `;
+      }
+      if (statusBadgeText) statusBadgeText.textContent = 'Erro ao gerar cobrança';
     }
   };
 
@@ -641,16 +721,71 @@ function initSicoobCheckout() {
       }
       if (tabContentCard) tabContentCard.classList.add('active');
       if (tabContentPix) tabContentPix.classList.remove('active');
+
+      // Ao entrar na aba de cartão, já prepara a fatura em background
+      prepararCobrancaCartao();
+    }
+  }
+
+  // Gera ou reutiliza a cobrança de cartão no Asaas
+  async function prepararCobrancaCartao() {
+    if (currentCardData || isGeneratingCard || !currentLead) return;
+    isGeneratingCard = true;
+
+    if (btnOpenCardInvoice) {
+      btnOpenCardInvoice.disabled = true;
+      if (btnCardText) btnCardText.textContent = 'GERANDO FATURA COM ASAAS...';
+    }
+    if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Conectando ao Asaas...';
+
+    try {
+      const cardData = await criarCobrancaCartaoAsaas({
+        nome: currentLead.nome,
+        cpf: currentLead.cpf,
+        dataNascimento: currentLead.dataNascimento,
+        email: currentLead.email,
+        telefone: currentLead.telefone,
+        modalidades: currentLead.modalidades,
+        periodo: currentLead.periodo,
+        valor: 129.90
+      });
+
+      currentCardData = cardData;
+
+      if (btnOpenCardInvoice) {
+        btnOpenCardInvoice.disabled = false;
+        if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA NO ASAAS';
+      }
+      if (cardStatusBadgeText) {
+        cardStatusBadgeText.textContent = 'Fatura pronta. Clique para pagar no Asaas.';
+      }
+
+      // Atualiza link de suporte do WhatsApp na aba de cartão
+      if (btnCardWhats) {
+        const whatsNum = appConfig.whatsapp || '5511999999999';
+        const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e estou realizando o pagamento da 1ª mensalidade de R$ 129,90 via Cartão no Asaas (ID: ${cardData.id}) para o Lote Fundador do CT Metamorfose.\n\nPreciso de suporte com meu pagamento:`;
+        btnCardWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
+      }
+    } catch (err) {
+      console.error('Erro ao gerar fatura de cartão no Asaas:', err);
+      if (btnOpenCardInvoice) {
+        btnOpenCardInvoice.disabled = false;
+        if (btnCardText) btnCardText.textContent = 'TENTAR GERAR FATURA NOVAMENTE';
+      }
+      if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Erro ao gerar fatura do cartão';
+    } finally {
+      isGeneratingCard = false;
     }
   }
 
   if (tabBtnPix) tabBtnPix.addEventListener('click', () => switchTab('pix'));
   if (tabBtnCard) tabBtnCard.addEventListener('click', () => switchTab('card'));
 
-  // Copiar Código Pix
+  // Copiar Código Pix Copia e Cola
   if (btnCopyPix && copiaColaInput) {
     btnCopyPix.addEventListener('click', async () => {
       try {
+        if (!copiaColaInput.value) return;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(copiaColaInput.value);
         } else {
@@ -685,6 +820,7 @@ function initSicoobCheckout() {
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         if (timerEl) timerEl.textContent = 'Expirado';
+        if (statusBadgeText) statusBadgeText.textContent = 'Código Pix expirado. Gere outro para pagar.';
       }
       timeLeft--;
     };
@@ -693,143 +829,108 @@ function initSicoobCheckout() {
     timerInterval = setInterval(updateTimer, 1000);
   }
 
-  // Simulação de Aprovação Pix (Sandbox)
+  // Simulação de Aprovação Pix (para testes em Sandbox / Demonstração)
   if (btnSimulatePix) {
-    btnSimulatePix.addEventListener('click', () => {
-      const authCode = `SICOOB-PIX-${Math.floor(100000 + Math.random() * 900000)}`;
-      concluirPagamentoSucesso({
-        metodo: 'Pix Instantâneo Sicoob',
-        authCode
-      });
-    });
-  }
-
-  // Máscaras e Validação do Cartão
-  if (cardNumberInput) {
-    cardNumberInput.addEventListener('input', (e) => {
-      let val = e.target.value.replace(/\D/g, '');
-      if (val.length > 16) val = val.substring(0, 16);
-
-      // Agrupa de 4 em 4 dígitos
-      const formatted = val.match(/.{1,4}/g)?.join(' ') || val;
-      e.target.value = formatted;
-
-      // Detecta bandeira
-      const bandeira = detectarBandeiraCartao(val);
-      if (cardBrandTag) cardBrandTag.textContent = bandeira;
-    });
-  }
-
-  if (cardExpiryInput) {
-    cardExpiryInput.addEventListener('input', (e) => {
-      let val = e.target.value.replace(/\D/g, '');
-      if (val.length > 4) val = val.substring(0, 4);
-
-      if (val.length <= 2) {
-        e.target.value = val;
-      } else {
-        e.target.value = `${val.substring(0, 2)}/${val.substring(2)}`;
-      }
-    });
-  }
-
-  if (cardCvvInput) {
-    cardCvvInput.addEventListener('input', (e) => {
-      let val = e.target.value.replace(/\D/g, '');
-      if (val.length > 4) val = val.substring(0, 4);
-      e.target.value = val;
-    });
-  }
-
-  // Submissão do Cartão
-  if (cardForm) {
-    cardForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const numVal = cardNumberInput ? cardNumberInput.value.replace(/\D/g, '') : '';
-      const holderVal = cardHolderInput ? cardHolderInput.value.trim() : '';
-      const expVal = cardExpiryInput ? cardExpiryInput.value.trim() : '';
-      const cvvVal = cardCvvInput ? cardCvvInput.value.replace(/\D/g, '') : '';
-
-      let isValid = true;
-
-      // 1. Número do Cartão
-      const errNum = document.getElementById('error-card-number');
-      if (!numVal || numVal.length < 13) {
-        if (errNum) errNum.textContent = 'Informe o número completo do cartão.';
-        isValid = false;
-      } else if (!validarNumeroCartao(numVal)) {
-        if (errNum) errNum.textContent = 'Número de cartão inválido. Verifique os dígitos.';
-        isValid = false;
-      } else {
-        if (errNum) errNum.textContent = '';
-      }
-
-      // 2. Nome do Titular
-      const errHolder = document.getElementById('error-card-holder');
-      if (!holderVal || holderVal.length < 3) {
-        if (errHolder) errHolder.textContent = 'Informe o nome completo impresso no cartão.';
-        isValid = false;
-      } else {
-        if (errHolder) errHolder.textContent = '';
-      }
-
-      // 3. Validade
-      const errExp = document.getElementById('error-card-expiry');
-      const expRes = validarValidadeCartao(expVal);
-      if (!expRes.valid) {
-        if (errExp) errExp.textContent = expRes.message;
-        isValid = false;
-      } else {
-        if (errExp) errExp.textContent = '';
-      }
-
-      // 4. CVV
-      const errCvv = document.getElementById('error-card-cvv');
-      if (!cvvVal || cvvVal.length < 3) {
-        if (errCvv) errCvv.textContent = 'Código de segurança inválido (3 ou 4 dígitos).';
-        isValid = false;
-      } else {
-        if (errCvv) errCvv.textContent = '';
-      }
-
-      if (!isValid) return;
-
-      // Processando no Sicoob Sandbox
-      if (btnSubmitCard) {
-        btnSubmitCard.disabled = true;
-        btnSubmitCard.innerHTML = '<span class="btn-text">PROCESSANDO COM SICOOB...</span>';
-      }
+    btnSimulatePix.addEventListener('click', async () => {
+      btnSimulatePix.disabled = true;
+      const originalContent = btnSimulatePix.innerHTML;
+      btnSimulatePix.innerHTML = '<span>Aprovando no Sandbox...</span>';
 
       try {
-        const resultado = await processarCartaoSandbox({
-          numero: numVal,
-          titular: holderVal,
-          validade: expVal,
-          cvv: cvvVal,
-          valor: 129.90
-        });
-
-        concluirPagamentoSucesso({
-          metodo: `Cartão de Crédito à Vista (${resultado.bandeira})`,
-          authCode: resultado.authCode
-        });
-
-        cardForm.reset();
-        if (cardBrandTag) cardBrandTag.textContent = 'CARTÃO';
-      } catch (err) {
-        alert('Ocorreu um erro ao processar seu cartão. Tente novamente.');
-      } finally {
-        if (btnSubmitCard) {
-          btnSubmitCard.disabled = false;
-          btnSubmitCard.innerHTML = '<span class="btn-text">PAGAR R$ 129,90 À VISTA VIA SICOOB</span><svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+        if (currentPixData && currentPixData.id) {
+          await simularAprovacaoPixLocal(currentPixData.id);
         }
+        concluirPagamentoSucesso({
+          metodo: 'Pix Instantâneo (Asaas Sandbox)',
+          authCode: currentPixData ? currentPixData.id : `ASAAS-TEST-${Math.floor(100000 + Math.random() * 900000)}`
+        });
+      } catch (err) {
+        console.error('Erro na simulação:', err);
+      } finally {
+        btnSimulatePix.disabled = false;
+        btnSimulatePix.innerHTML = originalContent;
+      }
+    });
+  }
+
+  // Abertura da Fatura Segura de Cartão Asaas e Polling
+  if (btnOpenCardInvoice) {
+    btnOpenCardInvoice.addEventListener('click', async () => {
+      if (!currentCardData) {
+        await prepararCobrancaCartao();
+      }
+
+      if (currentCardData && currentCardData.invoiceUrl) {
+        // Abre fatura oficial em nova aba segura
+        window.open(currentCardData.invoiceUrl, '_blank', 'noopener,noreferrer');
+
+        if (cardStatusBadgeText) {
+          cardStatusBadgeText.textContent = 'Aguardando confirmação do cartão no Asaas...';
+        }
+
+        // Inicia monitoramento contínuo em tempo real para a fatura do cartão
+        if (pollingController) {
+          pollingController.stop();
+        }
+
+        pollingController = iniciarPollingStatusPix({
+          paymentId: currentCardData.id,
+          intervalMs: 3000,
+          onPoll: (statusData) => {
+            if (cardStatusBadgeText) {
+              cardStatusBadgeText.textContent = 'Aguardando aprovação no Asaas...';
+            }
+          },
+          onConfirmed: (statusData) => {
+            if (cardStatusBadgeText) cardStatusBadgeText.textContent = '✓ Pagamento Aprovado!';
+            concluirPagamentoSucesso({
+              metodo: 'Cartão de Crédito/Débito (Asaas)',
+              authCode: currentCardData.id
+            });
+          },
+          onError: (err) => {
+            console.warn('[Polling Cartão]:', err.message);
+          }
+        });
+      }
+    });
+  }
+
+  // Simulação de Aprovação de Cartão (para testes no Sandbox)
+  if (btnSimulateCard) {
+    btnSimulateCard.addEventListener('click', async () => {
+      btnSimulateCard.disabled = true;
+      const originalContent = btnSimulateCard.innerHTML;
+      btnSimulateCard.innerHTML = '<span>Aprovando no Sandbox...</span>';
+
+      try {
+        if (currentCardData && currentCardData.id) {
+          await simularAprovacaoPixLocal(currentCardData.id);
+        }
+        concluirPagamentoSucesso({
+          metodo: 'Cartão de Crédito/Débito (Asaas Sandbox)',
+          authCode: currentCardData ? currentCardData.id : `ASAAS-CARD-${Math.floor(100000 + Math.random() * 900000)}`
+        });
+      } catch (err) {
+        console.error('Erro na simulação do cartão:', err);
+      } finally {
+        btnSimulateCard.disabled = false;
+        btnSimulateCard.innerHTML = originalContent;
       }
     });
   }
 
   // Transição para Tela de Sucesso
   function concluirPagamentoSucesso({ metodo, authCode }) {
+    if (pollingController) {
+      pollingController.stop();
+      pollingController = null;
+    }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
     if (checkoutView) checkoutView.style.display = 'none';
     if (successView) successView.style.display = 'block';
 
@@ -842,11 +943,12 @@ function initSicoobCheckout() {
 
     // Atualiza botão de WhatsApp com o comprovante aprovado
     if (btnSuccessWhats) {
+      const whatsNum = appConfig.whatsapp || '5511999999999';
       const msg = `Olá! Meu nome é ${leadNome} (CPF: ${leadCpf}) e meu pagamento da 1ª mensalidade de R$ 129,90 foi APROVADO via ${metodo}!\n\n` +
-        `🛡️ *Autenticação Bancária:* ${authCode}\n` +
+        `🛡️ *Autenticação Asaas:* ${authCode}\n` +
         `🔥 *Plano:* Membro Fundador (Valor Vitalício)\n` +
         `Gostaria de agendar minha visita VIP e retirar meu passe antecipado!`;
-      btnSuccessWhats.setAttribute('href', `https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`);
+      btnSuccessWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
     }
 
     // Rola modal para o topo suavemente
@@ -857,7 +959,14 @@ function initSicoobCheckout() {
   const closeModal = () => {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
-    if (timerInterval) clearInterval(timerInterval);
+    if (pollingController) {
+      pollingController.stop();
+      pollingController = null;
+    }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);

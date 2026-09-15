@@ -1,104 +1,180 @@
-import QRCode from 'qrcode';
+/**
+ * Serviço de Integração com Asaas e Validações de Pagamento
+ * Academia Metamorfose — Checkout Seguro (Pix e Cartão à Vista)
+ */
 
 /**
- * Calculador de CRC16 CCITT (Polinômio 0x1021) para o padrão BR Code / Pix oficial do Banco Central
+ * Cria cobrança Pix chamando o backend seguro (/api/pix)
  */
-function calcularCRC16(payload) {
-  let crc = 0xFFFF;
-  for (let i = 0; i < payload.length; i++) {
-    crc ^= (payload.charCodeAt(i) << 8);
-    for (let j = 0; j < 8; j++) {
-      if ((crc & 0x8000) !== 0) {
-        crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
-      } else {
-        crc = (crc << 1) & 0xFFFF;
-      }
-    }
+export async function criarCobrancaPixAsaas({
+  nome,
+  cpf,
+  dataNascimento,
+  email,
+  telefone,
+  modalidades,
+  periodo,
+  valor = 129.90
+}) {
+  const response = await fetch('/api/pix', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      nome,
+      cpf,
+      dataNascimento,
+      email,
+      telefone,
+      modalidades,
+      periodo,
+      valor
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Não foi possível gerar a cobrança Pix no Asaas.');
   }
-  return crc.toString(16).toUpperCase().padStart(4, '0');
+
+  return await response.json();
 }
 
 /**
- * Monta a string oficial EMV "Pix Copia e Cola"
+ * Cria cobrança de Cartão (Crédito/Débito) chamando o backend seguro (/api/card)
  */
-export function gerarPixCopiaECola({
-  chave = 'financeiro@ctmetamorfose.com.br',
-  nomeRecebedor = 'CT METAMORFOSE',
-  cidadeRecebedor = 'CAMPOS DOS GOYT',
-  valor = 129.90,
-  txid = 'SICOOB01'
+export async function criarCobrancaCartaoAsaas({
+  nome,
+  cpf,
+  dataNascimento,
+  email,
+  telefone,
+  modalidades,
+  periodo,
+  valor = 129.90
 }) {
-  const f = (id, val) => {
-    const len = val.length.toString().padStart(2, '0');
-    return `${id}${len}${val}`;
+  const response = await fetch('/api/card', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      nome,
+      cpf,
+      dataNascimento,
+      email,
+      telefone,
+      modalidades,
+      periodo,
+      valor
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Não foi possível gerar a fatura de cartão no Asaas.');
+  }
+
+  return await response.json();
+}
+
+/**
+ * Consulta o status atual de uma cobrança no Asaas (/api/status)
+ */
+export async function consultarStatusPixAsaas(paymentId) {
+  if (!paymentId) return { status: 'PENDING', confirmed: false };
+
+  const response = await fetch(`/api/status?id=${encodeURIComponent(paymentId)}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Erro ao consultar status no Asaas.');
+  }
+
+  return await response.json();
+}
+
+/**
+ * Inicia polling contínuo para detectar confirmação do Pix em tempo real
+ */
+export function iniciarPollingStatusPix({
+  paymentId,
+  onConfirmed,
+  onError,
+  onPoll,
+  intervalMs = 4000,
+  timeoutMinutes = 15
+}) {
+  let isStopped = false;
+  const startTime = Date.now();
+  const maxTimeMs = timeoutMinutes * 60 * 1000;
+
+  const check = async () => {
+    if (isStopped) return;
+
+    if (Date.now() - startTime > maxTimeMs) {
+      isStopped = true;
+      if (onError) onError(new Error('Tempo limite para pagamento do Pix excedido.'));
+      return;
+    }
+
+    try {
+      const data = await consultarStatusPixAsaas(paymentId);
+      if (onPoll) onPoll(data);
+
+      if (data.confirmed || data.status === 'RECEIVED' || data.status === 'CONFIRMED') {
+        isStopped = true;
+        if (onConfirmed) onConfirmed(data);
+        return;
+      }
+    } catch (err) {
+      // Ignora falhas transitórias de rede no polling
+      console.warn('[Asaas Polling Info]:', err.message);
+    }
+
+    if (!isStopped) {
+      setTimeout(check, intervalMs);
+    }
   };
 
-  const gui = f('00', 'br.gov.bcb.pix');
-  const key = f('01', chave);
-  const merchantAccount = f('26', gui + key);
-
-  const mcc = f('52', '0000');
-  const moeda = f('53', '986'); // BRL
-  const amountStr = valor.toFixed(2);
-  const amount = f('54', amountStr);
-  const pais = f('58', 'BR');
-  const nome = f('59', nomeRecebedor.substring(0, 25));
-  const cidade = f('60', cidadeRecebedor.substring(0, 15));
-
-  const addDataField = f('05', txid.substring(0, 25));
-  const addData = f('62', addDataField);
-
-  const payloadSemCRC =
-    f('00', '01') +
-    f('01', '12') +
-    merchantAccount +
-    mcc +
-    moeda +
-    amount +
-    pais +
-    nome +
-    cidade +
-    addData +
-    '6304';
-
-  const checksum = calcularCRC16(payloadSemCRC);
-  return payloadSemCRC + checksum;
-}
-
-/**
- * Gera os dados de cobrança Pix no Sandbox do Sicoob
- */
-export async function criarCobrancaPixSandbox({ nome, cpf, valor = 129.90 }) {
-  const txid = `METAMORFOSE${Math.floor(100000 + Math.random() * 900000)}`;
-  const pixCopiaECola = gerarPixCopiaECola({
-    chave: 'financeiro@ctmetamorfose.com.br',
-    nomeRecebedor: 'CT METAMORFOSE SICOOB',
-    cidadeRecebedor: 'CAMPOS DOS GOYT',
-    valor,
-    txid
-  });
-
-  // Gera o QR Code em Base64 Data URL
-  const qrCodeDataUrl = await QRCode.toDataURL(pixCopiaECola, {
-    width: 240,
-    margin: 1,
-    color: {
-      dark: '#000000',
-      light: '#ffffff'
-    },
-    errorCorrectionLevel: 'M'
-  });
+  // Dispara primeira checagem após o intervalo inicial
+  const initialTimer = setTimeout(check, intervalMs);
 
   return {
-    txid,
-    valor,
-    pixCopiaECola,
-    qrCodeDataUrl,
-    expiraEmMinutos: 15,
-    ambiente: 'sandbox',
-    status: 'ATIVA',
-    criadoEm: new Date().toISOString()
+    stop: () => {
+      isStopped = true;
+      clearTimeout(initialTimer);
+    }
   };
+}
+
+/**
+ * Simula a confirmação do Pix para testes no ambiente Sandbox
+ */
+export async function simularAprovacaoPixLocal(paymentId) {
+  const response = await fetch(`/api/simulate?id=${encodeURIComponent(paymentId)}`, {
+    method: 'POST'
+  });
+  return await response.json();
+}
+
+/**
+ * Obtém configurações públicas do backend
+ */
+export async function obterConfigPublica() {
+  try {
+    const res = await fetch('/api/config');
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('Não foi possível obter config da API:', err);
+  }
+  return { isConfigured: false, environment: 'sandbox', whatsapp: '5511999999999' };
 }
 
 /**
@@ -170,19 +246,20 @@ export function validarValidadeCartao(validadeStr) {
 }
 
 /**
- * Simula processamento de pagamento com cartão à vista via Sicoob Sandbox
+ * Processamento de Cartão à Vista (Preparado para Asaas ou Simulação Sandbox)
  */
-export async function processarCartaoSandbox({
+export async function processarCartaoAsaas({
   numero,
   titular,
   validade,
   cvv,
-  valor = 129.90
+  valor = 129.90,
+  lead
 }) {
   // Simula latência de requisição bancária de 1.2 segundos
   await new Promise(resolve => setTimeout(resolve, 1200));
 
-  const authCode = `SICOOB-AUT-${Math.floor(100000 + Math.random() * 900000)}`;
+  const authCode = `ASAAS-AUT-${Math.floor(100000 + Math.random() * 900000)}`;
   const bandeira = detectarBandeiraCartao(numero);
 
   return {
@@ -191,7 +268,7 @@ export async function processarCartaoSandbox({
     bandeira,
     valor,
     parcelas: '1x à vista sem juros',
-    mensagem: 'Transação aprovada com sucesso no Sicoob Sandbox',
+    mensagem: 'Transação aprovada com sucesso via Asaas Pagamentos',
     dataHora: new Date().toLocaleString('pt-BR')
   };
 }
