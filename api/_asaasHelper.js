@@ -465,11 +465,22 @@ export async function criarCobrancaCartaoAsaas({
   };
 }
 
+// Micro-cache em memória para status (reduz concorrência na API do Asaas)
+const statusCache = new Map();
+
 /**
  * Consulta status da cobrança no Asaas ou na simulação
  */
 export async function consultarStatusCobrancaAsaas(paymentId) {
   const config = getConfig();
+
+  // Verifica se temos resultado em cache válido (TTL de 2.5 segundos ou 60s se confirmado)
+  if (paymentId && statusCache.has(paymentId)) {
+    const cached = statusCache.get(paymentId);
+    if (cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+  }
 
   // Verifica se é cobrança simulada
   if (paymentId && paymentId.startsWith('pay_sim_')) {
@@ -499,7 +510,7 @@ export async function consultarStatusCobrancaAsaas(paymentId) {
   const data = await res.json();
   const confirmed = data.status === 'RECEIVED' || data.status === 'CONFIRMED';
 
-  return {
+  const result = {
     paymentId: data.id,
     status: data.status,
     confirmed,
@@ -508,12 +519,25 @@ export async function consultarStatusCobrancaAsaas(paymentId) {
     value: data.value,
     isSimulated: false
   };
+
+  // Se confirmado, mantém em cache por 60s; se pendente, micro-cache de 2.5s para evitar picos
+  if (paymentId) {
+    statusCache.set(paymentId, {
+      data: result,
+      expiresAt: Date.now() + (confirmed ? 60000 : 2500)
+    });
+  }
+
+  return result;
 }
 
 /**
  * Simula a confirmação de um pagamento de teste
  */
 export function simularAprovacaoPix(paymentId) {
+  if (paymentId) {
+    statusCache.delete(paymentId);
+  }
   if (cobrancasSimuladas.has(paymentId)) {
     const item = cobrancasSimuladas.get(paymentId);
     item.status = 'RECEIVED';

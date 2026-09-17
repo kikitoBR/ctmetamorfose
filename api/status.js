@@ -19,6 +19,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método não permitido. Utilize GET.' });
   }
 
+  // Permite que a CDN Edge da Vercel faça micro-cache de 2s para o mesmo ID, aliviando o servidor
+  res.setHeader('Cache-Control', 'public, s-maxage=2, stale-while-revalidate=2');
+
   const { id } = req.query || {};
 
   if (!id) {

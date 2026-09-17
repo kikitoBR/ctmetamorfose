@@ -654,10 +654,10 @@ function initAsaasCheckout() {
       // Inicia contagem regressiva de 15 minutos
       startPixTimer(15 * 60);
 
-      // Inicia Polling em tempo real para detectar quando o aluno pagar no banco
+      // Inicia Polling inteligente em tempo real para detectar quando o aluno pagar no banco
       pollingController = iniciarPollingStatusPix({
         paymentId: pixData.id,
-        intervalMs: 3500,
+        initialIntervalMs: 4000,
         onPoll: (statusData) => {
           if (statusBadgeText) {
             statusBadgeText.textContent = 'Aguardando confirmação bancária...';
@@ -875,7 +875,7 @@ function initAsaasCheckout() {
 
         pollingController = iniciarPollingStatusPix({
           paymentId: currentCardData.id,
-          intervalMs: 3000,
+          initialIntervalMs: 4000,
           onPoll: (statusData) => {
             if (cardStatusBadgeText) {
               cardStatusBadgeText.textContent = 'Aguardando aprovação no Asaas...';

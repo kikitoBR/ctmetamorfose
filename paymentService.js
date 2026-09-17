@@ -101,26 +101,60 @@ export async function consultarStatusPixAsaas(paymentId) {
 }
 
 /**
- * Inicia polling contínuo para detectar confirmação do Pix em tempo real
+ * Inicia polling inteligente e adaptativo para detecção de confirmação em tempo real
+ * Otimizado para suportar mais de 80 usuários simultâneos no checkout:
+ * - Intervalo dinâmico por estágios (4.5s -> 6.5s -> 9s -> 15s)
+ * - Jitter aleatório (±600ms) para evitar picos de concorrência simultânea
+ * - Page Visibility API: desacelera para 20s quando a aba está em segundo plano (ex: aluno no app do banco)
+ *   e dispara verificação IMEDIATA assim que o aluno retorna ao navegador!
  */
 export function iniciarPollingStatusPix({
   paymentId,
   onConfirmed,
   onError,
   onPoll,
-  intervalMs = 4000,
+  initialIntervalMs = 4000,
   timeoutMinutes = 15
 }) {
   let isStopped = false;
+  let timerId = null;
+  let isChecking = false;
   const startTime = Date.now();
   const maxTimeMs = timeoutMinutes * 60 * 1000;
 
+  // Calcula o intervalo ideal para o momento atual
+  const getNextIntervalMs = () => {
+    // Se o usuário minimizou ou trocou de aba (ex: abrindo o app do banco no celular)
+    if (typeof document !== 'undefined' && document.hidden) {
+      return 20000; // 20s em segundo plano economiza 80% das chamadas
+    }
+
+    const elapsedSec = (Date.now() - startTime) / 1000;
+    let baseMs;
+
+    if (elapsedSec < 35) {
+      baseMs = 4500; // Primeiros 35s: leitura ativa do QR code
+    } else if (elapsedSec < 120) {
+      baseMs = 6500; // 35s a 2min: janela típica de confirmação bancária
+    } else if (elapsedSec < 300) {
+      baseMs = 9000; // 2min a 5min: espaçamento suave
+    } else {
+      baseMs = 15000; // Acima de 5min: verificação de longo prazo
+    }
+
+    // Jitter aleatório (± 600ms) para dispersar concorrência
+    const jitter = Math.floor((Math.random() - 0.5) * 1200);
+    return Math.max(3000, baseMs + jitter);
+  };
+
   const check = async () => {
-    if (isStopped) return;
+    if (isStopped || isChecking) return;
+    isChecking = true;
 
     if (Date.now() - startTime > maxTimeMs) {
       isStopped = true;
-      if (onError) onError(new Error('Tempo limite para pagamento do Pix excedido.'));
+      cleanup();
+      if (onError) onError(new Error('Tempo limite para pagamento excedido.'));
       return;
     }
 
@@ -130,26 +164,49 @@ export function iniciarPollingStatusPix({
 
       if (data.confirmed || data.status === 'RECEIVED' || data.status === 'CONFIRMED') {
         isStopped = true;
+        cleanup();
         if (onConfirmed) onConfirmed(data);
         return;
       }
     } catch (err) {
-      // Ignora falhas transitórias de rede no polling
       console.warn('[Asaas Polling Info]:', err.message);
+    } finally {
+      isChecking = false;
     }
 
     if (!isStopped) {
-      setTimeout(check, intervalMs);
+      const nextDelay = getNextIntervalMs();
+      timerId = setTimeout(check, nextDelay);
     }
   };
 
-  // Dispara primeira checagem após o intervalo inicial
-  const initialTimer = setTimeout(check, intervalMs);
+  // Quando o aluno volta para o site após pagar no app do banco, verifica IMEDIATAMENTE
+  const handleVisibilityChange = () => {
+    if (isStopped) return;
+    if (typeof document !== 'undefined' && !document.hidden) {
+      if (timerId) clearTimeout(timerId);
+      check();
+    }
+  };
+
+  const cleanup = () => {
+    if (timerId) clearTimeout(timerId);
+    if (typeof document !== 'undefined' && document.removeEventListener) {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }
+  };
+
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+  }
+
+  // Primeira checagem após o delay inicial (padrão 4s)
+  timerId = setTimeout(check, initialIntervalMs);
 
   return {
     stop: () => {
       isStopped = true;
-      clearTimeout(initialTimer);
+      cleanup();
     }
   };
 }
