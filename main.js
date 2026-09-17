@@ -17,7 +17,10 @@ import {
 import { inject } from '@vercel/analytics';
 
 // Inicializa métricas de visitantes e page views da Vercel
-inject();
+// O modo é automaticamente detectado baseado no ambiente (development/production)
+inject({
+  mode: import.meta.env.MODE === 'development' ? 'development' : 'production'
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   initHeader();
