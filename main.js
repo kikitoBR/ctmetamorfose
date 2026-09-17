@@ -14,6 +14,10 @@ import {
   validarValidadeCartao, 
   processarCartaoAsaas 
 } from './paymentService.js';
+import { inject } from '@vercel/analytics';
+
+// Inicializa métricas de visitantes e page views da Vercel
+inject();
 
 document.addEventListener('DOMContentLoaded', () => {
   initHeader();
