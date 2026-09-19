@@ -308,28 +308,15 @@ function atualizarMetricasKPIs() {
   const contato = leads.filter(l => l.status === 'EM_CONTATO');
   const cancelados = leads.filter(l => l.status === 'CANCELADO');
 
-  const vagasLimite = 50;
-  const vagasOcupadas = Math.min(pagos.length, vagasLimite);
-  const vagasRestantes = Math.max(0, vagasLimite - vagasOcupadas);
-  const percentVagas = Math.round((vagasOcupadas / vagasLimite) * 100);
-
   const receitaTotal = pagos.reduce((acc, l) => acc + (parseFloat(l.valor) || 129.90), 0);
 
   // Elementos do DOM
   const totalEl = document.getElementById('kpi-total-leads');
-  const vagasOcupadasEl = document.getElementById('kpi-vagas-ocupadas');
-  const vagasPercentEl = document.getElementById('kpi-vagas-percent');
-  const progressBarEl = document.getElementById('kpi-progress-bar');
-  const vagasRestantesEl = document.getElementById('kpi-vagas-restantes');
   const receitaEl = document.getElementById('kpi-receita-total');
   const pagamentosCountEl = document.getElementById('kpi-pagamentos-count');
   const aguardandoEl = document.getElementById('kpi-aguardando');
 
   if (totalEl) totalEl.textContent = total;
-  if (vagasOcupadasEl) vagasOcupadasEl.textContent = vagasOcupadas;
-  if (vagasPercentEl) vagasPercentEl.textContent = `${percentVagas}%`;
-  if (progressBarEl) progressBarEl.style.width = `${percentVagas}%`;
-  if (vagasRestantesEl) vagasRestantesEl.textContent = `${vagasRestantes} vagas restantes`;
   
   if (receitaEl) {
     receitaEl.textContent = receitaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
