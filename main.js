@@ -464,6 +464,21 @@ function initFormValidation() {
       console.warn('Não foi possível salvar no localStorage:', err);
     }
 
+    // Persistência Centralizada no Supabase / Backend
+    fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(leadData)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.lead && data.lead.id) {
+          leadData.id = data.lead.id;
+          if (currentLead) currentLead.id = data.lead.id;
+        }
+      })
+      .catch(e => console.warn('[Leads Sync Error]:', e.message));
+
     // Abrir Modal de Checkout Asaas (Pix e Cartão à Vista)
     if (typeof window.openAsaasCheckout === 'function') {
       window.openAsaasCheckout(leadData);
@@ -605,7 +620,7 @@ function initAsaasCheckout() {
     currentCardData = null;
     isGeneratingCard = false;
     if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Pronto para pagamento seguro';
-    if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA NO ASAAS';
+    if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA';
     if (btnOpenCardInvoice) btnOpenCardInvoice.disabled = false;
 
     if (pollingController) {
@@ -623,7 +638,7 @@ function initAsaasCheckout() {
         qrContainer.innerHTML = `
           <div class="qr-loading-placeholder">
             <div class="spinner-radial"></div>
-            <span>Gerando Pix com Asaas...</span>
+            <span>Gerando Pix seguro...</span>
           </div>
         `;
       }
@@ -642,6 +657,20 @@ function initAsaasCheckout() {
       });
 
       currentPixData = pixData;
+
+      // Vincula cobrança Asaas ao lead no Supabase
+      if (lead && lead.id) {
+        fetch('/api/leads', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            leadId: lead.id,
+            asaasPaymentId: pixData.id,
+            asaasCustomerId: pixData.customerId,
+            metodoPagamento: 'PIX'
+          })
+        }).catch(() => {});
+      }
 
       if (qrContainer && pixData.qrCodeDataUrl) {
         qrContainer.innerHTML = `<img src="${pixData.qrCodeDataUrl}" alt="QR Code Pix Asaas" loading="eager">`;
@@ -670,7 +699,7 @@ function initAsaasCheckout() {
         onConfirmed: (statusData) => {
           if (statusBadgeText) statusBadgeText.textContent = '✓ Pagamento Confirmado!';
           concluirPagamentoSucesso({
-            metodo: 'Pix Instantâneo (Asaas)',
+            metodo: 'Pix Instantâneo',
             authCode: pixData.id
           });
         },
@@ -682,9 +711,7 @@ function initAsaasCheckout() {
       // Atualiza link de WhatsApp com comprovante Pix
       if (btnPixWhats) {
         const whatsNum = appConfig.whatsapp || '5511999999999';
-        const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix Asaas para o Lote Fundador do CT Metamorfose.\n\n` +
-          `💳 *ID da Cobrança Asaas:* ${pixData.id}\n` +
-          `Segue meu comprovante em anexo:`;
+        const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix para o Lote Fundador do CT Metamorfose.\n\n`;
         btnPixWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
       }
     } catch (err) {
@@ -738,9 +765,9 @@ function initAsaasCheckout() {
 
     if (btnOpenCardInvoice) {
       btnOpenCardInvoice.disabled = true;
-      if (btnCardText) btnCardText.textContent = 'GERANDO FATURA COM ASAAS...';
+      if (btnCardText) btnCardText.textContent = 'GERANDO FATURA SEGURA...';
     }
-    if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Conectando ao Asaas...';
+    if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Conectando ao ambiente seguro...';
 
     try {
       const cardData = await criarCobrancaCartaoAsaas({
@@ -756,18 +783,33 @@ function initAsaasCheckout() {
 
       currentCardData = cardData;
 
+      // Vincula fatura Asaas ao lead no Supabase
+      if (currentLead && currentLead.id) {
+        fetch('/api/leads', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            leadId: currentLead.id,
+            asaasPaymentId: cardData.id,
+            asaasCustomerId: cardData.customerId,
+            asaasInvoiceUrl: cardData.invoiceUrl,
+            metodoPagamento: 'CARTAO'
+          })
+        }).catch(() => {});
+      }
+
       if (btnOpenCardInvoice) {
         btnOpenCardInvoice.disabled = false;
-        if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA NO ASAAS';
+        if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA';
       }
       if (cardStatusBadgeText) {
-        cardStatusBadgeText.textContent = 'Fatura pronta. Clique para pagar no Asaas.';
+        cardStatusBadgeText.textContent = 'Fatura pronta para pagamento.';
       }
 
       // Atualiza link de suporte do WhatsApp na aba de cartão
       if (btnCardWhats) {
         const whatsNum = appConfig.whatsapp || '5511999999999';
-        const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e estou realizando o pagamento da 1ª mensalidade de R$ 129,90 via Cartão no Asaas (ID: ${cardData.id}) para o Lote Fundador do CT Metamorfose.\n\nPreciso de suporte com meu pagamento:`;
+        const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e estou realizando o pagamento da 1ª mensalidade de R$ 129,90 via Cartão para o Lote Fundador do CT Metamorfose.\n\nPreciso de suporte com meu pagamento:`;
         btnCardWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
       }
     } catch (err) {
@@ -869,7 +911,7 @@ function initAsaasCheckout() {
         window.open(currentCardData.invoiceUrl, '_blank', 'noopener,noreferrer');
 
         if (cardStatusBadgeText) {
-          cardStatusBadgeText.textContent = 'Aguardando confirmação do cartão no Asaas...';
+          cardStatusBadgeText.textContent = 'Aguardando confirmação do cartão...';
         }
 
         // Inicia monitoramento contínuo em tempo real para a fatura do cartão
@@ -882,13 +924,13 @@ function initAsaasCheckout() {
           initialIntervalMs: 4000,
           onPoll: (statusData) => {
             if (cardStatusBadgeText) {
-              cardStatusBadgeText.textContent = 'Aguardando aprovação no Asaas...';
+              cardStatusBadgeText.textContent = 'Aguardando aprovação do pagamento...';
             }
           },
           onConfirmed: (statusData) => {
             if (cardStatusBadgeText) cardStatusBadgeText.textContent = '✓ Pagamento Aprovado!';
             concluirPagamentoSucesso({
-              metodo: 'Cartão de Crédito/Débito (Asaas)',
+              metodo: 'Cartão de Crédito/Débito',
               authCode: currentCardData.id
             });
           },
@@ -945,13 +987,26 @@ function initAsaasCheckout() {
     if (receiptCpfEl) receiptCpfEl.textContent = leadCpf || 'Verificado';
     if (receiptAuthCodeEl) receiptAuthCodeEl.textContent = authCode;
 
+    // Atualiza status do lead no Supabase / backend para PAGO
+    if (currentLead) {
+      fetch('/api/leads', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId: currentLead.id || null,
+          cpf: currentLead.cpf || null,
+          status: 'PAGO',
+          metodo_pagamento: metodo,
+          asaasPaymentId: (currentPixData && currentPixData.id) || (currentCardData && currentCardData.id) || authCode
+        })
+      }).catch(err => console.warn('[Leads Status Update Error]:', err));
+    }
+
     // Atualiza botão de WhatsApp com o comprovante aprovado
     if (btnSuccessWhats) {
       const whatsNum = appConfig.whatsapp || '5511999999999';
       const msg = `Olá! Meu nome é ${leadNome} (CPF: ${leadCpf}) e meu pagamento da 1ª mensalidade de R$ 129,90 foi APROVADO via ${metodo}!\n\n` +
-        `🛡️ *Autenticação Asaas:* ${authCode}\n` +
-        `🔥 *Plano:* Membro Fundador (Valor Vitalício)\n` +
-        `Gostaria de agendar minha visita VIP e retirar meu passe antecipado!`;
+        `*Plano:* Membro Fundador (Valor Vitalício)\n`;
       btnSuccessWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
     }
 

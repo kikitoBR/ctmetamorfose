@@ -6,6 +6,11 @@ import {
   simularAprovacaoPix,
   getConfig
 } from './api/_asaasHelper.js';
+import leadsHandler from './api/leads.js';
+import adminAuthHandler from './api/admin/auth.js';
+import adminLeadsHandler from './api/admin/leads.js';
+import adminSyncHandler from './api/admin/sync.js';
+import webhookAsaasHandler from './api/webhook/asaas.js';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -14,6 +19,11 @@ export default defineConfig(({ mode }) => {
   if (env.ASAAS_API_KEY) process.env.ASAAS_API_KEY = env.ASAAS_API_KEY;
   if (env.ASAAS_ENVIRONMENT) process.env.ASAAS_ENVIRONMENT = env.ASAAS_ENVIRONMENT;
   if (env.WHATSAPP_NUMBER) process.env.WHATSAPP_NUMBER = env.WHATSAPP_NUMBER;
+  if (env.SUPABASE_URL) process.env.SUPABASE_URL = env.SUPABASE_URL;
+  if (env.SUPABASE_SERVICE_ROLE_KEY) process.env.SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+  if (env.ADMIN_PASSWORD) process.env.ADMIN_PASSWORD = env.ADMIN_PASSWORD;
+  if (env.ADMIN_JWT_SECRET) process.env.ADMIN_JWT_SECRET = env.ADMIN_JWT_SECRET;
+  if (env.ASAAS_WEBHOOK_ACCESS_TOKEN) process.env.ASAAS_WEBHOOK_ACCESS_TOKEN = env.ASAAS_WEBHOOK_ACCESS_TOKEN;
 
   return {
     server: {
@@ -25,6 +35,81 @@ export default defineConfig(({ mode }) => {
         configureServer(server) {
           server.middlewares.use(async (req, res, next) => {
             const url = new URL(req.url, `http://${req.headers.host}`);
+
+            // Adapta resposta do connect para suportar .status().json() do Vercel
+            if (!res.status) {
+              res.status = function(code) {
+                res.statusCode = code;
+                return this;
+              };
+            }
+            if (!res.json) {
+              res.json = function(data) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(data));
+                return this;
+              };
+            }
+
+            // Helper para ler body de requests POST/PATCH
+            const parseBody = () => new Promise(resolve => {
+              let bodyStr = '';
+              req.on('data', chunk => { bodyStr += chunk; });
+              req.on('end', () => {
+                try {
+                  req.body = bodyStr ? JSON.parse(bodyStr) : {};
+                } catch (e) {
+                  req.body = bodyStr;
+                }
+                resolve(req.body);
+              });
+            });
+
+            // Rota amigável: /admin -> /admin.html
+            if (url.pathname === '/admin' || url.pathname === '/admin/') {
+              req.url = '/admin.html';
+              return next();
+            }
+
+            // Rota: /api/leads
+            if (url.pathname === '/api/leads') {
+              if (req.method === 'POST' || req.method === 'PATCH') {
+                await parseBody();
+              }
+              return leadsHandler(req, res);
+            }
+
+            // Rota: /api/admin/auth
+            if (url.pathname === '/api/admin/auth') {
+              if (req.method === 'POST') {
+                await parseBody();
+              }
+              return adminAuthHandler(req, res);
+            }
+
+            // Rota: /api/admin/leads
+            if (url.pathname === '/api/admin/leads') {
+              if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE') {
+                await parseBody();
+              }
+              return adminLeadsHandler(req, res);
+            }
+
+            // Rota: /api/admin/sync
+            if (url.pathname === '/api/admin/sync') {
+              if (req.method === 'POST') {
+                await parseBody();
+              }
+              return adminSyncHandler(req, res);
+            }
+
+            // Rota: /api/webhook/asaas
+            if (url.pathname === '/api/webhook/asaas') {
+              if (req.method === 'POST') {
+                await parseBody();
+              }
+              return webhookAsaasHandler(req, res);
+            }
 
             // Rota: POST /api/pix
             if (url.pathname === '/api/pix' && req.method === 'POST') {
