@@ -1,3 +1,4 @@
+import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import { 
   criarCobrancaPixAsaas, 
@@ -28,6 +29,14 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       port: 5174
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(process.cwd(), 'index.html'),
+          admin: path.resolve(process.cwd(), 'admin.html')
+        }
+      }
     },
     plugins: [
       {
