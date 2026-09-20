@@ -45,9 +45,22 @@ function readEnvDirectly() {
  */
 export function getConfig() {
   const fileEnv = readEnvDirectly();
-  const apiKey = (process.env.ASAAS_API_KEY || fileEnv.ASAAS_API_KEY || '').trim();
-  const env = (process.env.ASAAS_ENVIRONMENT || fileEnv.ASAAS_ENVIRONMENT || 'sandbox').trim().toLowerCase();
-  const whatsapp = (process.env.WHATSAPP_NUMBER || fileEnv.WHATSAPP_NUMBER || '5522998449106').trim();
+  const apiKey = (fileEnv.ASAAS_API_KEY || process.env.ASAAS_API_KEY || '').trim();
+  
+  let env = (fileEnv.ASAAS_ENVIRONMENT || process.env.ASAAS_ENVIRONMENT || '').trim().toLowerCase();
+
+  // Auto-detecção inteligente pelo prefixo oficial da chave Asaas:
+  // Chaves de produção do Asaas SEMPRE começam com $aact_prod_
+  // Chaves de homologação/sandbox SEMPRE começam com $aact_hmlg_ ou $aact_sandbox_
+  if (apiKey.startsWith('$aact_prod_')) {
+    env = 'production';
+  } else if (apiKey.startsWith('$aact_hmlg_') || apiKey.startsWith('$aact_sandbox_')) {
+    env = 'sandbox';
+  } else if (!env) {
+    env = 'sandbox';
+  }
+
+  const whatsapp = (fileEnv.WHATSAPP_NUMBER || process.env.WHATSAPP_NUMBER || '5522998449106').trim();
 
   const isConfigured = apiKey.length > 10 && !apiKey.includes('SEU_TOKEN_AQUI');
   const baseUrl = env === 'production' 
