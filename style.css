@@ -901,9 +901,12 @@ h1, h2, h3, h4 {
   font-weight: 600;
 }
 
-.c-perk span {
+.c-perk-icon {
   color: var(--red-light);
   font-weight: 900;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
 }
 
 .countdown-btn-cta {
