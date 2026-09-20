@@ -74,8 +74,8 @@ function initCountdown() {
 
   if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
 
-  // Data alvo: 26 de Setembro de 2026 às 18:00 (Horário de Brasília)
-  const targetDate = new Date('2026-09-26T18:00:00-03:00');
+  // Data alvo: 17 de Outubro de 2026 às 18:00 (Horário de Brasília)
+  const targetDate = new Date('2026-10-17T18:00:00-03:00');
 
   function update() {
     const now = new Date().getTime();
