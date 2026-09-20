@@ -1006,7 +1006,7 @@ function initAsaasCheckout() {
     if (btnSuccessWhats) {
       const whatsNum = appConfig.whatsapp || '5511999999999';
       const msg = `Olá! Meu nome é ${leadNome} (CPF: ${leadCpf}) e meu pagamento da 1ª mensalidade de R$ 129,90 foi APROVADO via ${metodo}!\n\n` +
-        `*Plano:* Membro Fundador (Valor Vitalício)\n`;
+        `*Plano:* Membro Fundador (Desconto Proporcional Vitalício)\n`;
       btnSuccessWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
     }
 
