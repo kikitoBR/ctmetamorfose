@@ -47,7 +47,7 @@ export function getConfig() {
   const fileEnv = readEnvDirectly();
   const apiKey = (process.env.ASAAS_API_KEY || fileEnv.ASAAS_API_KEY || '').trim();
   const env = (process.env.ASAAS_ENVIRONMENT || fileEnv.ASAAS_ENVIRONMENT || 'sandbox').trim().toLowerCase();
-  const whatsapp = (process.env.WHATSAPP_NUMBER || fileEnv.WHATSAPP_NUMBER || '5511999999999').trim();
+  const whatsapp = (process.env.WHATSAPP_NUMBER || fileEnv.WHATSAPP_NUMBER || '5522998449106').trim();
 
   const isConfigured = apiKey.length > 10 && !apiKey.includes('SEU_TOKEN_AQUI');
   const baseUrl = env === 'production' 

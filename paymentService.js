@@ -231,7 +231,7 @@ export async function obterConfigPublica() {
   } catch (err) {
     console.warn('Não foi possível obter config da API:', err);
   }
-  return { isConfigured: false, environment: 'sandbox', whatsapp: '5511999999999' };
+  return { isConfigured: false, environment: 'sandbox', whatsapp: '5522998449106' };
 }
 
 /**

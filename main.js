@@ -585,7 +585,7 @@ function initAsaasCheckout() {
   let isGeneratingCard = false;
   let timerInterval = null;
   let pollingController = null;
-  let appConfig = { whatsapp: '5511999999999' };
+  let appConfig = { whatsapp: '5522998449106' };
 
   if (!modal) return;
 
@@ -710,7 +710,7 @@ function initAsaasCheckout() {
 
       // Atualiza link de WhatsApp com comprovante Pix
       if (btnPixWhats) {
-        const whatsNum = appConfig.whatsapp || '5511999999999';
+        const whatsNum = appConfig.whatsapp || '5522998449106';
         const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix para o Lote Fundador do CT Metamorfose.\n\n`;
         btnPixWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
       }
@@ -808,7 +808,7 @@ function initAsaasCheckout() {
 
       // Atualiza link de suporte do WhatsApp na aba de cartão
       if (btnCardWhats) {
-        const whatsNum = appConfig.whatsapp || '5511999999999';
+        const whatsNum = appConfig.whatsapp || '5522998449106';
         const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e estou realizando o pagamento da 1ª mensalidade de R$ 129,90 via Cartão para o Lote Fundador do CT Metamorfose.\n\nPreciso de suporte com meu pagamento:`;
         btnCardWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
       }
@@ -1004,7 +1004,7 @@ function initAsaasCheckout() {
 
     // Atualiza botão de WhatsApp com o comprovante aprovado
     if (btnSuccessWhats) {
-      const whatsNum = appConfig.whatsapp || '5511999999999';
+      const whatsNum = appConfig.whatsapp || '5522998449106';
       const msg = `Olá! Meu nome é ${leadNome} (CPF: ${leadCpf}) e meu pagamento da 1ª mensalidade de R$ 129,90 foi APROVADO via ${metodo}!\n\n` +
         `*Plano:* Membro Fundador (Desconto Proporcional Vitalício)\n`;
       btnSuccessWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
