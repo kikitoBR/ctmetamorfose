@@ -32,7 +32,8 @@ export default async function handler(req, res) {
       const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
       const search = url.searchParams.get('search') || '';
       const status = url.searchParams.get('status') || '';
-      const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+      const limitParam = url.searchParams.get('limit');
+      const limit = limitParam ? parseInt(limitParam, 10) : null;
       const offset = parseInt(url.searchParams.get('offset') || '0', 10);
 
       const [leadsData, statsData] = await Promise.all([

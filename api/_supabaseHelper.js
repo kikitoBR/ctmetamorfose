@@ -248,7 +248,7 @@ export async function updateLeadByPaymentId(asaasPaymentId, updateData) {
 /**
  * Busca leads com paginação, busca e filtros
  */
-export async function getLeadsList({ search = '', status = '', limit = 100, offset = 0 } = {}) {
+export async function getLeadsList({ search = '', status = '', limit = null, offset = 0 } = {}) {
   const config = getSupabaseConfig();
 
   if (!config.isConfigured) {
@@ -268,7 +268,7 @@ export async function getLeadsList({ search = '', status = '', limit = 100, offs
     }
 
     const total = leads.length;
-    const paginated = leads.slice(offset, offset + limit);
+    const paginated = limit ? leads.slice(offset, offset + limit) : leads;
 
     return {
       leads: paginated,
@@ -278,7 +278,10 @@ export async function getLeadsList({ search = '', status = '', limit = 100, offs
   }
 
   try {
-    let queryUrl = `${config.url}/rest/v1/leads?select=*&order=created_at.desc&limit=${limit}&offset=${offset}`;
+    let queryUrl = `${config.url}/rest/v1/leads?select=*&order=created_at.desc`;
+    if (limit) {
+      queryUrl += `&limit=${limit}&offset=${offset}`;
+    }
 
     if (status && status !== 'ALL') {
       queryUrl += `&status=eq.${encodeURIComponent(status)}`;
