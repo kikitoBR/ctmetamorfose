@@ -3,7 +3,7 @@
  * Rota: /api/admin/leads
  */
 import { authenticateAdminRequest } from '../_authHelper.js';
-import { getLeadsList, getLeadsStats, updateLeadById } from '../_supabaseHelper.js';
+import { getLeadsList, getLeadsStats, updateLeadById, deleteLeadById } from '../_supabaseHelper.js';
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -20,40 +20,40 @@ export default async function handler(req, res) {
     return;
   }
 
-  // 1. Verificação de Autenticação Segura (Zero Trust)
+  // Validação Estrita de Autenticação JWT via Bearer Token
   const admin = authenticateAdminRequest(req);
   if (!admin) {
-    return res.status(401).json({ error: 'Não autorizado. Token de sessão ausente ou expirado.' });
+    return res.status(401).json({ error: 'Sessão administrativa expirada ou inválida. Faça login novamente.' });
   }
 
-  const url = new URL(req.url, `http://${req.headers.host}`);
-
-  // GET: Listagem de leads com busca, filtros e KPIs
+  // GET: Lista leads com paginação, filtros e estatísticas consolidadas
   if (req.method === 'GET') {
     try {
+      const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
       const search = url.searchParams.get('search') || '';
       const status = url.searchParams.get('status') || '';
-      const limit = parseInt(url.searchParams.get('limit') || '200', 10);
+      const limit = parseInt(url.searchParams.get('limit') || '50', 10);
       const offset = parseInt(url.searchParams.get('offset') || '0', 10);
 
-      const [leadsResult, stats] = await Promise.all([
+      const [leadsData, statsData] = await Promise.all([
         getLeadsList({ search, status, limit, offset }),
         getLeadsStats()
       ]);
 
       return res.status(200).json({
-        leads: leadsResult.leads,
-        total: leadsResult.total,
-        stats,
-        isSupabase: leadsResult.isSupabase
+        success: true,
+        leads: leadsData.leads,
+        total: leadsData.total,
+        stats: statsData,
+        isSupabase: leadsData.isSupabase
       });
     } catch (err) {
       console.error('[API /api/admin/leads GET Error]:', err);
-      return res.status(500).json({ error: 'Erro interno ao listar leads.' });
+      return res.status(500).json({ error: 'Erro interno ao consultar leads.' });
     }
   }
 
-  // PATCH: Atualização de status ou observações de um lead
+  // PATCH: Atualização concorrente do status ou observações de um lead
   if (req.method === 'PATCH') {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
@@ -92,6 +92,25 @@ export default async function handler(req, res) {
     } catch (err) {
       console.error('[API /api/admin/leads PATCH Error]:', err);
       return res.status(500).json({ error: 'Erro interno ao atualizar lead.' });
+    }
+  }
+
+  // DELETE: Remover lead de teste do sistema
+  if (req.method === 'DELETE') {
+    try {
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+      const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+      const id = body.id || url.searchParams.get('id');
+
+      if (!id) {
+        return res.status(400).json({ error: 'ID do lead é obrigatório para exclusão.' });
+      }
+
+      const deleted = await deleteLeadById(id);
+      return res.status(200).json({ success: true, deleted });
+    } catch (err) {
+      console.error('[API /api/admin/leads DELETE Error]:', err);
+      return res.status(500).json({ error: 'Erro interno ao excluir lead.' });
     }
   }
 

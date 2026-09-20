@@ -354,3 +354,38 @@ export async function getLeadsStats() {
     isSupabase: result.isSupabase
   };
 }
+
+/**
+ * Remove um lead do banco de dados
+ */
+export async function deleteLeadById(id) {
+  const config = getSupabaseConfig();
+
+  if (!config.isConfigured) {
+    let leads = getLocalLeads();
+    const initialLen = leads.length;
+    leads = leads.filter(l => l.id !== id && l.cpf !== id);
+    if (leads.length !== initialLen) {
+      saveLocalLeads(leads);
+      return true;
+    }
+    return false;
+  }
+
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    const filter = isUuid ? `id=eq.${id}` : `or=(id.eq.${id},cpf.eq.${id})`;
+    const response = await fetch(`${config.url}/rest/v1/leads?${filter}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.key,
+        'Authorization': `Bearer ${config.key}`
+      }
+    });
+    return response.ok;
+  } catch (err) {
+    console.error('[Supabase Delete Error]:', err.message);
+    return false;
+  }
+}
+
