@@ -381,12 +381,7 @@ function renderizarLeads() {
         ? `<span class="pill-periodo">${lead.periodo.toUpperCase()}</span>` 
         : '';
 
-      const whatsNum = sanitizarTelefone(lead.telefone);
-      const whatsMsg = lead.status === 'PAGO'
-        ? `Olá ${lead.nome}! Tudo bem? Aqui é do CT Metamorfose. Confirmamos seu pagamento no Lote Fundador e gostaríamos de dar as boas-vindas!`
-        : `Olá ${lead.nome}! Tudo bem? Aqui é do CT Metamorfose. Vimos seu interesse nas vagas exclusivas do 1º Lote Fundador. Como podemos ajudar com sua matrícula?`;
-      
-      const whatsUrl = whatsNum ? `https://wa.me/${whatsNum}?text=${encodeURIComponent(whatsMsg)}` : '#';
+      const whatsUrl = gerarLinkWhatsApp(lead.telefone, lead.nome, lead.status);
 
       const statusClass = obterClasseStatus(lead.status);
       const dataCadastro = formatarData(lead.created_at);
@@ -464,8 +459,7 @@ function renderizarLeads() {
   // 2. Renderizar Cards Mobile
   if (cardsContainer) {
     cardsContainer.innerHTML = lista.map(lead => {
-      const whatsNum = sanitizarTelefone(lead.telefone);
-      const whatsUrl = whatsNum ? `https://wa.me/${whatsNum}` : '#';
+      const whatsUrl = gerarLinkWhatsApp(lead.telefone, lead.nome, lead.status);
       const statusClass = obterClasseStatus(lead.status);
 
       return `
@@ -486,7 +480,11 @@ function renderizarLeads() {
           <div class="card-meta-grid">
             <div>
               <span class="summary-label">Contato:</span>
-              <div>${escapeHtml(lead.telefone)}</div>
+              <div>
+                <a href="${whatsUrl}" target="_blank" class="lead-tel-link" style="color: #22c55e; font-weight: 600;">
+                  ${escapeHtml(lead.telefone)}
+                </a>
+              </div>
             </div>
             <div>
               <span class="summary-label">Valor:</span>
@@ -610,8 +608,7 @@ window.adminAbrirModalDetalhes = function(leadId) {
   }
 
   if (btnWhats) {
-    const whatsNum = sanitizarTelefone(lead.telefone);
-    btnWhats.href = whatsNum ? `https://wa.me/${whatsNum}` : '#';
+    btnWhats.href = gerarLinkWhatsApp(lead.telefone, lead.nome, lead.status);
   }
 
   if (modal) modal.classList.add('open');
@@ -913,3 +910,16 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+function gerarLinkWhatsApp(telefone, nome, status) {
+  const whatsNum = sanitizarTelefone(telefone);
+  if (!whatsNum) return '#';
+
+  const primeiroNome = (nome || 'Aluno').trim().split(' ')[0];
+  const whatsMsg = status === 'PAGO'
+    ? `Olá ${primeiroNome}! Tudo bem? Aqui é do CT Metamorfose. Confirmamos seu pagamento no Lote Fundador e gostaríamos de dar as boas-vindas!`
+    : `Olá ${primeiroNome}! Tudo bem? Aqui é do CT Metamorfose. Vimos seu interesse nas vagas exclusivas do 1º Lote Fundador. Como podemos ajudar com sua matrícula?`;
+
+  return `https://api.whatsapp.com/send?phone=${whatsNum}&text=${encodeURIComponent(whatsMsg)}`;
+}
+
