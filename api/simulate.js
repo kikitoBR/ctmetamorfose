@@ -14,7 +14,13 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { id } = req.query || req.body || {};
+  let id = (req.query && req.query.id) || (req.body && req.body.id);
+  if (!id && req.url) {
+    try {
+      const parsedUrl = new URL(req.url, 'http://localhost');
+      id = parsedUrl.searchParams.get('id');
+    } catch (e) {}
+  }
 
   if (!id) {
     return res.status(400).json({ error: 'Parâmetro id é obrigatório para simulação.' });
