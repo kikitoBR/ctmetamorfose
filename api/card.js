@@ -27,6 +27,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Nome e CPF são obrigatórios para gerar o pagamento com cartão.' });
     }
 
+    // O valor oficial do Lote Membro Fundador é R$ 129,90 e é travado estritamente no backend.
+    // Qualquer tentativa de manipulação de preço no frontend é ignorada por segurança.
+    const VALOR_OFICIAL = 129.90;
+
     const cobranca = await criarCobrancaCartaoAsaas({
       nome,
       cpf,
@@ -35,7 +39,7 @@ export default async function handler(req, res) {
       telefone,
       modalidades,
       periodo,
-      valor: valor || 129.90,
+      valor: VALOR_OFICIAL,
       descricao
     });
 

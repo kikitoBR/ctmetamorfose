@@ -127,7 +127,7 @@ export default defineConfig(({ mode }) => {
               req.on('end', async () => {
                 try {
                   const body = bodyStr ? JSON.parse(bodyStr) : {};
-                  const cobranca = await criarCobrancaPixAsaas(body);
+                  const cobranca = await criarCobrancaPixAsaas({ ...body, valor: 129.90 });
                   res.setHeader('Content-Type', 'application/json');
                   res.statusCode = 200;
                   res.end(JSON.stringify(cobranca));
@@ -148,7 +148,7 @@ export default defineConfig(({ mode }) => {
               req.on('end', async () => {
                 try {
                   const body = bodyStr ? JSON.parse(bodyStr) : {};
-                  const cobranca = await criarCobrancaCartaoAsaas(body);
+                  const cobranca = await criarCobrancaCartaoAsaas({ ...body, valor: 129.90 });
                   res.setHeader('Content-Type', 'application/json');
                   res.statusCode = 200;
                   res.end(JSON.stringify(cobranca));
