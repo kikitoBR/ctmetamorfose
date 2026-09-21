@@ -1098,145 +1098,219 @@
           </div>
         </div>
 
-        <!-- SELETOR DE ABAS -->
-        <div class="payment-tabs-nav" role="tablist">
-          <button type="button" class="payment-tab-btn active" id="tab-btn-pix" role="tab" aria-selected="true">
-            <svg class="tab-icon-pix" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12.002 4.293a.998.998 0 0 0-.707.293L8.14 7.74a4.484 4.484 0 0 0-1.318 3.182v2.156c0 1.192.474 2.336 1.318 3.18l3.155 3.155a.999.999 0 0 0 1.414 0l3.155-3.155a4.484 4.484 0 0 0 1.318-3.18v-2.156c0-1.192-.474-2.336-1.318-3.182l-3.155-3.154a.998.998 0 0 0-.707-.293zm0 2.414 2.448 2.448a2.49 2.49 0 0 1 .732 1.767v2.156c0 .662-.263 1.298-.732 1.767L12.002 17.29l-2.448-2.447a2.49 2.49 0 0 1-.732-1.767v-2.156c0-.662.263-1.298.732-1.767l2.448-2.448z"/>
-            </svg>
-            <span>Pix Instantâneo</span>
-            <span class="tab-badge-rec">Mais Rápido</span>
-          </button>
-          
-          <button type="button" class="payment-tab-btn" id="tab-btn-card" role="tab" aria-selected="false">
-            <svg class="tab-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
-            </svg>
-            <span>Cartão (Crédito ou Débito)</span>
-          </button>
-        </div>
+        <!-- ETAPA 1: ESCOLHA DA FORMA DE PAGAMENTO -->
+        <div class="payment-method-selector-view" id="payment-method-selector-view">
+          <div class="payment-method-heading">
+            <span class="selection-step-tag">SELECIONE A FORMA DE PAGAMENTO</span>
+            <h4 class="payment-selection-title">Como você prefere pagar?</h4>
+            <p class="payment-selection-subtitle">Escolha uma opção para continuar. O QR Code do Pix só será gerado após sua seleção.</p>
+          </div>
 
-        <!-- ABA PIX -->
-        <div class="payment-tab-content active" id="tab-content-pix">
-          <div class="pix-checkout-box">
-            <!-- Radar de Status em Tempo Real -->
-            <div class="pix-status-radar-pill" id="pix-status-badge">
-              <span class="radar-dot"></span>
-              <span id="pix-status-badge-text">Aguardando leitura do QR Code...</span>
-            </div>
-
-            <div class="pix-qrcode-wrapper">
-              <div class="pix-qrcode-card">
-                <div id="pix-qrcode-container" class="pix-qr-img-box">
-                  <div class="qr-loading-placeholder">
-                    <div class="spinner-radial"></div>
-                    <span>Gerando Pix seguro...</span>
-                  </div>
+          <div class="payment-options-grid">
+            <!-- Opção 1: Pix -->
+            <button type="button" class="payment-option-card option-pix" id="btn-select-pix">
+              <div class="option-card-left">
+                <div class="option-icon-wrap pix">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.002 4.293a.998.998 0 0 0-.707.293L8.14 7.74a4.484 4.484 0 0 0-1.318 3.182v2.156c0 1.192.474 2.336 1.318 3.18l3.155 3.155a.999.999 0 0 0 1.414 0l3.155-3.155a4.484 4.484 0 0 0 1.318-3.18v-2.156c0-1.192-.474-2.336-1.318-3.182l-3.155-3.154a.998.998 0 0 0-.707-.293zm0 2.414 2.448 2.448a2.49 2.49 0 0 1 .732 1.767v2.156c0 .662-.263 1.298-.732 1.767L12.002 17.29l-2.448-2.447a2.49 2.49 0 0 1-.732-1.767v-2.156c0-.662.263-1.298.732-1.767l2.448-2.448z"/>
+                  </svg>
                 </div>
-                <div class="pix-qr-scan-hint">
-                  <svg class="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                  <span>Abra o app do banco e aponte a câmera</span>
+                <div class="option-content">
+                  <div class="option-title-row">
+                    <strong class="option-name">Pix Instantâneo</strong>
+                    <span class="option-badge-pix">LIBERAÇÃO IMEDIATA</span>
+                  </div>
+                  <p class="option-desc">Gere o QR Code e pague pelo app do seu banco com aprovação em segundos.</p>
+                  <div class="option-meta-row">
+                    <span class="option-price">R$ 129,90</span>
+                    <span class="option-note">• Sem taxas extras</span>
+                  </div>
                 </div>
               </div>
+              <div class="option-action-indicator">
+                <span class="btn-option-cta">Pagar com Pix</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </button>
 
-              <div class="pix-info-side">
-                <div class="pix-timer-alert">
-                  <svg class="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span>Expira em <strong id="pix-countdown-timer">15:00</strong></span>
+            <!-- Opção 2: Cartão -->
+            <button type="button" class="payment-option-card option-card" id="btn-select-card">
+              <div class="option-card-left">
+                <div class="option-icon-wrap card">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+                  </svg>
+                </div>
+                <div class="option-content">
+                  <div class="option-title-row">
+                    <strong class="option-name">Cartão de Crédito ou Débito</strong>
+                    <span class="option-badge-card">3D SECURE</span>
+                  </div>
+                  <p class="option-desc">Pague com segurança em ambiente bancário criptografado com antifraude.</p>
+                  <div class="option-meta-row">
+                    <span class="option-price">R$ 129,90</span>
+                    <span class="option-note">• Visa, Master, Elo, Hiper, Amex</span>
+                  </div>
+                </div>
+              </div>
+              <div class="option-action-indicator">
+                <span class="btn-option-cta">Pagar com Cartão</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- ETAPA 2: TELA DE DETALHE DO PAGAMENTO (PIX OU CARTÃO) -->
+        <div class="payment-detail-view" id="payment-detail-view" style="display: none;">
+          <!-- Barra superior com botão para trocar forma de pagamento -->
+          <div class="payment-nav-header">
+            <button type="button" class="btn-back-to-methods" id="btn-back-to-methods">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              <span>Alterar forma de pagamento</span>
+            </button>
+          </div>
+
+          <!-- SELETOR DE ABAS -->
+          <div class="payment-tabs-nav" role="tablist">
+            <button type="button" class="payment-tab-btn" id="tab-btn-pix" role="tab" aria-selected="false">
+              <svg class="tab-icon-pix" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.002 4.293a.998.998 0 0 0-.707.293L8.14 7.74a4.484 4.484 0 0 0-1.318 3.182v2.156c0 1.192.474 2.336 1.318 3.18l3.155 3.155a.999.999 0 0 0 1.414 0l3.155-3.155a4.484 4.484 0 0 0 1.318-3.18v-2.156c0-1.192-.474-2.336-1.318-3.182l-3.155-3.154a.998.998 0 0 0-.707-.293zm0 2.414 2.448 2.448a2.49 2.49 0 0 1 .732 1.767v2.156c0 .662-.263 1.298-.732 1.767L12.002 17.29l-2.448-2.447a2.49 2.49 0 0 1-.732-1.767v-2.156c0-.662.263-1.298.732-1.767l2.448-2.448z"/>
+              </svg>
+              <span>Pix Instantâneo</span>
+              <span class="tab-badge-rec">Mais Rápido</span>
+            </button>
+            
+            <button type="button" class="payment-tab-btn" id="tab-btn-card" role="tab" aria-selected="false">
+              <svg class="tab-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+              </svg>
+              <span>Cartão (Crédito ou Débito)</span>
+            </button>
+          </div>
+
+          <!-- ABA PIX -->
+          <div class="payment-tab-content" id="tab-content-pix">
+            <div class="pix-checkout-box">
+              <!-- Radar de Status em Tempo Real -->
+              <div class="pix-status-radar-pill" id="pix-status-badge">
+                <span class="radar-dot"></span>
+                <span id="pix-status-badge-text">Aguardando leitura do QR Code...</span>
+              </div>
+
+              <div class="pix-qrcode-wrapper">
+                <div class="pix-qrcode-card">
+                  <div id="pix-qrcode-container" class="pix-qr-img-box">
+                    <div class="qr-loading-placeholder">
+                      <div class="spinner-radial"></div>
+                      <span>Gerando Pix seguro...</span>
+                    </div>
+                  </div>
+                  <div class="pix-qr-scan-hint">
+                    <svg class="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <span>Abra o app do banco e aponte a câmera</span>
+                  </div>
                 </div>
 
-                <label class="pix-copia-cola-label" for="pix-copia-cola-input">Ou copie o código Pix Copia e Cola:</label>
-                <div class="pix-copy-input-group">
-                  <input type="text" id="pix-copia-cola-input" readonly value="">
-                  <button type="button" class="btn-copy-pix" id="btn-copy-pix" title="Copiar código Pix">
-                    <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                    <span id="btn-copy-text">Copiar</span>
-                  </button>
-                </div>
-                <div class="copy-success-toast" id="copy-success-toast">✓ Código Pix copiado com sucesso!</div>
+                <div class="pix-info-side">
+                  <div class="pix-timer-alert">
+                    <svg class="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Expira em <strong id="pix-countdown-timer">15:00</strong></span>
+                  </div>
 
-                <div class="pix-steps-list">
-                  <div class="step-item">
-                    <span class="step-num">1</span>
-                    <div class="step-text">Copie o código ou escaneie o QR Code</div>
+                  <label class="pix-copia-cola-label" for="pix-copia-cola-input">Ou copie o código Pix Copia e Cola:</label>
+                  <div class="pix-copy-input-group">
+                    <input type="text" id="pix-copia-cola-input" readonly value="">
+                    <button type="button" class="btn-copy-pix" id="btn-copy-pix" title="Copiar código Pix">
+                      <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span id="btn-copy-text">Copiar</span>
+                    </button>
                   </div>
-                  <div class="step-item">
-                    <span class="step-num">2</span>
-                    <div class="step-text">No app do seu banco, cole na opção <strong>Pix Copia e Cola</strong></div>
-                  </div>
-                  <div class="step-item">
-                    <span class="step-num">3</span>
-                    <div class="step-text">Confirme o valor de <strong>R$ 129,90</strong> para Academia Metamorfose</div>
+                  <div class="copy-success-toast" id="copy-success-toast">✓ Código Pix copiado com sucesso!</div>
+
+                  <div class="pix-steps-list">
+                    <div class="step-item">
+                      <span class="step-num">1</span>
+                      <div class="step-text">Copie o código ou escaneie o QR Code</div>
+                    </div>
+                    <div class="step-item">
+                      <span class="step-num">2</span>
+                      <div class="step-text">No app do seu banco, cole na opção <strong>Pix Copia e Cola</strong></div>
+                    </div>
+                    <div class="step-item">
+                      <span class="step-num">3</span>
+                      <div class="step-text">Confirme o valor de <strong>R$ 129,90</strong> para Academia Metamorfose</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- ABA CARTÃO (FATURA SEGURA) -->
-        <div class="payment-tab-content" id="tab-content-card">
-          <div class="card-checkout-box">
-            <div class="card-invoice-promo-card">
-              <div class="card-invoice-header">
-                <div class="card-invoice-badge">
-                  <svg class="icon-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <path d="m9 12 2 2 4-4"/>
-                  </svg>
-                  <span>CHECKOUT PROTEGIDO</span>
+          <!-- ABA CARTÃO (FATURA SEGURA) -->
+          <div class="payment-tab-content" id="tab-content-card">
+            <div class="card-checkout-box">
+              <div class="card-invoice-promo-card">
+                <div class="card-invoice-header">
+                  <div class="card-invoice-badge">
+                    <svg class="icon-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    <span>CHECKOUT PROTEGIDO</span>
+                  </div>
+                  <h4 class="card-invoice-title">Pague com Cartão de Crédito ou Débito</h4>
+                  <p class="card-invoice-desc">Você será conectado ao ambiente seguro e criptografado oficial para preencher seu cartão com autenticação bancária 3D Secure sem riscos.</p>
                 </div>
-                <h4 class="card-invoice-title">Pague com Cartão de Crédito ou Débito</h4>
-                <p class="card-invoice-desc">Você será conectado ao ambiente seguro e criptografado oficial para preencher seu cartão com autenticação bancária 3D Secure sem riscos.</p>
-              </div>
 
-              <!-- Bandeiras Aceitas -->
-              <div class="accepted-cards-row">
-                <span class="cards-label">Bandeiras aceitas:</span>
-                <div class="card-badges-grid">
-                  <span class="card-brand-pill">VISA</span>
-                  <span class="card-brand-pill">MASTERCARD</span>
-                  <span class="card-brand-pill">ELO</span>
-                  <span class="card-brand-pill">HIPERCARD</span>
-                  <span class="card-brand-pill">AMEX</span>
+                <!-- Bandeiras Aceitas -->
+                <div class="accepted-cards-row">
+                  <span class="cards-label">Bandeiras aceitas:</span>
+                  <div class="card-badges-grid">
+                    <span class="card-brand-pill">VISA</span>
+                    <span class="card-brand-pill">MASTERCARD</span>
+                    <span class="card-brand-pill">ELO</span>
+                    <span class="card-brand-pill">HIPERCARD</span>
+                    <span class="card-brand-pill">AMEX</span>
+                  </div>
                 </div>
-              </div>
 
-              <!-- Vantagens do Checkout -->
-              <div class="card-security-bullets">
-                <div class="sec-bullet">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span><strong>Crédito à Vista:</strong> R$ 129,90 no lote vitalício</span>
+                <!-- Vantagens do Checkout -->
+                <div class="card-security-bullets">
+                  <div class="sec-bullet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span><strong>Crédito à Vista:</strong> R$ 129,90 no lote vitalício</span>
+                  </div>
+                  <div class="sec-bullet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span><strong>Cartão de Débito:</strong> Autenticação bancária 3DS direta com seu banco</span>
+                  </div>
+                  <div class="sec-bullet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span><strong>Zero Risco:</strong> Seus dados financeiros protegidos com tecnologia antifraude</span>
+                  </div>
                 </div>
-                <div class="sec-bullet">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span><strong>Cartão de Débito:</strong> Autenticação bancária 3DS direta com seu banco</span>
-                </div>
-                <div class="sec-bullet">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span><strong>Zero Risco:</strong> Seus dados financeiros protegidos com tecnologia antifraude</span>
-                </div>
-              </div>
 
-              <!-- Botão Principal de Ação -->
-              <div class="card-action-wrap">
-                <button type="button" class="btn btn-red btn-block btn-modal-action pulse-glow-red" id="btn-open-card-invoice">
-                  <svg class="icon-card-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                    <line x1="2" x2="22" y1="10" y2="10"/>
-                  </svg>
-                  <span id="btn-card-text">ABRIR FATURA SEGURA</span>
-                  <svg class="icon-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/>
-                    <line x1="10" y1="14" x2="21" y2="3"/>
-                  </svg>
-                </button>
+                <!-- Botão Principal de Ação -->
+                <div class="card-action-wrap">
+                  <button type="button" class="btn btn-red btn-block btn-modal-action pulse-glow-red" id="btn-open-card-invoice">
+                    <svg class="icon-card-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="5" width="20" height="14" rx="2"/>
+                      <line x1="2" x2="22" y1="10" y2="10"/>
+                    </svg>
+                    <span id="btn-card-text">ABRIR FATURA SEGURA</span>
+                    <svg class="icon-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                  </button>
 
-                <p class="card-wait-note">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span>Esta tela monitora seu pagamento em tempo real. Assim que o pagamento for aprovado, sua vaga será confirmada aqui automaticamente.</span>
-                </p>
+                  <p class="card-wait-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>Esta tela monitora seu pagamento em tempo real. Assim que o pagamento for aprovado, sua vaga será confirmada aqui automaticamente.</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>

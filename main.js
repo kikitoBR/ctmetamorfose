@@ -558,6 +558,12 @@ function initAsaasCheckout() {
   const tabContentPix = document.getElementById('tab-content-pix');
   const tabContentCard = document.getElementById('tab-content-card');
 
+  const methodSelectorView = document.getElementById('payment-method-selector-view');
+  const paymentDetailView = document.getElementById('payment-detail-view');
+  const btnSelectPix = document.getElementById('btn-select-pix');
+  const btnSelectCard = document.getElementById('btn-select-card');
+  const btnBackToMethods = document.getElementById('btn-back-to-methods');
+
   const qrContainer = document.getElementById('pix-qrcode-container');
   const copiaColaInput = document.getElementById('pix-copia-cola-input');
   const btnCopyPix = document.getElementById('btn-copy-pix');
@@ -582,6 +588,7 @@ function initAsaasCheckout() {
   let currentLead = null;
   let currentPixData = null;
   let currentCardData = null;
+  let isGeneratingPix = false;
   let isGeneratingCard = false;
   let timerInterval = null;
   let pollingController = null;
@@ -609,19 +616,33 @@ function initAsaasCheckout() {
     if (checkoutView) checkoutView.style.display = 'block';
     if (successView) successView.style.display = 'none';
 
-    // Ativa aba Pix por padrão
-    switchTab('pix');
+    // Exibe a tela de SELEÇÃO de método e esconde os detalhes até o usuário escolher
+    if (methodSelectorView) methodSelectorView.style.display = 'block';
+    if (paymentDetailView) paymentDetailView.style.display = 'none';
 
     // Abre o Modal
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
 
     // Reseta estado anterior do polling, timer e dados
+    currentPixData = null;
     currentCardData = null;
+    isGeneratingPix = false;
     isGeneratingCard = false;
     if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Pronto para pagamento seguro';
     if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA';
     if (btnOpenCardInvoice) btnOpenCardInvoice.disabled = false;
+
+    if (qrContainer) {
+      qrContainer.innerHTML = `
+        <div class="qr-loading-placeholder">
+          <div class="spinner-radial"></div>
+          <span>Aguardando seleção de pagamento...</span>
+        </div>
+      `;
+    }
+    if (copiaColaInput) copiaColaInput.value = '';
+    if (statusBadgeText) statusBadgeText.textContent = 'Selecione a forma de pagamento';
 
     if (pollingController) {
       pollingController.stop();
@@ -631,14 +652,49 @@ function initAsaasCheckout() {
       clearInterval(timerInterval);
       timerInterval = null;
     }
+  };
 
-    // Gera cobrança Pix no Asaas
+  // Ação ao selecionar PIX
+  async function escolherPix() {
+    if (methodSelectorView) methodSelectorView.style.display = 'none';
+    if (paymentDetailView) paymentDetailView.style.display = 'block';
+    switchTab('pix');
+    if (!currentPixData && !isGeneratingPix) {
+      await gerarCobrancaPix();
+    }
+  }
+
+  // Ação ao selecionar CARTÃO
+  async function escolherCartao() {
+    if (methodSelectorView) methodSelectorView.style.display = 'none';
+    if (paymentDetailView) paymentDetailView.style.display = 'block';
+    switchTab('card');
+    if (!currentCardData && !isGeneratingCard) {
+      await prepararCobrancaCartao();
+    }
+  }
+
+  // Voltar para a seleção de forma de pagamento
+  function voltarParaSelecao() {
+    if (paymentDetailView) paymentDetailView.style.display = 'none';
+    if (methodSelectorView) methodSelectorView.style.display = 'block';
+  }
+
+  if (btnSelectPix) btnSelectPix.addEventListener('click', escolherPix);
+  if (btnSelectCard) btnSelectCard.addEventListener('click', escolherCartao);
+  if (btnBackToMethods) btnBackToMethods.addEventListener('click', voltarParaSelecao);
+
+  // Gera cobrança Pix no Asaas apenas quando o usuário selecionar Pix
+  async function gerarCobrancaPix() {
+    if (currentPixData || isGeneratingPix || !currentLead) return;
+    isGeneratingPix = true;
+
     try {
       if (qrContainer) {
         qrContainer.innerHTML = `
           <div class="qr-loading-placeholder">
             <div class="spinner-radial"></div>
-            <span>Gerando Pix seguro...</span>
+            <span>Gerando Pix seguro no Asaas...</span>
           </div>
         `;
       }
@@ -646,25 +702,25 @@ function initAsaasCheckout() {
       if (statusBadgeText) statusBadgeText.textContent = 'Gerando cobrança instantânea...';
 
       const pixData = await criarCobrancaPixAsaas({
-        nome: lead.nome,
-        cpf: lead.cpf,
-        dataNascimento: lead.dataNascimento,
-        email: lead.email,
-        telefone: lead.telefone,
-        modalidades: lead.modalidades,
-        periodo: lead.periodo,
+        nome: currentLead.nome,
+        cpf: currentLead.cpf,
+        dataNascimento: currentLead.dataNascimento,
+        email: currentLead.email,
+        telefone: currentLead.telefone,
+        modalidades: currentLead.modalidades,
+        periodo: currentLead.periodo,
         valor: 129.90
       });
 
       currentPixData = pixData;
 
       // Vincula cobrança Asaas ao lead no Supabase
-      if (lead && lead.id) {
+      if (currentLead && currentLead.id) {
         fetch('/api/leads', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            leadId: lead.id,
+            leadId: currentLead.id,
             asaasPaymentId: pixData.id,
             asaasCustomerId: pixData.customerId,
             metodoPagamento: 'PIX'
@@ -688,6 +744,7 @@ function initAsaasCheckout() {
       startPixTimer(15 * 60);
 
       // Inicia Polling inteligente em tempo real para detectar quando o aluno pagar no banco
+      if (pollingController) pollingController.stop();
       pollingController = iniciarPollingStatusPix({
         paymentId: pixData.id,
         initialIntervalMs: 4000,
@@ -711,7 +768,7 @@ function initAsaasCheckout() {
       // Atualiza link de WhatsApp com comprovante Pix
       if (btnPixWhats) {
         const whatsNum = appConfig.whatsapp || '5522998449106';
-        const msg = `Olá! Meu nome é ${lead.nome} (CPF: ${lead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix para o Lote Fundador do CT Metamorfose.\n\n`;
+        const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix para o Lote Fundador do CT Metamorfose.\n\n`;
         btnPixWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
       }
     } catch (err) {
@@ -725,8 +782,10 @@ function initAsaasCheckout() {
         `;
       }
       if (statusBadgeText) statusBadgeText.textContent = 'Erro ao gerar cobrança';
+    } finally {
+      isGeneratingPix = false;
     }
-  };
+  }
 
   // Alternância de Abas
   function switchTab(tab) {
@@ -741,6 +800,10 @@ function initAsaasCheckout() {
       }
       if (tabContentPix) tabContentPix.classList.add('active');
       if (tabContentCard) tabContentCard.classList.remove('active');
+
+      if (!currentPixData && !isGeneratingPix) {
+        gerarCobrancaPix();
+      }
     } else {
       if (tabBtnCard) {
         tabBtnCard.classList.add('active');
@@ -753,8 +816,10 @@ function initAsaasCheckout() {
       if (tabContentCard) tabContentCard.classList.add('active');
       if (tabContentPix) tabContentPix.classList.remove('active');
 
-      // Ao entrar na aba de cartão, já prepara a fatura em background
-      prepararCobrancaCartao();
+      // Ao entrar na aba de cartão, prepara a fatura se ainda não gerada
+      if (!currentCardData && !isGeneratingCard) {
+        prepararCobrancaCartao();
+      }
     }
   }
 
