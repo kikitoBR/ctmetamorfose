@@ -3139,72 +3139,72 @@ select option {
    ========================================================================== */
 .payment-method-selector-view {
   display: block;
-  animation: fadeInStep 0.3s ease;
+  animation: fadeInStep 0.25s ease;
 }
 
 @keyframes fadeInStep {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .payment-method-heading {
   text-align: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.15rem;
 }
 
 .selection-step-tag {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--red-light);
   background: rgba(229, 9, 20, 0.12);
-  border: 1px solid rgba(229, 9, 20, 0.3);
-  padding: 0.2rem 0.65rem;
+  border: 1px solid rgba(229, 9, 20, 0.28);
+  padding: 0.2rem 0.6rem;
   border-radius: var(--radius-full);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.45rem;
 }
 
 .payment-selection-title {
   font-family: var(--font-heading);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 900;
   color: var(--text-white);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
   letter-spacing: -0.01em;
 }
 
 .payment-selection-subtitle {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
-  line-height: 1.45;
-  max-width: 440px;
+  line-height: 1.4;
+  max-width: 420px;
   margin: 0 auto;
 }
 
 .payment-options-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
 }
 
 .payment-option-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
-  padding: 1.15rem 1.25rem;
+  padding: 1rem 1.15rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 0.9rem;
   cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
   width: 100%;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .payment-option-card::before {
@@ -3218,37 +3218,32 @@ select option {
   transition: background 0.2s ease;
 }
 
-.payment-option-card:hover {
+.payment-option-card:hover,
+.payment-option-card:active {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6);
+  transform: translateY(-1px);
 }
 
-.payment-option-card.option-pix:hover {
+.payment-option-card.option-pix:hover,
+.payment-option-card.option-pix:active {
   border-color: rgba(50, 188, 173, 0.55);
-  box-shadow: 0 8px 24px -6px rgba(50, 188, 173, 0.2);
+  box-shadow: 0 6px 20px -4px rgba(50, 188, 173, 0.18);
 }
 
-.payment-option-card.option-pix:hover::before {
+.payment-option-card.option-pix:hover::before,
+.payment-option-card.option-pix:active::before {
   background: #32BCAD;
 }
 
-.payment-option-card.option-card:hover {
+.payment-option-card.option-card:hover,
+.payment-option-card.option-card:active {
   border-color: rgba(229, 9, 20, 0.55);
-  box-shadow: 0 8px 24px -6px rgba(229, 9, 20, 0.25);
+  box-shadow: 0 6px 20px -4px rgba(229, 9, 20, 0.2);
 }
 
-.payment-option-card.option-card:hover::before {
+.payment-option-card.option-card:hover::before,
+.payment-option-card.option-card:active::before {
   background: var(--red-primary);
-}
-
-.option-card-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  flex: 1;
-  min-width: 0;
 }
 
 .option-icon-wrap {
@@ -3262,132 +3257,177 @@ select option {
 }
 
 .option-icon-wrap.pix {
-  background: rgba(50, 188, 173, 0.15);
-  border: 1px solid rgba(50, 188, 173, 0.35);
+  background: rgba(50, 188, 173, 0.14);
+  border: 1px solid rgba(50, 188, 173, 0.3);
   color: #32BCAD;
 }
 
 .option-icon-wrap.pix svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .option-icon-wrap.card {
   background: rgba(229, 9, 20, 0.12);
-  border: 1px solid rgba(229, 9, 20, 0.3);
+  border: 1px solid rgba(229, 9, 20, 0.25);
   color: var(--red-light);
 }
 
 .option-icon-wrap.card svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .option-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .option-title-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
-  margin-bottom: 0.25rem;
 }
 
 .option-name {
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text-white);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .option-badge-pix {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   background: #00AE9D;
   color: #002228;
-  padding: 0.15rem 0.45rem;
+  padding: 0.12rem 0.4rem;
   border-radius: 4px;
   text-transform: uppercase;
 }
 
 .option-badge-card {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   background: rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  padding: 0.15rem 0.45rem;
+  padding: 0.12rem 0.4rem;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   text-transform: uppercase;
-}
-
-.option-desc {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  line-height: 1.35;
-  margin-bottom: 0.45rem;
 }
 
 .option-meta-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.4rem;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--text-muted);
 }
 
 .option-price {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-white);
 }
 
-.option-note {
-  font-size: 0.72rem;
-  color: var(--text-dim);
+.option-meta-bullet {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.7rem;
 }
 
-.option-action-indicator {
+.option-meta-highlight {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.option-chevron-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  color: var(--text-muted);
+  justify-content: center;
+  color: var(--text-dim);
   flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
-.btn-option-cta {
-  font-family: var(--font-heading);
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-  transition: color 0.2s ease;
-}
-
-.payment-option-card.option-pix:hover .btn-option-cta,
-.payment-option-card.option-pix:hover .option-action-indicator {
-  color: #32BCAD;
-}
-
-.payment-option-card.option-card:hover .btn-option-cta,
-.payment-option-card.option-card:hover .option-action-indicator {
-  color: var(--red-light);
-}
-
-.option-action-indicator svg {
-  width: 16px;
-  height: 16px;
+.option-chevron-wrap svg {
+  width: 14px;
+  height: 14px;
   transition: transform 0.2s ease;
 }
 
-.payment-option-card:hover .option-action-indicator svg {
-  transform: translateX(3px);
+.payment-option-card:hover .option-chevron-wrap,
+.payment-option-card:active .option-chevron-wrap {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+}
+
+.payment-option-card:hover .option-chevron-wrap svg,
+.payment-option-card:active .option-chevron-wrap svg {
+  transform: translateX(2px);
+}
+
+.payment-option-card.option-pix:hover .option-chevron-wrap {
+  border-color: rgba(50, 188, 173, 0.35);
+  color: #32BCAD;
+}
+
+.payment-option-card.option-card:hover .option-chevron-wrap {
+  border-color: rgba(229, 9, 20, 0.35);
+  color: var(--red-light);
+}
+
+/* Responsividade mobile específica */
+@media (max-width: 480px) {
+  .payment-option-card {
+    padding: 0.85rem 0.95rem;
+    gap: 0.75rem;
+  }
+
+  .option-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .option-icon-wrap.pix svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .option-icon-wrap.card svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .option-name {
+    font-size: 0.94rem;
+  }
+
+  .option-price {
+    font-size: 0.9rem;
+  }
+
+  .option-meta-highlight {
+    font-size: 0.75rem;
+  }
 }
 
 /* Header de Navegação da Tela de Detalhes */
