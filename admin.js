@@ -11,10 +11,20 @@ let state = {
   token: null,
   currentUser: 'Admin',
   leads: [],
+  totalLeads: 0,
+  currentPage: 1,
+  limit: 25,
+  totalPages: 1,
   currentFilter: 'ALL',
   searchQuery: '',
+  filterMetodo: 'ALL',
+  filterPeriodo: 'ALL',
+  filterModalidade: 'ALL',
+  filterDateRange: 'ALL',
+  orderBy: 'created_at.desc',
   selectedLead: null,
-  autoRefreshTimer: null
+  autoRefreshTimer: null,
+  stats: null
 };
 
 // ==========================================================================
@@ -140,7 +150,8 @@ function setupEventListeners() {
       filterTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       state.currentFilter = tab.dataset.filter;
-      renderizarLeads();
+      state.currentPage = 1;
+      carregarLeads();
     });
   });
 
@@ -157,6 +168,7 @@ function setupEventListeners() {
 
       clearTimeout(searchDebounce);
       searchDebounce = setTimeout(() => {
+        state.currentPage = 1;
         carregarLeads();
       }, 350);
     });
@@ -167,7 +179,106 @@ function setupEventListeners() {
       searchInput.value = '';
       state.searchQuery = '';
       btnClearSearch.style.display = 'none';
+      state.currentPage = 1;
       carregarLeads();
+    });
+  }
+
+  // 8. Filtros Avançados Dropdowns
+  const selectMetodo = document.getElementById('filter-metodo');
+  if (selectMetodo) {
+    selectMetodo.addEventListener('change', () => {
+      state.filterMetodo = selectMetodo.value;
+      state.currentPage = 1;
+      carregarLeads();
+    });
+  }
+
+  const selectPeriodo = document.getElementById('filter-periodo');
+  if (selectPeriodo) {
+    selectPeriodo.addEventListener('change', () => {
+      state.filterPeriodo = selectPeriodo.value;
+      state.currentPage = 1;
+      carregarLeads();
+    });
+  }
+
+  const selectModalidade = document.getElementById('filter-modalidade');
+  if (selectModalidade) {
+    selectModalidade.addEventListener('change', () => {
+      state.filterModalidade = selectModalidade.value;
+      state.currentPage = 1;
+      carregarLeads();
+    });
+  }
+
+  const selectDateRange = document.getElementById('filter-date-range');
+  if (selectDateRange) {
+    selectDateRange.addEventListener('change', () => {
+      state.filterDateRange = selectDateRange.value;
+      state.currentPage = 1;
+      carregarLeads();
+    });
+  }
+
+  const selectOrder = document.getElementById('filter-order');
+  if (selectOrder) {
+    selectOrder.addEventListener('change', () => {
+      state.orderBy = selectOrder.value;
+      state.currentPage = 1;
+      carregarLeads();
+    });
+  }
+
+  const btnClearFilters = document.getElementById('btn-clear-filters');
+  if (btnClearFilters) {
+    btnClearFilters.addEventListener('click', () => {
+      if (selectMetodo) selectMetodo.value = 'ALL';
+      if (selectPeriodo) selectPeriodo.value = 'ALL';
+      if (selectModalidade) selectModalidade.value = 'ALL';
+      if (selectDateRange) selectDateRange.value = 'ALL';
+      if (selectOrder) selectOrder.value = 'created_at.desc';
+      if (searchInput) searchInput.value = '';
+      if (btnClearSearch) btnClearSearch.style.display = 'none';
+
+      state.filterMetodo = 'ALL';
+      state.filterPeriodo = 'ALL';
+      state.filterModalidade = 'ALL';
+      state.filterDateRange = 'ALL';
+      state.orderBy = 'created_at.desc';
+      state.searchQuery = '';
+      state.currentFilter = 'ALL';
+      state.currentPage = 1;
+
+      // Reseta abas de status para "Todos"
+      const tabs = document.querySelectorAll('.filter-tab');
+      tabs.forEach(t => {
+        if (t.dataset.filter === 'ALL') t.classList.add('active');
+        else t.classList.remove('active');
+      });
+
+      carregarLeads();
+      showToast('Filtros restaurados.', 'info');
+    });
+  }
+
+  // 9. Controles de Paginação
+  const btnFirst = document.getElementById('btn-page-first');
+  if (btnFirst) btnFirst.addEventListener('click', () => irParaPagina(1));
+
+  const btnPrev = document.getElementById('btn-page-prev');
+  if (btnPrev) btnPrev.addEventListener('click', () => irParaPagina(state.currentPage - 1));
+
+  const btnNext = document.getElementById('btn-page-next');
+  if (btnNext) btnNext.addEventListener('click', () => irParaPagina(state.currentPage + 1));
+
+  const btnLast = document.getElementById('btn-page-last');
+  if (btnLast) btnLast.addEventListener('click', () => irParaPagina(state.totalPages));
+
+  const selectPerPage = document.getElementById('select-per-page');
+  if (selectPerPage) {
+    selectPerPage.addEventListener('change', () => {
+      mudarLimite(parseInt(selectPerPage.value, 10));
     });
   }
 
@@ -271,16 +382,22 @@ function exibirErroLogin(msg) {
 // ==========================================================================
 // CARREGAMENTO & GESTÃO DE LEADS
 // ==========================================================================
-async function carregarLeads() {
+async function carregarLeads(manterPagina = false) {
   if (!state.token) return;
 
   try {
-    let url = '/api/admin/leads';
     const params = new URLSearchParams();
     if (state.searchQuery) params.append('search', state.searchQuery);
-    if (params.toString()) url += `?${params.toString()}`;
+    if (state.currentFilter && state.currentFilter !== 'ALL') params.append('status', state.currentFilter);
+    if (state.filterMetodo && state.filterMetodo !== 'ALL') params.append('metodo', state.filterMetodo);
+    if (state.filterPeriodo && state.filterPeriodo !== 'ALL') params.append('periodo', state.filterPeriodo);
+    if (state.filterModalidade && state.filterModalidade !== 'ALL') params.append('modalidade', state.filterModalidade);
+    if (state.filterDateRange && state.filterDateRange !== 'ALL') params.append('dateRange', state.filterDateRange);
+    if (state.orderBy) params.append('orderBy', state.orderBy);
+    params.append('limit', state.limit);
+    params.append('page', state.currentPage);
 
-    const res = await fetch(url, {
+    const res = await fetch(`/api/admin/leads?${params.toString()}`, {
       headers: { 'Authorization': `Bearer ${state.token}` }
     });
 
@@ -291,24 +408,45 @@ async function carregarLeads() {
 
     const data = await res.json();
     state.leads = data.leads || [];
+    state.totalLeads = typeof data.total === 'number' ? data.total : (data.leads ? data.leads.length : 0);
+    state.totalPages = data.totalPages || Math.ceil(state.totalLeads / state.limit) || 1;
+    if (data.page) state.currentPage = data.page;
 
-    atualizarMetricasKPIs();
+    if (data.stats) {
+      state.stats = data.stats;
+      atualizarMetricasKPIs(data.stats);
+    }
+
     renderizarLeads();
+    renderizarPaginacao();
   } catch (err) {
     console.error('Erro ao carregar leads:', err);
   }
 }
 
-function atualizarMetricasKPIs() {
-  const leads = state.leads;
-  
-  const total = leads.length;
-  const pagos = leads.filter(l => l.status === 'PAGO');
-  const aguardando = leads.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
-  const contato = leads.filter(l => l.status === 'EM_CONTATO');
-  const cancelados = leads.filter(l => l.status === 'CANCELADO');
+function irParaPagina(num) {
+  const target = Math.max(1, Math.min(state.totalPages, num));
+  if (target !== state.currentPage) {
+    state.currentPage = target;
+    carregarLeads(true);
+  }
+}
 
-  const receitaTotal = pagos.reduce((acc, l) => acc + (parseFloat(l.valor) || 129.90), 0);
+function mudarLimite(novoLimite) {
+  state.limit = novoLimite;
+  state.currentPage = 1;
+  carregarLeads();
+}
+
+function atualizarMetricasKPIs(stats) {
+  if (!stats) return;
+
+  const total = stats.totalLeads ?? 0;
+  const pagos = stats.vagasOcupadas ?? 0;
+  const receitaTotal = stats.receitaTotal ?? 0;
+  const aguardando = stats.aguardandoTotal ?? 0;
+  const contato = stats.emAtendimentoTotal ?? 0;
+  const cancelados = stats.canceladosTotal ?? 0;
 
   // Elementos do DOM
   const totalEl = document.getElementById('kpi-total-leads');
@@ -322,9 +460,9 @@ function atualizarMetricasKPIs() {
     receitaEl.textContent = receitaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
   if (pagamentosCountEl) {
-    pagamentosCountEl.textContent = `${pagos.length} pagamento${pagos.length === 1 ? '' : 's'} quitado${pagos.length === 1 ? '' : 's'}`;
+    pagamentosCountEl.textContent = `${pagos} pagamento${pagos === 1 ? '' : 's'} quitado${pagos === 1 ? '' : 's'}`;
   }
-  if (aguardandoEl) aguardandoEl.textContent = aguardando.length;
+  if (aguardandoEl) aguardandoEl.textContent = aguardando;
 
   // Atualiza contadores nas abas de filtro
   const tabAll = document.getElementById('tab-count-all');
@@ -334,38 +472,101 @@ function atualizarMetricasKPIs() {
   const tabCancelado = document.getElementById('tab-count-cancelado');
 
   if (tabAll) tabAll.textContent = total;
-  if (tabPago) tabPago.textContent = pagos.length;
-  if (tabAguardando) tabAguardando.textContent = aguardando.length;
-  if (tabContato) tabContato.textContent = contato.length;
-  if (tabCancelado) tabCancelado.textContent = cancelados.length;
+  if (tabPago) tabPago.textContent = pagos;
+  if (tabAguardando) tabAguardando.textContent = aguardando;
+  if (tabContato) tabContato.textContent = contato;
+  if (tabCancelado) tabCancelado.textContent = cancelados;
+}
+
+function renderizarPaginacao() {
+  const showingCount = document.getElementById('table-showing-count');
+  const btnFirst = document.getElementById('btn-page-first');
+  const btnPrev = document.getElementById('btn-page-prev');
+  const btnNext = document.getElementById('btn-page-next');
+  const btnLast = document.getElementById('btn-page-last');
+  const pageNumbers = document.getElementById('page-numbers');
+  const selectPerPage = document.getElementById('select-per-page');
+
+  if (selectPerPage) {
+    selectPerPage.value = String(state.limit);
+  }
+
+  const total = state.totalLeads;
+  const page = state.currentPage;
+  const limit = state.limit;
+  const totalPages = Math.max(1, state.totalPages || Math.ceil(total / limit) || 1);
+
+  if (showingCount) {
+    if (total === 0) {
+      showingCount.textContent = 'Mostrando 0 de 0 registros';
+    } else {
+      const start = (page - 1) * limit + 1;
+      const end = Math.min(page * limit, total);
+      showingCount.textContent = `Mostrando ${start} - ${end} de ${total} registros`;
+    }
+  }
+
+  if (btnFirst) btnFirst.disabled = page <= 1;
+  if (btnPrev) btnPrev.disabled = page <= 1;
+  if (btnNext) btnNext.disabled = page >= totalPages;
+  if (btnLast) btnLast.disabled = page >= totalPages;
+
+  if (pageNumbers) {
+    pageNumbers.innerHTML = '';
+    
+    // Calcula páginas a exibir
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push('...');
+      const start = Math.max(2, page - 1);
+      const end = Math.min(totalPages - 1, page + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (page < totalPages - 2) pages.push('...');
+      pages.push(totalPages);
+    }
+
+    pages.forEach(p => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      if (p === '...') {
+        btn.className = 'page-number-btn ellipsis';
+        btn.textContent = '...';
+        btn.disabled = true;
+      } else {
+        btn.className = `page-number-btn ${p === page ? 'active' : ''}`;
+        btn.textContent = p;
+        btn.addEventListener('click', () => {
+          if (p !== state.currentPage) {
+            state.currentPage = p;
+            carregarLeads(true);
+          }
+        });
+      }
+      pageNumbers.appendChild(btn);
+    });
+  }
 }
 
 function renderizarLeads() {
   const tableBody = document.getElementById('leads-table-body');
   const cardsContainer = document.getElementById('leads-cards-container');
-  const showingCount = document.getElementById('table-showing-count');
 
-  // Filtra por status
-  let lista = state.leads;
-  if (state.currentFilter !== 'ALL') {
-    lista = lista.filter(l => l.status === state.currentFilter);
-  }
-
-  if (showingCount) {
-    showingCount.textContent = `Mostrando ${lista.length} de ${state.leads.length} registros`;
-  }
+  const lista = state.leads || [];
 
   if (lista.length === 0) {
     const emptyRow = `
       <tr>
         <td colspan="7" style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
           <p style="font-size: 1.1rem; margin-bottom: 4px;">Nenhum lead encontrado.</p>
-          <span style="font-size: 0.8rem;">Tente ajustar o termo da busca ou o filtro de status selecionado.</span>
+          <span style="font-size: 0.8rem;">Tente ajustar o termo da busca ou os filtros selecionados.</span>
         </td>
       </tr>
     `;
     if (tableBody) tableBody.innerHTML = emptyRow;
-    if (cardsContainer) cardsContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-dim);">Nenhum lead encontrado.</div>';
+    if (cardsContainer) cardsContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-dim);">Nenhum lead encontrado com os filtros selecionados.</div>';
     return;
   }
 
@@ -536,12 +737,12 @@ window.adminAtualizarStatus = async function(leadId, novoStatus) {
         }
         state.leads[idx].admin_responsavel = state.currentUser;
       }
-      atualizarMetricasKPIs();
       renderizarLeads();
       showToast('Status atualizado com sucesso!', 'success');
+      carregarLeads(true);
     } else {
       showToast('Erro ao atualizar status do lead.', 'error');
-      carregarLeads(); // Restaura estado do backend
+      carregarLeads(true); // Restaura estado do backend
     }
   } catch (err) {
     console.error('Erro na atualização de status:', err);
@@ -650,7 +851,7 @@ async function salvarDetalhesLead() {
       showToast('Lead atualizado com sucesso!', 'success');
       const modal = document.getElementById('modal-lead-details');
       if (modal) modal.classList.remove('open');
-      await carregarLeads();
+      await carregarLeads(true);
     } else {
       showToast('Erro ao salvar alterações.', 'error');
     }
@@ -711,66 +912,101 @@ async function sincronizarComAsaas() {
 // ==========================================================================
 // EXPORTAÇÃO PARA CSV (EXCEL FRIENDLY COM UTF-8 BOM)
 // ==========================================================================
-function exportarParaCSV() {
-  if (!state.leads || state.leads.length === 0) {
-    showToast('Não há dados para exportar.', 'info');
-    return;
+async function exportarParaCSV() {
+  if (!state.token) return;
+
+  const btnExport = document.getElementById('btn-export-csv');
+  if (btnExport) btnExport.disabled = true;
+  showToast('Buscando registros filtrados para exportação...', 'info');
+
+  try {
+    const params = new URLSearchParams();
+    if (state.searchQuery) params.append('search', state.searchQuery);
+    if (state.currentFilter && state.currentFilter !== 'ALL') params.append('status', state.currentFilter);
+    if (state.filterMetodo && state.filterMetodo !== 'ALL') params.append('metodo', state.filterMetodo);
+    if (state.filterPeriodo && state.filterPeriodo !== 'ALL') params.append('periodo', state.filterPeriodo);
+    if (state.filterModalidade && state.filterModalidade !== 'ALL') params.append('modalidade', state.filterModalidade);
+    if (state.filterDateRange && state.filterDateRange !== 'ALL') params.append('dateRange', state.filterDateRange);
+    if (state.orderBy) params.append('orderBy', state.orderBy);
+    params.append('limit', '5000');
+    params.append('offset', '0');
+
+    const res = await fetch(`/api/admin/leads?${params.toString()}`, {
+      headers: { 'Authorization': `Bearer ${state.token}` }
+    });
+
+    if (!res.ok) {
+      throw new Error(`Erro ao exportar: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const leadsParaExportar = data.leads || [];
+
+    if (leadsParaExportar.length === 0) {
+      showToast('Não há dados correspondentes para exportar.', 'info');
+      return;
+    }
+
+    const cabecalho = [
+      'ID',
+      'Nome Completo',
+      'CPF',
+      'Telefone',
+      'Email',
+      'Data Nascimento',
+      'Modalidades',
+      'Periodo',
+      'Status',
+      'Metodo Pagamento',
+      'Valor (R$)',
+      'ID Cobranca Asaas',
+      'Data Cadastro',
+      'Data Pagamento',
+      'Observacoes Administrativas',
+      'Admin Responsavel'
+    ];
+
+    const linhas = leadsParaExportar.map(lead => {
+      const modalidades = Array.isArray(lead.modalidades) ? lead.modalidades.join(' + ') : '';
+      return [
+        lead.id || '',
+        lead.nome || '',
+        lead.cpf || '',
+        lead.telefone || '',
+        lead.email || '',
+        lead.data_nascimento || '',
+        modalidades,
+        lead.periodo || '',
+        lead.status || '',
+        lead.metodo_pagamento || '',
+        (parseFloat(lead.valor) || 129.90).toFixed(2),
+        lead.asaas_payment_id || '',
+        lead.created_at || '',
+        lead.pago_em || '',
+        (lead.observacoes || '').replace(/"/g, '""').replace(/\n/g, ' '),
+        lead.admin_responsavel || ''
+      ].map(campo => `"${campo}"`).join(';');
+    });
+
+    const csvContent = '\uFEFF' + [cabecalho.join(';'), ...linhas].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `leads-metamorfose-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`Planilha CSV com ${leadsParaExportar.length} leads gerada com sucesso!`, 'success');
+  } catch (err) {
+    console.error('Erro na exportação CSV:', err);
+    showToast('Falha ao exportar leads.', 'error');
+  } finally {
+    if (btnExport) btnExport.disabled = false;
   }
-
-  const cabecalho = [
-    'ID',
-    'Nome Completo',
-    'CPF',
-    'Telefone',
-    'Email',
-    'Data Nascimento',
-    'Modalidades',
-    'Periodo',
-    'Status',
-    'Metodo Pagamento',
-    'Valor (R$)',
-    'ID Cobranca Asaas',
-    'Data Cadastro',
-    'Data Pagamento',
-    'Observacoes Administrativas',
-    'Admin Responsavel'
-  ];
-
-  const linhas = state.leads.map(lead => {
-    const modalidades = Array.isArray(lead.modalidades) ? lead.modalidades.join(' + ') : '';
-    return [
-      lead.id || '',
-      lead.nome || '',
-      lead.cpf || '',
-      lead.telefone || '',
-      lead.email || '',
-      lead.data_nascimento || '',
-      modalidades,
-      lead.periodo || '',
-      lead.status || '',
-      lead.metodo_pagamento || '',
-      (parseFloat(lead.valor) || 129.90).toFixed(2),
-      lead.asaas_payment_id || '',
-      lead.created_at || '',
-      lead.pago_em || '',
-      (lead.observacoes || '').replace(/"/g, '""').replace(/\n/g, ' '),
-      lead.admin_responsavel || ''
-    ].map(campo => `"${campo}"`).join(';');
-  });
-
-  const csvContent = '\uFEFF' + [cabecalho.join(';'), ...linhas].join('\r\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `leads-metamorfose-${new Date().toISOString().split('T')[0]}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  showToast('Planilha CSV gerada com sucesso!', 'success');
 }
 
 // ==========================================================================

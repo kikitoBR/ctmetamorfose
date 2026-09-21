@@ -182,7 +182,7 @@ export async function buscarOuCriarClienteAsaas({
         const searchData = await searchRes.json();
         if (searchData.data && searchData.data.length > 0) {
           const customerId = searchData.data[0].id;
-          // Atualiza dados e observações do cliente no Asaas para manter sincronizado
+          // Atualiza dados e observações do cliente no Asaas para manter sincronizado (e desativa notificações automáticas/SMS)
           try {
             await fetch(`${baseUrl}/customers/${customerId}`, {
               method: 'POST',
@@ -192,7 +192,8 @@ export async function buscarOuCriarClienteAsaas({
                 email: email || searchData.data[0].email,
                 mobilePhone: telLimpo || searchData.data[0].mobilePhone,
                 observations: obs,
-                externalReference: `CPF-${cpfLimpo}`
+                externalReference: `CPF-${cpfLimpo}`,
+                notificationDisabled: true
               })
             });
           } catch (updateErr) {
@@ -206,7 +207,7 @@ export async function buscarOuCriarClienteAsaas({
     }
   }
 
-  // 2. Se não encontrou, cria novo cliente
+  // 2. Se não encontrou, cria novo cliente com notificações automáticas/SMS desativadas
   const payload = {
     name: nome || 'Aluno Metamorfose',
     cpfCnpj: cpfLimpo || undefined,
@@ -214,7 +215,7 @@ export async function buscarOuCriarClienteAsaas({
     mobilePhone: telLimpo || undefined,
     observations: obs,
     externalReference: cpfLimpo ? `CPF-${cpfLimpo}` : undefined,
-    notificationDisabled: false
+    notificationDisabled: true
   };
 
   const createRes = await fetch(`${baseUrl}/customers`, {
@@ -330,7 +331,8 @@ export async function criarCobrancaPixAsaas({
     value: valor,
     dueDate: hoje,
     description: descFormatada,
-    externalReference: externalReference
+    externalReference: externalReference,
+    postalService: false
   };
 
   const paymentRes = await fetch(`${config.baseUrl}/payments`, {
@@ -451,7 +453,8 @@ export async function criarCobrancaCartaoAsaas({
     value: valor,
     dueDate: hoje,
     description: descFormatada,
-    externalReference: externalReference
+    externalReference: externalReference,
+    postalService: false
   };
 
   const paymentRes = await fetch(`${config.baseUrl}/payments`, {

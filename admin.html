@@ -289,6 +289,83 @@
           </div>
         </div>
 
+        <!-- Painel de Filtros Avançados -->
+        <div class="leads-filters-panel" id="leads-filters-panel">
+          <div class="filter-group">
+            <label for="filter-metodo" class="filter-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              Pagamento:
+            </label>
+            <select id="filter-metodo" class="filter-select">
+              <option value="ALL">Todos os Métodos</option>
+              <option value="PIX">Somente PIX</option>
+              <option value="CARTAO">Somente Cartão</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-periodo" class="filter-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Turno:
+            </label>
+            <select id="filter-periodo" class="filter-select">
+              <option value="ALL">Todos os Turnos</option>
+              <option value="Manhã">Manhã</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noite">Noite</option>
+              <option value="Flexível">Flexível</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-modalidade" class="filter-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18h12M6 6h12M12 6v12"></path></svg>
+              Modalidade:
+            </label>
+            <select id="filter-modalidade" class="filter-select">
+              <option value="ALL">Todas Modalidades</option>
+              <option value="Musculação">Musculação</option>
+              <option value="Funcional">Funcional</option>
+              <option value="Dança">Dança</option>
+              <option value="Kids">Espaço Kids</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-date-range" class="filter-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              Cadastro:
+            </label>
+            <select id="filter-date-range" class="filter-select">
+              <option value="ALL">Todo o Histórico</option>
+              <option value="today">Cadastrados Hoje</option>
+              <option value="7days">Últimos 7 dias</option>
+              <option value="30days">Últimos 30 dias</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-order" class="filter-label">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Ordem:
+            </label>
+            <select id="filter-order" class="filter-select">
+              <option value="created_at.desc">Mais recentes primeiro</option>
+              <option value="created_at.asc">Mais antigos primeiro</option>
+              <option value="nome.asc">Nome (A - Z)</option>
+              <option value="nome.desc">Nome (Z - A)</option>
+              <option value="valor.desc">Maior valor</option>
+            </select>
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" id="btn-clear-filters" class="btn-clear-filters" title="Limpar todos os filtros">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              Limpar Filtros
+            </button>
+          </div>
+        </div>
+
         <!-- Table Container (Desktop) -->
         <div class="table-responsive-container">
           <table class="leads-table">
@@ -320,11 +397,32 @@
           <!-- Renderizado no Mobile via JS -->
         </div>
 
-        <!-- Footer da Tabela com Contador -->
+        <!-- Footer da Tabela com Paginação & Contadores -->
         <div class="table-pagination-footer">
           <div class="footer-left">
             <span id="table-showing-count">Mostrando 0 de 0 registros</span>
+            <div class="pagination-limit-wrap">
+              <label for="select-per-page">Por página:</label>
+              <select id="select-per-page" class="select-per-page">
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
           </div>
+
+          <div class="footer-center">
+            <div class="pagination-controls" id="pagination-controls">
+              <button type="button" id="btn-page-first" class="btn-page-nav" title="Primeira página" disabled>&laquo;</button>
+              <button type="button" id="btn-page-prev" class="btn-page-nav" title="Página anterior" disabled>&lsaquo; Anterior</button>
+              <div id="page-numbers" class="page-numbers-container">
+                <button type="button" class="page-number-btn active">1</button>
+              </div>
+              <button type="button" id="btn-page-next" class="btn-page-nav" title="Próxima página" disabled>Próxima &rsaquo;</button>
+              <button type="button" id="btn-page-last" class="btn-page-nav" title="Última página" disabled>&raquo;</button>
+            </div>
+          </div>
+
           <div class="footer-right">
             <span class="sync-info-text">Atualização automática ativa a cada 30s</span>
           </div>

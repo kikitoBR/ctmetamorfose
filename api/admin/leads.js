@@ -32,19 +32,33 @@ export default async function handler(req, res) {
       const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
       const search = url.searchParams.get('search') || '';
       const status = url.searchParams.get('status') || '';
+      const metodo = url.searchParams.get('metodo') || '';
+      const periodo = url.searchParams.get('periodo') || '';
+      const modalidade = url.searchParams.get('modalidade') || '';
+      const dateRange = url.searchParams.get('dateRange') || '';
+      const orderBy = url.searchParams.get('orderBy') || 'created_at.desc';
       const limitParam = url.searchParams.get('limit');
-      const limit = limitParam ? parseInt(limitParam, 10) : null;
-      const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+      const limit = limitParam !== null ? parseInt(limitParam, 10) : 25;
+      const pageParam = url.searchParams.get('page');
+      const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
+      const offsetParam = url.searchParams.get('offset');
+      const offset = offsetParam !== null ? parseInt(offsetParam, 10) : (page - 1) * limit;
 
       const [leadsData, statsData] = await Promise.all([
-        getLeadsList({ search, status, limit, offset }),
+        getLeadsList({ search, status, metodo, periodo, modalidade, dateRange, orderBy, limit, offset }),
         getLeadsStats()
       ]);
+
+      const total = leadsData.total;
+      const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
 
       return res.status(200).json({
         success: true,
         leads: leadsData.leads,
-        total: leadsData.total,
+        total,
+        page,
+        limit,
+        totalPages,
         stats: statsData,
         isSupabase: leadsData.isSupabase
       });

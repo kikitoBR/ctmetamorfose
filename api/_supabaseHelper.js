@@ -246,9 +246,19 @@ export async function updateLeadByPaymentId(asaasPaymentId, updateData) {
 }
 
 /**
- * Busca leads com paginação, busca e filtros
+ * Busca leads com paginação, busca e filtros avançados
  */
-export async function getLeadsList({ search = '', status = '', limit = null, offset = 0 } = {}) {
+export async function getLeadsList({ 
+  search = '', 
+  status = '', 
+  metodo = '',
+  periodo = '',
+  modalidade = '',
+  dateRange = '',
+  orderBy = 'created_at.desc',
+  limit = 25, 
+  offset = 0 
+} = {}) {
   const config = getSupabaseConfig();
 
   if (!config.isConfigured) {
@@ -256,6 +266,27 @@ export async function getLeadsList({ search = '', status = '', limit = null, off
 
     if (status && status !== 'ALL') {
       leads = leads.filter(l => l.status === status);
+    }
+    if (metodo && metodo !== 'ALL') {
+      const m = metodo.toUpperCase();
+      leads = leads.filter(l => (l.metodo_pagamento || '').toUpperCase().includes(m));
+    }
+    if (periodo && periodo !== 'ALL') {
+      leads = leads.filter(l => (l.periodo || '').toLowerCase().includes(periodo.toLowerCase()));
+    }
+    if (modalidade && modalidade !== 'ALL') {
+      leads = leads.filter(l => {
+        const arr = Array.isArray(l.modalidades) ? l.modalidades : [l.modalidades];
+        return arr.some(item => String(item).toLowerCase().includes(modalidade.toLowerCase()));
+      });
+    }
+    if (dateRange && dateRange !== 'ALL') {
+      const now = new Date();
+      let since = new Date();
+      if (dateRange === 'today') since.setHours(0, 0, 0, 0);
+      else if (dateRange === '7days') since.setDate(now.getDate() - 7);
+      else if (dateRange === '30days') since.setDate(now.getDate() - 30);
+      leads = leads.filter(l => new Date(l.created_at) >= since);
     }
     if (search) {
       const q = search.toLowerCase();
@@ -266,6 +297,14 @@ export async function getLeadsList({ search = '', status = '', limit = null, off
         (l.email && l.email.toLowerCase().includes(q))
       );
     }
+
+    leads.sort((a, b) => {
+      if (orderBy === 'created_at.asc') return new Date(a.created_at) - new Date(b.created_at);
+      if (orderBy === 'nome.asc') return (a.nome || '').localeCompare(b.nome || '');
+      if (orderBy === 'nome.desc') return (b.nome || '').localeCompare(a.nome || '');
+      if (orderBy === 'valor.desc') return (b.valor || 0) - (a.valor || 0);
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
     const total = leads.length;
     const paginated = limit ? leads.slice(offset, offset + limit) : leads;
@@ -278,17 +317,51 @@ export async function getLeadsList({ search = '', status = '', limit = null, off
   }
 
   try {
-    let queryUrl = `${config.url}/rest/v1/leads?select=*&order=created_at.desc`;
-    if (limit) {
-      queryUrl += `&limit=${limit}&offset=${offset}`;
-    }
+    let queryUrl = `${config.url}/rest/v1/leads?select=*`;
 
     if (status && status !== 'ALL') {
       queryUrl += `&status=eq.${encodeURIComponent(status)}`;
     }
+    if (metodo && metodo !== 'ALL') {
+      if (metodo === 'PIX') {
+        queryUrl += `&metodo_pagamento=ilike.*PIX*`;
+      } else if (metodo === 'CARTAO') {
+        queryUrl += `&metodo_pagamento=ilike.*CARTA*`;
+      } else {
+        queryUrl += `&metodo_pagamento=eq.${encodeURIComponent(metodo)}`;
+      }
+    }
+    if (periodo && periodo !== 'ALL') {
+      queryUrl += `&periodo=ilike.%25${encodeURIComponent(periodo)}%25`;
+    }
+    if (modalidade && modalidade !== 'ALL') {
+      queryUrl += `&modalidades=cs.%5B%22${encodeURIComponent(modalidade)}%22%5D`;
+    }
+    if (dateRange && dateRange !== 'ALL') {
+      const now = new Date();
+      let since = new Date();
+      if (dateRange === 'today') since.setHours(0, 0, 0, 0);
+      else if (dateRange === '7days') since.setDate(now.getDate() - 7);
+      else if (dateRange === '30days') since.setDate(now.getDate() - 30);
+      queryUrl += `&created_at=gte.${since.toISOString()}`;
+    }
     if (search) {
-      const q = encodeURIComponent(`%${search}%`);
+      const q = encodeURIComponent(`%${search.trim()}%`);
       queryUrl += `&or=(nome.ilike.${q},cpf.ilike.${q},telefone.ilike.${q},email.ilike.${q})`;
+    }
+
+    const validOrders = {
+      'created_at.desc': 'created_at.desc',
+      'created_at.asc': 'created_at.asc',
+      'nome.asc': 'nome.asc',
+      'nome.desc': 'nome.desc',
+      'valor.desc': 'valor.desc'
+    };
+    const safeOrder = validOrders[orderBy] || 'created_at.desc';
+    queryUrl += `&order=${safeOrder}`;
+
+    if (limit) {
+      queryUrl += `&limit=${limit}&offset=${offset}`;
     }
 
     const response = await fetch(queryUrl, {
@@ -329,32 +402,79 @@ export async function getLeadsList({ search = '', status = '', limit = null, off
 }
 
 /**
- * Calcula métricas e KPIs consolidados
+ * Calcula métricas e KPIs consolidados de forma leve e rápida
  */
 export async function getLeadsStats() {
-  const result = await getLeadsList({ limit: 1000 });
-  const all = result.leads;
+  const config = getSupabaseConfig();
 
-  const totalLeads = result.total;
-  const pagos = all.filter(l => l.status === 'PAGO');
-  const aguardando = all.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
-  const emAtendimento = all.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
-  const cancelados = all.filter(l => l.status === 'CANCELADO');
+  if (!config.isConfigured) {
+    const leads = getLocalLeads();
+    const totalLeads = leads.length;
+    const pagos = leads.filter(l => l.status === 'PAGO');
+    const aguardando = leads.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
+    const emAtendimento = leads.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
+    const cancelados = leads.filter(l => l.status === 'CANCELADO');
 
-  const receitaTotal = pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
-  const vagasOcupadas = pagos.length;
-  const metaLoteFundador = 50;
+    return {
+      totalLeads,
+      vagasOcupadas: pagos.length,
+      metaLoteFundador: 50,
+      percentualMeta: Math.min(100, Math.round((pagos.length / 50) * 100)),
+      receitaTotal: pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0),
+      aguardandoTotal: aguardando.length,
+      emAtendimentoTotal: emAtendimento.length,
+      canceladosTotal: cancelados.length,
+      isSupabase: false
+    };
+  }
+
+  try {
+    const response = await fetch(`${config.url}/rest/v1/leads?select=id,status,valor&limit=5000`, {
+      method: 'GET',
+      headers: {
+        'apikey': config.key,
+        'Authorization': `Bearer ${config.key}`
+      }
+    });
+
+    if (response.ok) {
+      const all = await response.json();
+      const totalLeads = all.length;
+      const pagos = all.filter(l => l.status === 'PAGO');
+      const aguardando = all.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
+      const emAtendimento = all.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
+      const cancelados = all.filter(l => l.status === 'CANCELADO');
+
+      const receitaTotal = pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
+      const vagasOcupadas = pagos.length;
+      const metaLoteFundador = 50;
+
+      return {
+        totalLeads,
+        vagasOcupadas,
+        metaLoteFundador,
+        percentualMeta: Math.min(100, Math.round((vagasOcupadas / metaLoteFundador) * 100)),
+        receitaTotal,
+        aguardandoTotal: aguardando.length,
+        emAtendimentoTotal: emAtendimento.length,
+        canceladosTotal: cancelados.length,
+        isSupabase: true
+      };
+    }
+  } catch (err) {
+    console.error('[Supabase Stats Error]:', err.message);
+  }
 
   return {
-    totalLeads,
-    vagasOcupadas,
-    metaLoteFundador,
-    percentualMeta: Math.min(100, Math.round((vagasOcupadas / metaLoteFundador) * 100)),
-    receitaTotal,
-    aguardandoTotal: aguardando.length,
-    emAtendimentoTotal: emAtendimento.length,
-    canceladosTotal: cancelados.length,
-    isSupabase: result.isSupabase
+    totalLeads: 0,
+    vagasOcupadas: 0,
+    metaLoteFundador: 50,
+    percentualMeta: 0,
+    receitaTotal: 0,
+    aguardandoTotal: 0,
+    emAtendimentoTotal: 0,
+    canceladosTotal: 0,
+    isSupabase: false
   };
 }
 
