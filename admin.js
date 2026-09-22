@@ -1151,10 +1151,23 @@ function gerarLinkWhatsApp(telefone, nome, status) {
   const whatsNum = sanitizarTelefone(telefone);
   if (!whatsNum) return '#';
 
-  const primeiroNome = (nome || 'Aluno').trim().split(' ')[0];
-  const whatsMsg = status === 'PAGO'
-    ? `Olá ${primeiroNome}! Tudo bem? Aqui é do CT Metamorfose. Confirmamos seu pagamento no Lote Fundador e gostaríamos de dar as boas-vindas!`
-    : `Olá ${primeiroNome}! Tudo bem? Aqui é do CT Metamorfose. Vimos seu interesse nas vagas exclusivas do 1º Lote Fundador. Como podemos ajudar com sua matrícula?`;
+  const primeiroNome = (nome || '').trim().split(' ')[0];
+  const saudacaoNome = (primeiroNome && primeiroNome.toLowerCase() !== 'aluno')
+    ? `Olá, ${primeiroNome}!\n\n`
+    : '';
+
+  let whatsMsg;
+  if (status === 'PAGO') {
+    whatsMsg = `${saudacaoNome}Seja muito bem-vindo ao CT Metamorfose!\n\n` +
+      `Você agora faz parte do nosso Membro Fundador, um grupo especial que estará com a gente desde o início dessa nova história. 💪🏼\n\n` +
+      `Em breve, nossa equipe entrará em contato para passar todas as informações sobre a inauguração, acesso, funcionamento e demais orientações.\n\n` +
+      `📲 Enquanto isso, entre no nosso grupo oficial de Membros Fundadores, pois será por lá que compartilharemos as principais informações e novidades:\n\n` +
+      `👉 https://chat.whatsapp.com/KYmUApOtidvCwU0bMPkhig?s=cl&p=i&mlu=4&ilr=4\n\n` +
+      `Nos vemos no CT! 🔥\n` +
+      `CT Metamorfose | O seu novo espaço de transformação.`;
+  } else {
+    whatsMsg = `Olá ${primeiroNome || 'Atleta'}! Tudo bem? Aqui é do CT Metamorfose. Vimos seu interesse nas vagas exclusivas do 1º Lote Fundador. Como podemos ajudar com sua matrícula?`;
+  }
 
   return `https://api.whatsapp.com/send?phone=${whatsNum}&text=${encodeURIComponent(whatsMsg)}`;
 }
