@@ -360,36 +360,76 @@ export async function getLeadsList({
     const safeOrder = validOrders[orderBy] || 'created_at.desc';
     queryUrl += `&order=${safeOrder}`;
 
-    if (limit) {
+    if (limit && limit <= 1000) {
       queryUrl += `&limit=${limit}&offset=${offset}`;
-    }
 
-    const response = await fetch(queryUrl, {
-      method: 'GET',
-      headers: {
-        'apikey': config.key,
-        'Authorization': `Bearer ${config.key}`,
-        'Prefer': 'count=exact'
+      const response = await fetch(queryUrl, {
+        method: 'GET',
+        headers: {
+          'apikey': config.key,
+          'Authorization': `Bearer ${config.key}`,
+          'Prefer': 'count=exact'
+        }
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Erro Supabase (${response.status}): ${errText}`);
       }
-    });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Erro Supabase (${response.status}): ${errText}`);
+      const contentRange = response.headers.get('content-range');
+      let total = 0;
+      if (contentRange && contentRange.includes('/')) {
+        total = parseInt(contentRange.split('/')[1], 10) || 0;
+      }
+
+      const leads = await response.json();
+      return {
+        leads,
+        total: total || leads.length,
+        isSupabase: true
+      };
+    } else {
+      // Para exportações ou buscas maiores que 1000, busca em chunks contínuos
+      let allLeads = [];
+      let currentOffset = offset;
+      const targetLimit = limit || 50000;
+      let total = 0;
+
+      while (allLeads.length < targetLimit) {
+        const fetchSize = Math.min(1000, targetLimit - allLeads.length);
+        const chunkUrl = `${queryUrl}&limit=${fetchSize}&offset=${currentOffset}`;
+
+        const response = await fetch(chunkUrl, {
+          method: 'GET',
+          headers: {
+            'apikey': config.key,
+            'Authorization': `Bearer ${config.key}`,
+            'Prefer': 'count=exact'
+          }
+        });
+
+        if (!response.ok) break;
+
+        const contentRange = response.headers.get('content-range');
+        if (contentRange && contentRange.includes('/')) {
+          total = parseInt(contentRange.split('/')[1], 10) || total;
+        }
+
+        const chunk = await response.json();
+        if (!Array.isArray(chunk) || chunk.length === 0) break;
+
+        allLeads.push(...chunk);
+        if (chunk.length < fetchSize || (total > 0 && allLeads.length >= total)) break;
+        currentOffset += chunk.length;
+      }
+
+      return {
+        leads: allLeads,
+        total: total || allLeads.length,
+        isSupabase: true
+      };
     }
-
-    const contentRange = response.headers.get('content-range');
-    let total = 0;
-    if (contentRange && contentRange.includes('/')) {
-      total = parseInt(contentRange.split('/')[1], 10) || 0;
-    }
-
-    const leads = await response.json();
-    return {
-      leads,
-      total: total || leads.length,
-      isSupabase: true
-    };
   } catch (err) {
     console.error('[Supabase List Error]:', err.message);
     const leads = getLocalLeads();
@@ -429,38 +469,64 @@ export async function getLeadsStats() {
   }
 
   try {
-    const response = await fetch(`${config.url}/rest/v1/leads?select=id,status,valor&limit=5000`, {
-      method: 'GET',
-      headers: {
-        'apikey': config.key,
-        'Authorization': `Bearer ${config.key}`
+    let all = [];
+    let from = 0;
+    const chunkSize = 1000;
+    let hasMore = true;
+    let totalCount = 0;
+
+    while (hasMore) {
+      const response = await fetch(`${config.url}/rest/v1/leads?select=id,status,valor&order=created_at.desc`, {
+        method: 'GET',
+        headers: {
+          'apikey': config.key,
+          'Authorization': `Bearer ${config.key}`,
+          'Range': `${from}-${from + chunkSize - 1}`,
+          'Prefer': 'count=exact'
+        }
+      });
+
+      if (!response.ok) break;
+
+      const contentRange = response.headers.get('content-range');
+      if (contentRange && contentRange.includes('/')) {
+        totalCount = parseInt(contentRange.split('/')[1], 10) || totalCount;
       }
-    });
 
-    if (response.ok) {
-      const all = await response.json();
-      const totalLeads = all.length;
-      const pagos = all.filter(l => l.status === 'PAGO');
-      const aguardando = all.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
-      const emAtendimento = all.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
-      const cancelados = all.filter(l => l.status === 'CANCELADO');
-
-      const receitaTotal = pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
-      const vagasOcupadas = pagos.length;
-      const metaLoteFundador = 50;
-
-      return {
-        totalLeads,
-        vagasOcupadas,
-        metaLoteFundador,
-        percentualMeta: Math.min(100, Math.round((vagasOcupadas / metaLoteFundador) * 100)),
-        receitaTotal,
-        aguardandoTotal: aguardando.length,
-        emAtendimentoTotal: emAtendimento.length,
-        canceladosTotal: cancelados.length,
-        isSupabase: true
-      };
+      const batch = await response.json();
+      if (!Array.isArray(batch) || batch.length === 0) {
+        hasMore = false;
+      } else {
+        all.push(...batch);
+        if (batch.length < chunkSize || (totalCount > 0 && all.length >= totalCount)) {
+          hasMore = false;
+        } else {
+          from += chunkSize;
+        }
+      }
     }
+
+    const totalLeads = totalCount || all.length;
+    const pagos = all.filter(l => l.status === 'PAGO');
+    const aguardando = all.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
+    const emAtendimento = all.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
+    const cancelados = all.filter(l => l.status === 'CANCELADO');
+
+    const receitaTotal = pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
+    const vagasOcupadas = pagos.length;
+    const metaLoteFundador = 50;
+
+    return {
+      totalLeads,
+      vagasOcupadas,
+      metaLoteFundador,
+      percentualMeta: Math.min(100, Math.round((vagasOcupadas / metaLoteFundador) * 100)),
+      receitaTotal,
+      aguardandoTotal: aguardando.length,
+      emAtendimentoTotal: emAtendimento.length,
+      canceladosTotal: cancelados.length,
+      isSupabase: true
+    };
   } catch (err) {
     console.error('[Supabase Stats Error]:', err.message);
   }
