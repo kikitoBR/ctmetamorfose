@@ -723,6 +723,7 @@ function initAsaasCheckout() {
             leadId: currentLead.id,
             asaasPaymentId: pixData.id,
             asaasCustomerId: pixData.customerId,
+            asaasInvoiceUrl: pixData.invoiceUrl,
             metodoPagamento: 'PIX'
           })
         }).catch(() => {});

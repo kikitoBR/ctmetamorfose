@@ -597,8 +597,17 @@ function renderizarLeads() {
       const dataCadastro = formatarData(lead.created_at);
       const dataPago = lead.pago_em ? `<br><span style="color: #34d399; font-size: 0.72rem;">Pago em ${formatarData(lead.pago_em)}</span>` : '';
 
-      const faturaLink = lead.asaas_invoice_url 
-        ? `<a href="${lead.asaas_invoice_url}" target="_blank" class="link-fatura-asaas">Fatura Asaas ↗</a>` 
+      // Link direto e oficial para o comprovante/fatura do Asaas
+      const paymentCode = lead.asaas_payment_id ? lead.asaas_payment_id.replace(/^pay_/, '') : '';
+      const invoiceUrl = paymentCode 
+        ? `https://www.asaas.com/i/${paymentCode}` 
+        : lead.asaas_invoice_url;
+
+      const isPix = String(lead.metodo_pagamento || '').toUpperCase().includes('PIX');
+      const faturaLabel = isPix ? 'Recibo Pix ↗' : 'Fatura Cartão ↗';
+
+      const faturaLink = invoiceUrl 
+        ? `<a href="${invoiceUrl}" target="_blank" class="link-fatura-asaas">${faturaLabel}</a>` 
         : (lead.asaas_payment_id ? `<span class="code-pill">${lead.asaas_payment_id}</span>` : '<span style="color: var(--text-dim); font-size: 0.75rem;">Sem fatura</span>');
 
       return `
@@ -796,9 +805,14 @@ window.adminAbrirModalDetalhes = function(leadId) {
 
   if (asaasIdEl) asaasIdEl.textContent = lead.asaas_payment_id || 'Nenhum ID gerado';
   if (btnInvoice) {
-    if (lead.asaas_invoice_url) {
+    const paymentCode = lead.asaas_payment_id ? lead.asaas_payment_id.replace(/^pay_/, '') : '';
+    const invoiceUrl = paymentCode 
+      ? `https://www.asaas.com/i/${paymentCode}` 
+      : lead.asaas_invoice_url;
+
+    if (invoiceUrl) {
       btnInvoice.style.display = 'inline-block';
-      btnInvoice.href = lead.asaas_invoice_url;
+      btnInvoice.href = invoiceUrl;
     } else {
       btnInvoice.style.display = 'none';
     }
