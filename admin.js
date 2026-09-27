@@ -444,6 +444,7 @@ function atualizarMetricasKPIs(stats) {
   const total = stats.totalLeads ?? 0;
   const pagos = stats.vagasOcupadas ?? 0;
   const receitaTotal = stats.receitaTotal ?? 0;
+  const receitaEstimada = stats.receitaEstimada ?? (total * 129.90);
   const aguardando = stats.aguardandoTotal ?? 0;
   const contato = stats.emAtendimentoTotal ?? 0;
   const cancelados = stats.canceladosTotal ?? 0;
@@ -451,6 +452,8 @@ function atualizarMetricasKPIs(stats) {
   // Elementos do DOM
   const totalEl = document.getElementById('kpi-total-leads');
   const receitaEl = document.getElementById('kpi-receita-total');
+  const receitaEstimadaEl = document.getElementById('kpi-receita-estimada');
+  const receitaEstimadaSubEl = document.getElementById('kpi-receita-estimada-sub');
   const pagamentosCountEl = document.getElementById('kpi-pagamentos-count');
   const aguardandoEl = document.getElementById('kpi-aguardando');
 
@@ -458,6 +461,12 @@ function atualizarMetricasKPIs(stats) {
   
   if (receitaEl) {
     receitaEl.textContent = receitaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+  if (receitaEstimadaEl) {
+    receitaEstimadaEl.textContent = receitaEstimada.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+  if (receitaEstimadaSubEl) {
+    receitaEstimadaSubEl.textContent = `Se todos os ${total} leads pagarem`;
   }
   if (pagamentosCountEl) {
     pagamentosCountEl.textContent = `${pagos} pagamento${pagos === 1 ? '' : 's'} quitado${pagos === 1 ? '' : 's'}`;

@@ -461,6 +461,7 @@ export async function getLeadsStats() {
       metaLoteFundador: 50,
       percentualMeta: Math.min(100, Math.round((pagos.length / 50) * 100)),
       receitaTotal: pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0),
+      receitaEstimada: leads.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0),
       aguardandoTotal: aguardando.length,
       emAtendimentoTotal: emAtendimento.length,
       canceladosTotal: cancelados.length,
@@ -513,6 +514,7 @@ export async function getLeadsStats() {
     const cancelados = all.filter(l => l.status === 'CANCELADO');
 
     const receitaTotal = pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
+    const receitaEstimada = all.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
     const vagasOcupadas = pagos.length;
     const metaLoteFundador = 50;
 
@@ -522,6 +524,7 @@ export async function getLeadsStats() {
       metaLoteFundador,
       percentualMeta: Math.min(100, Math.round((vagasOcupadas / metaLoteFundador) * 100)),
       receitaTotal,
+      receitaEstimada,
       aguardandoTotal: aguardando.length,
       emAtendimentoTotal: emAtendimento.length,
       canceladosTotal: cancelados.length,
@@ -537,6 +540,7 @@ export async function getLeadsStats() {
     metaLoteFundador: 50,
     percentualMeta: 0,
     receitaTotal: 0,
+    receitaEstimada: 0,
     aguardandoTotal: 0,
     emAtendimentoTotal: 0,
     canceladosTotal: 0,
