@@ -806,6 +806,11 @@ body.admin-body::before {
   color: var(--text-dim);
 }
 
+.tab-pill.purple {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+}
+
 .controls-right {
   display: flex;
   align-items: center;
@@ -1124,6 +1129,12 @@ body.admin-body::before {
   background-color: var(--status-cancelado-bg);
   border-color: var(--status-cancelado-border);
   color: var(--status-cancelado-text);
+}
+
+.status-select-table.espera {
+  background-color: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
 }
 
 .status-select-table:focus {

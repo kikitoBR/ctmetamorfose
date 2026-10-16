@@ -479,12 +479,14 @@ function atualizarMetricasKPIs(stats) {
   const tabAguardando = document.getElementById('tab-count-aguardando');
   const tabContato = document.getElementById('tab-count-contato');
   const tabCancelado = document.getElementById('tab-count-cancelado');
+  const tabEspera = document.getElementById('tab-count-espera');
 
   if (tabAll) tabAll.textContent = total;
   if (tabPago) tabPago.textContent = pagos;
   if (tabAguardando) tabAguardando.textContent = aguardando;
   if (tabContato) tabContato.textContent = contato;
   if (tabCancelado) tabCancelado.textContent = cancelados;
+  if (tabEspera) tabEspera.textContent = stats.listaEsperaTotal ?? 0;
 }
 
 function renderizarPaginacao() {
@@ -644,11 +646,12 @@ function renderizarLeads() {
               <option value="PAGO" ${lead.status === 'PAGO' ? 'selected' : ''}>🟢 Pago</option>
               <option value="EM_CONTATO" ${lead.status === 'EM_CONTATO' ? 'selected' : ''}>🔵 Em Contato</option>
               <option value="CANCELADO" ${lead.status === 'CANCELADO' ? 'selected' : ''}>🔴 Cancelado</option>
+              <option value="LISTA_ESPERA" ${lead.status === 'LISTA_ESPERA' ? 'selected' : ''}>🟣 Espera</option>
             </select>
           </td>
           <td>
             <div class="lead-gateway-cell">
-              <span class="gateway-valor">R$ ${(parseFloat(lead.valor) || 129.90).toFixed(2).replace('.', ',')}</span>
+              <span class="gateway-valor">R$ ${(Number(lead.valor !== undefined && lead.valor !== null ? lead.valor : 129.90)).toFixed(2).replace('.', ',')}</span>
               <div class="gateway-badge-row">
                 <span class="badge-metodo">${escapeHtml(lead.metodo_pagamento || 'PIX')}</span>
                 ${faturaLink}
@@ -693,6 +696,7 @@ function renderizarLeads() {
               <option value="PAGO" ${lead.status === 'PAGO' ? 'selected' : ''}>🟢 Pago</option>
               <option value="EM_CONTATO" ${lead.status === 'EM_CONTATO' ? 'selected' : ''}>🔵 Contato</option>
               <option value="CANCELADO" ${lead.status === 'CANCELADO' ? 'selected' : ''}>🔴 Cancelado</option>
+              <option value="LISTA_ESPERA" ${lead.status === 'LISTA_ESPERA' ? 'selected' : ''}>🟣 Espera</option>
             </select>
           </div>
 
@@ -707,7 +711,7 @@ function renderizarLeads() {
             </div>
             <div>
               <span class="summary-label">Valor:</span>
-              <div class="gateway-valor">R$ ${(parseFloat(lead.valor) || 129.90).toFixed(2).replace('.', ',')}</div>
+              <div class="gateway-valor">R$ ${(Number(lead.valor !== undefined && lead.valor !== null ? lead.valor : 129.90)).toFixed(2).replace('.', ',')}</div>
             </div>
           </div>
 
@@ -1002,7 +1006,7 @@ async function exportarParaCSV() {
         lead.periodo || '',
         lead.status || '',
         lead.metodo_pagamento || '',
-        (parseFloat(lead.valor) || 129.90).toFixed(2),
+        (Number(lead.valor !== undefined && lead.valor !== null ? lead.valor : 129.90)).toFixed(2),
         lead.asaas_payment_id || '',
         lead.created_at || '',
         lead.pago_em || '',
@@ -1088,6 +1092,7 @@ function obterClasseStatus(status) {
     case 'AGUARDANDO_PAGAMENTO': return 'aguardando';
     case 'EM_CONTATO': return 'contato';
     case 'CANCELADO': return 'cancelado';
+    case 'LISTA_ESPERA': return 'espera';
     default: return 'aguardando';
   }
 }
@@ -1188,6 +1193,10 @@ function gerarLinkWhatsApp(telefone, nome, status) {
       `👉 https://chat.whatsapp.com/KYmUApOtidvCwU0bMPkhig?s=cl&p=i&mlu=4&ilr=4\n\n` +
       `Nos vemos no CT! 🔥\n` +
       `CT Metamorfose | O seu novo espaço de transformação.`;
+  } else if (status === 'LISTA_ESPERA') {
+    whatsMsg = `${saudacaoNome}Olá ${primeiroNome || 'Atleta'}! Aqui é da equipe do CT Metamorfose.\n\n` +
+      `Vimos que você se inscreveu na nossa Lista de Espera VIP. O 1º Lote Fundador foi 100% esgotado, mas você tem prioridade máxima na fila de espera para abertura de novas vagas ou repescagem! 💪🏼\n\n` +
+      `Como podemos te ajudar?`;
   } else {
     whatsMsg = `Olá ${primeiroNome || 'Atleta'}! Tudo bem? Aqui é do CT Metamorfose. Vimos seu interesse nas vagas exclusivas do 1º Lote Fundador. Como podemos ajudar com sua matrícula?`;
   }

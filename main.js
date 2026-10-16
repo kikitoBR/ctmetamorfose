@@ -3,17 +3,7 @@
  * Interações, Tabs das Modalidades, Contador Regressivo, Validação, Pagamento Asaas e WhatsApp Link
  */
 
-import { 
-  criarCobrancaPixAsaas, 
-  criarCobrancaCartaoAsaas,
-  iniciarPollingStatusPix,
-  simularAprovacaoPixLocal,
-  obterConfigPublica,
-  detectarBandeiraCartao, 
-  validarNumeroCartao, 
-  validarValidadeCartao, 
-  processarCartaoAsaas 
-} from './paymentService.js';
+import { obterConfigPublica } from './paymentService.js';
 import { inject } from '@vercel/analytics';
 
 // Inicializa métricas de visitantes e page views da Vercel
@@ -28,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqAccordion();
   initInputMasks();
   initFormValidation();
-  initAsaasCheckout();
+  initWaitlistModal();
   initSmoothScroll();
 });
 
@@ -444,7 +434,7 @@ function initFormValidation() {
 
     if (!isValid) return;
 
-    // Lead Válido! Salvar no localStorage
+    // Lead Válido! Salvar no localStorage com status LISTA_ESPERA e valor 0
     const leadData = {
       nome: nomeVal,
       cpf: cpfVal,
@@ -453,6 +443,8 @@ function initFormValidation() {
       email: emailVal,
       modalidades: modalidadesChecked,
       periodo: periodoSelect ? periodoSelect.value : '',
+      status: 'LISTA_ESPERA',
+      valor: 0,
       timestamp: new Date().toISOString()
     };
 
@@ -464,7 +456,7 @@ function initFormValidation() {
       console.warn('Não foi possível salvar no localStorage:', err);
     }
 
-    // Persistência Centralizada no Supabase / Backend
+    // Persistência Centralizada no Supabase / Backend (Lista de Espera sem cobrança)
     fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -474,17 +466,12 @@ function initFormValidation() {
       .then(data => {
         if (data && data.lead && data.lead.id) {
           leadData.id = data.lead.id;
-          if (currentLead) currentLead.id = data.lead.id;
         }
       })
       .catch(e => console.warn('[Leads Sync Error]:', e.message));
 
-    // Abrir Modal de Checkout Asaas (Pix e Cartão à Vista)
-    if (typeof window.openAsaasCheckout === 'function') {
-      window.openAsaasCheckout(leadData);
-    } else if (typeof window.openSicoobCheckout === 'function') {
-      window.openSicoobCheckout(leadData);
-    }
+    // Abrir Modal de Confirmação da Lista de Espera (sem pagamento, sem valores)
+    abrirModalListaEspera(leadData);
 
     // Resetar formulário mantendo modalidades padrão do plano
     form.reset();
@@ -544,562 +531,75 @@ function initFormValidation() {
 }
 
 /* ==========================================================================
-   7. CHECKOUT & PAGAMENTO ASAAS (PIX DIRETO E CARTÃO À VISTA)
+   7. MODAL DE CONFIRMAÇÃO DA LISTA DE ESPERA VIP (SEM PAGAMENTO / SEM VALORES)
    ========================================================================== */
-function initAsaasCheckout() {
+let appConfig = { whatsapp: '5522998449106' };
+
+function initWaitlistModal() {
   const modal = document.getElementById('payment-modal');
-  const checkoutView = document.getElementById('checkout-view');
-  const successView = document.getElementById('payment-success-view');
   const closeBtn = document.getElementById('btn-close-checkout');
   const finishBtn = document.getElementById('btn-finish-checkout');
-
-  const tabBtnPix = document.getElementById('tab-btn-pix');
-  const tabBtnCard = document.getElementById('tab-btn-card');
-  const tabContentPix = document.getElementById('tab-content-pix');
-  const tabContentCard = document.getElementById('tab-content-card');
-
-  const methodSelectorView = document.getElementById('payment-method-selector-view');
-  const paymentDetailView = document.getElementById('payment-detail-view');
-  const btnSelectPix = document.getElementById('btn-select-pix');
-  const btnSelectCard = document.getElementById('btn-select-card');
-  const btnBackToMethods = document.getElementById('btn-back-to-methods');
-
-  const qrContainer = document.getElementById('pix-qrcode-container');
-  const copiaColaInput = document.getElementById('pix-copia-cola-input');
-  const btnCopyPix = document.getElementById('btn-copy-pix');
-  const btnCopyText = document.getElementById('btn-copy-text');
-  const copyToast = document.getElementById('copy-success-toast');
-  const timerEl = document.getElementById('pix-countdown-timer');
-  const btnPixWhats = document.getElementById('btn-pix-whatsapp');
-  const btnSimulatePix = document.getElementById('btn-simulate-pix');
-  const statusBadgeText = document.getElementById('pix-status-badge-text');
-
-  const cardStatusBadgeText = document.getElementById('card-status-badge-text');
-  const btnOpenCardInvoice = document.getElementById('btn-open-card-invoice');
-  const btnCardText = document.getElementById('btn-card-text');
-  const btnCardWhats = document.getElementById('btn-card-whatsapp');
-  const btnSimulateCard = document.getElementById('btn-simulate-card');
-
-  const receiptNameEl = document.getElementById('receipt-lead-name');
-  const receiptCpfEl = document.getElementById('receipt-lead-cpf');
-  const receiptAuthCodeEl = document.getElementById('receipt-auth-code');
-  const btnSuccessWhats = document.getElementById('btn-success-whatsapp');
-
-  let currentLead = null;
-  let currentPixData = null;
-  let currentCardData = null;
-  let isGeneratingPix = false;
-  let isGeneratingCard = false;
-  let timerInterval = null;
-  let pollingController = null;
-  let appConfig = { whatsapp: '5522998449106' };
-
-  if (!modal) return;
 
   // Carrega config pública (WhatsApp oficial e status de ambiente)
   obterConfigPublica().then(cfg => {
     if (cfg && cfg.whatsapp) appConfig = cfg;
-  });
+  }).catch(() => {});
 
-  // Função Global para abrir o Checkout com os dados do lead
-  window.openAsaasCheckout = window.openSicoobCheckout = async (lead) => {
-    currentLead = lead;
-
-    // Preenche nome no cabeçalho
-    const leadNameEl = document.getElementById('checkout-lead-name');
-    if (leadNameEl && lead && lead.nome) {
-      const primeiroNome = lead.nome.split(' ')[0];
-      leadNameEl.textContent = primeiroNome.toUpperCase();
-    }
-
-    // Reseta visualização
-    if (checkoutView) checkoutView.style.display = 'block';
-    if (successView) successView.style.display = 'none';
-
-    // Exibe a tela de SELEÇÃO de método e esconde os detalhes até o usuário escolher
-    if (methodSelectorView) methodSelectorView.style.display = 'block';
-    if (paymentDetailView) paymentDetailView.style.display = 'none';
-
-    // Abre o Modal
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden', 'false');
-
-    // Reseta estado anterior do polling, timer e dados
-    currentPixData = null;
-    currentCardData = null;
-    isGeneratingPix = false;
-    isGeneratingCard = false;
-    if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Pronto para pagamento seguro';
-    if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA';
-    if (btnOpenCardInvoice) btnOpenCardInvoice.disabled = false;
-
-    if (qrContainer) {
-      qrContainer.innerHTML = `
-        <div class="qr-loading-placeholder">
-          <div class="spinner-radial"></div>
-          <span>Aguardando seleção de pagamento...</span>
-        </div>
-      `;
-    }
-    if (copiaColaInput) copiaColaInput.value = '';
-    if (statusBadgeText) statusBadgeText.textContent = 'Selecione a forma de pagamento';
-
-    if (pollingController) {
-      pollingController.stop();
-      pollingController = null;
-    }
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-  };
-
-  // Ação ao selecionar PIX
-  async function escolherPix() {
-    if (methodSelectorView) methodSelectorView.style.display = 'none';
-    if (paymentDetailView) paymentDetailView.style.display = 'block';
-    switchTab('pix');
-    if (!currentPixData && !isGeneratingPix) {
-      await gerarCobrancaPix();
-    }
-  }
-
-  // Ação ao selecionar CARTÃO
-  async function escolherCartao() {
-    if (methodSelectorView) methodSelectorView.style.display = 'none';
-    if (paymentDetailView) paymentDetailView.style.display = 'block';
-    switchTab('card');
-    if (!currentCardData && !isGeneratingCard) {
-      await prepararCobrancaCartao();
-    }
-  }
-
-  // Voltar para a seleção de forma de pagamento
-  function voltarParaSelecao() {
-    if (paymentDetailView) paymentDetailView.style.display = 'none';
-    if (methodSelectorView) methodSelectorView.style.display = 'block';
-  }
-
-  if (btnSelectPix) btnSelectPix.addEventListener('click', escolherPix);
-  if (btnSelectCard) btnSelectCard.addEventListener('click', escolherCartao);
-  if (btnBackToMethods) btnBackToMethods.addEventListener('click', voltarParaSelecao);
-
-  // Gera cobrança Pix no Asaas apenas quando o usuário selecionar Pix
-  async function gerarCobrancaPix() {
-    if (currentPixData || isGeneratingPix || !currentLead) return;
-    isGeneratingPix = true;
-
-    try {
-      if (qrContainer) {
-        qrContainer.innerHTML = `
-          <div class="qr-loading-placeholder">
-            <div class="spinner-radial"></div>
-            <span>Gerando Pix seguro no Asaas...</span>
-          </div>
-        `;
-      }
-      if (copiaColaInput) copiaColaInput.value = '';
-      if (statusBadgeText) statusBadgeText.textContent = 'Gerando cobrança instantânea...';
-
-      const pixData = await criarCobrancaPixAsaas({
-        nome: currentLead.nome,
-        cpf: currentLead.cpf,
-        dataNascimento: currentLead.dataNascimento,
-        email: currentLead.email,
-        telefone: currentLead.telefone,
-        modalidades: currentLead.modalidades,
-        periodo: currentLead.periodo,
-        valor: 129.90
-      });
-
-      currentPixData = pixData;
-
-      // Vincula cobrança Asaas ao lead no Supabase
-      if (currentLead && currentLead.id) {
-        fetch('/api/leads', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            leadId: currentLead.id,
-            asaasPaymentId: pixData.id,
-            asaasCustomerId: pixData.customerId,
-            asaasInvoiceUrl: pixData.invoiceUrl,
-            metodoPagamento: 'PIX'
-          })
-        }).catch(() => {});
-      }
-
-      if (qrContainer && pixData.qrCodeDataUrl) {
-        qrContainer.innerHTML = `<img src="${pixData.qrCodeDataUrl}" alt="QR Code Pix Asaas" loading="eager">`;
-      }
-
-      if (copiaColaInput) {
-        copiaColaInput.value = pixData.pixCopiaECola || '';
-      }
-
-      if (statusBadgeText) {
-        statusBadgeText.textContent = 'Aguardando leitura do QR Code...';
-      }
-
-      // Inicia contagem regressiva de 15 minutos
-      startPixTimer(15 * 60);
-
-      // Inicia Polling inteligente em tempo real para detectar quando o aluno pagar no banco
-      if (pollingController) pollingController.stop();
-      pollingController = iniciarPollingStatusPix({
-        paymentId: pixData.id,
-        initialIntervalMs: 4000,
-        onPoll: (statusData) => {
-          if (statusBadgeText) {
-            statusBadgeText.textContent = 'Aguardando confirmação bancária...';
-          }
-        },
-        onConfirmed: (statusData) => {
-          if (statusBadgeText) statusBadgeText.textContent = '✓ Pagamento Confirmado!';
-          concluirPagamentoSucesso({
-            metodo: 'Pix Instantâneo',
-            authCode: pixData.id
-          });
-        },
-        onError: (err) => {
-          console.warn('[Polling Error]:', err.message);
-        }
-      });
-
-      // Atualiza link de WhatsApp com comprovante Pix
-      if (btnPixWhats) {
-        const whatsNum = appConfig.whatsapp || '5522998449106';
-        const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e gerei meu pagamento da 1ª mensalidade de R$ 129,90 via Pix para o Lote Fundador do CT Metamorfose.\n\n`;
-        btnPixWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
-      }
-    } catch (err) {
-      console.error('Erro ao gerar Pix no Asaas:', err);
-      if (qrContainer) {
-        qrContainer.innerHTML = `
-          <div class="qr-error-box" style="padding: 1rem; text-align: center; color: #ef4444; font-size: 0.85rem;">
-            <p><strong>Falha ao gerar o Pix</strong></p>
-            <p style="color: #94a3b8; margin-top: 4px;">${err.message}</p>
-          </div>
-        `;
-      }
-      if (statusBadgeText) statusBadgeText.textContent = 'Erro ao gerar cobrança';
-    } finally {
-      isGeneratingPix = false;
-    }
-  }
-
-  // Alternância de Abas
-  function switchTab(tab) {
-    if (tab === 'pix') {
-      if (tabBtnPix) {
-        tabBtnPix.classList.add('active');
-        tabBtnPix.setAttribute('aria-selected', 'true');
-      }
-      if (tabBtnCard) {
-        tabBtnCard.classList.remove('active');
-        tabBtnCard.setAttribute('aria-selected', 'false');
-      }
-      if (tabContentPix) tabContentPix.classList.add('active');
-      if (tabContentCard) tabContentCard.classList.remove('active');
-
-      if (!currentPixData && !isGeneratingPix) {
-        gerarCobrancaPix();
-      }
-    } else {
-      if (tabBtnCard) {
-        tabBtnCard.classList.add('active');
-        tabBtnCard.setAttribute('aria-selected', 'true');
-      }
-      if (tabBtnPix) {
-        tabBtnPix.classList.remove('active');
-        tabBtnPix.setAttribute('aria-selected', 'false');
-      }
-      if (tabContentCard) tabContentCard.classList.add('active');
-      if (tabContentPix) tabContentPix.classList.remove('active');
-
-      // Ao entrar na aba de cartão, prepara a fatura se ainda não gerada
-      if (!currentCardData && !isGeneratingCard) {
-        prepararCobrancaCartao();
-      }
-    }
-  }
-
-  // Gera ou reutiliza a cobrança de cartão no Asaas
-  async function prepararCobrancaCartao() {
-    if (currentCardData || isGeneratingCard || !currentLead) return;
-    isGeneratingCard = true;
-
-    if (btnOpenCardInvoice) {
-      btnOpenCardInvoice.disabled = true;
-      if (btnCardText) btnCardText.textContent = 'GERANDO FATURA SEGURA...';
-    }
-    if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Conectando ao ambiente seguro...';
-
-    try {
-      const cardData = await criarCobrancaCartaoAsaas({
-        nome: currentLead.nome,
-        cpf: currentLead.cpf,
-        dataNascimento: currentLead.dataNascimento,
-        email: currentLead.email,
-        telefone: currentLead.telefone,
-        modalidades: currentLead.modalidades,
-        periodo: currentLead.periodo,
-        valor: 129.90
-      });
-
-      currentCardData = cardData;
-
-      // Vincula fatura Asaas ao lead no Supabase
-      if (currentLead && currentLead.id) {
-        fetch('/api/leads', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            leadId: currentLead.id,
-            asaasPaymentId: cardData.id,
-            asaasCustomerId: cardData.customerId,
-            asaasInvoiceUrl: cardData.invoiceUrl,
-            metodoPagamento: 'CARTAO'
-          })
-        }).catch(() => {});
-      }
-
-      if (btnOpenCardInvoice) {
-        btnOpenCardInvoice.disabled = false;
-        if (btnCardText) btnCardText.textContent = 'ABRIR FATURA SEGURA';
-      }
-      if (cardStatusBadgeText) {
-        cardStatusBadgeText.textContent = 'Fatura pronta para pagamento.';
-      }
-
-      // Atualiza link de suporte do WhatsApp na aba de cartão
-      if (btnCardWhats) {
-        const whatsNum = appConfig.whatsapp || '5522998449106';
-        const msg = `Olá! Meu nome é ${currentLead.nome} (CPF: ${currentLead.cpf}) e estou realizando o pagamento da 1ª mensalidade de R$ 129,90 via Cartão para o Lote Fundador do CT Metamorfose.\n\nPreciso de suporte com meu pagamento:`;
-        btnCardWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
-      }
-    } catch (err) {
-      console.error('Erro ao gerar fatura de cartão no Asaas:', err);
-      if (btnOpenCardInvoice) {
-        btnOpenCardInvoice.disabled = false;
-        if (btnCardText) btnCardText.textContent = 'TENTAR GERAR FATURA NOVAMENTE';
-      }
-      if (cardStatusBadgeText) cardStatusBadgeText.textContent = 'Erro ao gerar fatura do cartão';
-    } finally {
-      isGeneratingCard = false;
-    }
-  }
-
-  if (tabBtnPix) tabBtnPix.addEventListener('click', () => switchTab('pix'));
-  if (tabBtnCard) tabBtnCard.addEventListener('click', () => switchTab('card'));
-
-  // Copiar Código Pix Copia e Cola
-  if (btnCopyPix && copiaColaInput) {
-    btnCopyPix.addEventListener('click', async () => {
-      try {
-        if (!copiaColaInput.value) return;
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(copiaColaInput.value);
-        } else {
-          copiaColaInput.select();
-          document.execCommand('copy');
-        }
-
-        if (btnCopyText) btnCopyText.textContent = '✓ Copiado!';
-        if (copyToast) copyToast.classList.add('show');
-
-        setTimeout(() => {
-          if (btnCopyText) btnCopyText.textContent = 'Copiar';
-          if (copyToast) copyToast.classList.remove('show');
-        }, 3000);
-      } catch (err) {
-        console.warn('Não foi possível copiar automaticamente:', err);
-      }
-    });
-  }
-
-  // Timer Regressivo do Pix
-  function startPixTimer(durationSeconds) {
-    if (timerInterval) clearInterval(timerInterval);
-    let timeLeft = durationSeconds;
-
-    const updateTimer = () => {
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
-      if (timerEl) {
-        timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      }
-      if (timeLeft <= 0) {
-        clearInterval(timerInterval);
-        if (timerEl) timerEl.textContent = 'Expirado';
-        if (statusBadgeText) statusBadgeText.textContent = 'Código Pix expirado. Gere outro para pagar.';
-      }
-      timeLeft--;
-    };
-
-    updateTimer();
-    timerInterval = setInterval(updateTimer, 1000);
-  }
-
-  // Simulação de Aprovação Pix (para testes em Sandbox / Demonstração)
-  if (btnSimulatePix) {
-    btnSimulatePix.addEventListener('click', async () => {
-      btnSimulatePix.disabled = true;
-      const originalContent = btnSimulatePix.innerHTML;
-      btnSimulatePix.innerHTML = '<span>Aprovando no Sandbox...</span>';
-
-      try {
-        if (currentPixData && currentPixData.id) {
-          await simularAprovacaoPixLocal(currentPixData.id);
-        }
-        concluirPagamentoSucesso({
-          metodo: 'Pix Instantâneo (Asaas Sandbox)',
-          authCode: currentPixData ? currentPixData.id : `ASAAS-TEST-${Math.floor(100000 + Math.random() * 900000)}`
-        });
-      } catch (err) {
-        console.error('Erro na simulação:', err);
-      } finally {
-        btnSimulatePix.disabled = false;
-        btnSimulatePix.innerHTML = originalContent;
-      }
-    });
-  }
-
-  // Abertura da Fatura Segura de Cartão Asaas e Polling
-  if (btnOpenCardInvoice) {
-    btnOpenCardInvoice.addEventListener('click', async () => {
-      if (!currentCardData) {
-        await prepararCobrancaCartao();
-      }
-
-      if (currentCardData && currentCardData.invoiceUrl) {
-        // Abre fatura oficial em nova aba segura
-        window.open(currentCardData.invoiceUrl, '_blank', 'noopener,noreferrer');
-
-        if (cardStatusBadgeText) {
-          cardStatusBadgeText.textContent = 'Aguardando confirmação do cartão...';
-        }
-
-        // Inicia monitoramento contínuo em tempo real para a fatura do cartão
-        if (pollingController) {
-          pollingController.stop();
-        }
-
-        pollingController = iniciarPollingStatusPix({
-          paymentId: currentCardData.id,
-          initialIntervalMs: 4000,
-          onPoll: (statusData) => {
-            if (cardStatusBadgeText) {
-              cardStatusBadgeText.textContent = 'Aguardando aprovação do pagamento...';
-            }
-          },
-          onConfirmed: (statusData) => {
-            if (cardStatusBadgeText) cardStatusBadgeText.textContent = '✓ Pagamento Aprovado!';
-            concluirPagamentoSucesso({
-              metodo: 'Cartão de Crédito/Débito',
-              authCode: currentCardData.id
-            });
-          },
-          onError: (err) => {
-            console.warn('[Polling Cartão]:', err.message);
-          }
-        });
-      }
-    });
-  }
-
-  // Simulação de Aprovação de Cartão (para testes no Sandbox)
-  if (btnSimulateCard) {
-    btnSimulateCard.addEventListener('click', async () => {
-      btnSimulateCard.disabled = true;
-      const originalContent = btnSimulateCard.innerHTML;
-      btnSimulateCard.innerHTML = '<span>Aprovando no Sandbox...</span>';
-
-      try {
-        if (currentCardData && currentCardData.id) {
-          await simularAprovacaoPixLocal(currentCardData.id);
-        }
-        concluirPagamentoSucesso({
-          metodo: 'Cartão de Crédito/Débito (Asaas Sandbox)',
-          authCode: currentCardData ? currentCardData.id : `ASAAS-CARD-${Math.floor(100000 + Math.random() * 900000)}`
-        });
-      } catch (err) {
-        console.error('Erro na simulação do cartão:', err);
-      } finally {
-        btnSimulateCard.disabled = false;
-        btnSimulateCard.innerHTML = originalContent;
-      }
-    });
-  }
-
-  // Transição para Tela de Sucesso
-  function concluirPagamentoSucesso({ metodo, authCode }) {
-    if (pollingController) {
-      pollingController.stop();
-      pollingController = null;
-    }
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-
-    if (checkoutView) checkoutView.style.display = 'none';
-    if (successView) successView.style.display = 'block';
-
-    const leadNome = currentLead ? currentLead.nome : 'Atleta';
-    const leadCpf = currentLead ? currentLead.cpf : '';
-
-    if (receiptNameEl) receiptNameEl.textContent = leadNome;
-    if (receiptCpfEl) receiptCpfEl.textContent = leadCpf || 'Verificado';
-    if (receiptAuthCodeEl) receiptAuthCodeEl.textContent = authCode;
-
-    // Atualiza status do lead no Supabase / backend para PAGO
-    if (currentLead) {
-      fetch('/api/leads', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          leadId: currentLead.id || null,
-          cpf: currentLead.cpf || null,
-          status: 'PAGO',
-          metodo_pagamento: metodo,
-          asaasPaymentId: (currentPixData && currentPixData.id) || (currentCardData && currentCardData.id) || authCode
-        })
-      }).catch(err => console.warn('[Leads Status Update Error]:', err));
-    }
-
-    // Atualiza botão de WhatsApp com o comprovante aprovado
-    if (btnSuccessWhats) {
-      const whatsNum = appConfig.whatsapp || '5522998449106';
-      const msg = `Olá! Meu nome é ${leadNome} (CPF: ${leadCpf}) e meu pagamento da 1ª mensalidade de R$ 129,90 foi APROVADO via ${metodo}!\n\n` +
-        `*Plano:* Membro Fundador (Desconto Proporcional Vitalício)\n`;
-      btnSuccessWhats.setAttribute('href', `https://wa.me/${whatsNum}?text=${encodeURIComponent(msg)}`);
-    }
-
-    // Rola modal para o topo suavemente
-    modal.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // Fechar Modal
   const closeModal = () => {
-    modal.classList.remove('open');
-    modal.setAttribute('aria-hidden', 'true');
-    if (pollingController) {
-      pollingController.stop();
-      pollingController = null;
-    }
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
     }
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (finishBtn) finishBtn.addEventListener('click', closeModal);
 
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+      closeModal();
+    }
   });
+
+  // Compatibilidade global
+  window.openWaitlistModal = window.openAsaasCheckout = window.openSicoobCheckout = abrirModalListaEspera;
+}
+
+function abrirModalListaEspera(lead) {
+  const modal = document.getElementById('payment-modal');
+  const nameEl = document.getElementById('waitlist-lead-name');
+  const summaryName = document.getElementById('waitlist-summary-name');
+  const summaryPhone = document.getElementById('waitlist-summary-phone');
+  const btnWhats = document.getElementById('btn-waitlist-whatsapp');
+
+  const primeiroNome = (lead && lead.nome) ? lead.nome.trim().split(' ')[0] : 'Atleta';
+  if (nameEl) nameEl.textContent = primeiroNome;
+  if (summaryName) summaryName.textContent = lead && lead.nome ? lead.nome : '-';
+  if (summaryPhone) {
+    const raw = lead ? String(lead.telefone).replace(/\D/g, '') : '';
+    const formatted = raw.length === 11 
+      ? '(' + raw.slice(0, 2) + ') ' + raw.slice(2, 7) + '-' + raw.slice(7)
+      : (lead ? lead.telefone : '-');
+    summaryPhone.textContent = formatted;
+  }
+
+  if (btnWhats) {
+    const whatsNum = appConfig.whatsapp || '5522998449106';
+    const msg = 'Olá, equipe do CT Metamorfose! Meu nome é ' + (lead ? lead.nome : 'Atleta') + ' e acabei de me cadastrar na Lista de Espera VIP. Gostaria de confirmar se receberam meus dados! 💪🏼';
+    btnWhats.href = 'https://wa.me/' + whatsNum + '?text=' + encodeURIComponent(msg);
+  }
+
+  if (modal) {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    modal.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 /**

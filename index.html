@@ -124,14 +124,14 @@
 
       <nav class="desktop-nav" aria-label="Navegação Principal">
         <a href="#espaco" class="nav-link">O Espaço</a>
-        <a href="#fundador" class="nav-link">Lote Fundador</a>
+        <a href="#fundador" class="nav-link">Lista de Espera</a>
         <a href="#localizacao" class="nav-link">Localização</a>
         <a href="#faq" class="nav-link">Dúvidas</a>
       </nav>
 
       <div class="header-actions">
         <a href="#matricula" class="btn btn-primary btn-sm pulse-glow" id="btn-header-matricula">
-          <span>Garantir Vaga</span>
+          <span>Lista de Espera</span>
           <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
         <button class="mobile-toggle" id="mobile-toggle" aria-label="Abrir Menu" aria-expanded="false">
@@ -146,10 +146,10 @@
     <div class="mobile-drawer" id="mobile-drawer">
       <nav class="mobile-nav">
         <a href="#espaco" class="mobile-nav-link">O Espaço</a>
-        <a href="#fundador" class="mobile-nav-link">Lote Fundador</a>
+        <a href="#fundador" class="mobile-nav-link">Lista de Espera</a>
         <a href="#localizacao" class="mobile-nav-link">Localização</a>
         <a href="#faq" class="mobile-nav-link">Dúvidas Frequentes</a>
-        <a href="#matricula" class="btn btn-primary w-full btn-mobile-cta">Garantir Vaga</a>
+        <a href="#matricula" class="btn btn-primary w-full btn-mobile-cta">Entrar na Lista de Espera</a>
       </nav>
     </div>
   </header>
@@ -163,23 +163,23 @@
         <div class="hero-grid">
           <!-- Coluna Esquerda: Informações Principais, Chamada & CTAs -->
           <div class="hero-text-col">
-            <div class="hero-badge">
-              <span class="pulse-dot"></span>
-              <span class="badge-text">PRÉ-MATRÍCULAS ABERTAS</span>
+            <div class="hero-badge" style="background: rgba(220, 38, 38, 0.18); border-color: rgba(239, 68, 68, 0.4);">
+              <span class="pulse-dot" style="background: #ef4444; box-shadow: 0 0 10px #ef4444;"></span>
+              <span class="badge-text" style="color: #fca5a5;">100% DAS VAGAS ESGOTADAS • LOTE ENCERRADO</span>
             </div>
 
             <h1 class="hero-title">
-              SUA TRANSFORMAÇÃO COMEÇA <span class="highlight-gradient">ANTES DAS PORTAS</span> SE ABRIREM.
+              LOTE FUNDADOR <span class="highlight-gradient">100% ESGOTADO.</span> ENTRE NA LISTA DE ESPERA.
             </h1>
 
             <p class="hero-description">
-              Muito mais que uma academia: um espaço total de <strong>15.000m²</strong> unindo todas as modalidades esportivas, <strong>Musculação, Funcional, Spinning e Danças</strong> com uma estrutura completa com <strong>Área Kids, Praça de Alimentação, Coworking</strong> e serviços exclusivos para o seu dia a dia.
+              Todas as vagas da pré-matrícula promocional foram preenchidas em tempo recorde! Preencha o formulário abaixo para entrar na <strong>Lista de Espera VIP</strong> e ser avisado com prioridade máxima caso novas vagas sejam liberadas para a inauguração.
             </p>
 
             <!-- Hero CTAs -->
             <div class="hero-actions">
               <a href="#matricula" class="btn btn-red btn-lg pulse-glow-red" id="btn-hero-matricula">
-                <span>Quero Ser Membro Fundador</span>
+                <span>Quero Entrar na Lista de Espera</span>
                 <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
             </div>
@@ -189,8 +189,8 @@
           <div class="hero-countdown-col">
             <div class="countdown-card" id="countdown-wrapper">
               <div class="countdown-header">
-                <span class="countdown-tag">TEMPO RESTANTE</span>
-                <span class="countdown-status">17 de Outubro de 2026 às 18h</span>
+                <span class="countdown-tag" style="background: rgba(220, 38, 38, 0.25); color: #fca5a5; border-color: rgba(239, 68, 68, 0.4);">LOTE ENCERRADO</span>
+                <span class="countdown-status">Inauguração: 17 de Outubro às 18h</span>
               </div>
               <div class="countdown-timer" id="countdown-timer">
                 <div class="time-box">
@@ -218,12 +218,12 @@
               <div class="scarcity-container">
                 <div class="scarcity-info">
                   <span>Vagas do Lote Fundador</span>
-                  <strong class="scarcity-highlight"><span id="scarcity-pct">95</span>% PREENCHIDAS</strong>
+                  <strong class="scarcity-highlight" style="color: #ef4444;"><span id="scarcity-pct">100</span>% ESGOTADAS</strong>
                 </div>
                 <div class="scarcity-track">
-                  <div class="scarcity-fill" id="scarcity-bar" style="width: 95%;"></div>
+                  <div class="scarcity-fill" id="scarcity-bar" style="width: 100%; background: linear-gradient(90deg, #dc2626, #ef4444); box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);"></div>
                 </div>
-                <span class="scarcity-hint">Apenas 10 vagas restantes para travar a mensalidade promocional de abertura.</span>
+                <span class="scarcity-hint" style="color: #f87171; font-weight: 700;">🚨 100% das vagas foram preenchidas! Cadastre-se na Lista de Espera abaixo.</span>
               </div>
 
               <div class="fundador-benefits-compact">
@@ -240,11 +240,10 @@
                   </div>
 
                   <div class="f-compact-item">
-                    <span class="f-compact-emoji">💰</span>
+                    <span class="f-compact-emoji">⭐</span>
                     <div class="f-compact-content">
-                      <strong class="f-compact-heading">2. VALOR VITALÍCIO COM DESCONTO</strong>
-                      <span class="f-compact-text">Preço reduzido para sempre, mantendo a mesma proporção de desconto nos reajustes.</span>
-                      <span class="f-compact-warning">⚠️ Perde o desconto se ficar inativo por 30 dias</span>
+                      <strong class="f-compact-heading">2. CONDIÇÃO ESPECIAL DE INAUGURAÇÃO</strong>
+                      <span class="f-compact-text">Prioridade para garantir condição exclusiva no próximo lote.</span>
                     </div>
                   </div>
 
@@ -260,7 +259,7 @@
                     <span class="f-compact-emoji">👀</span>
                     <div class="f-compact-content">
                       <strong class="f-compact-heading">4. VISITA VIP</strong>
-                      <span class="f-compact-text">Os 5 primeiros fundadores conhecerão o CT antes da inauguração.</span>
+                      <span class="f-compact-text">Os primeiros cadastrados conhecerão o CT antes da inauguração.</span>
                     </div>
                   </div>
 
@@ -299,7 +298,7 @@
               </div>
 
               <a href="#matricula" class="btn btn-red btn-block pulse-glow-red countdown-btn-cta">
-                <span>Garantir Vaga Limitada</span>
+                <span>Entrar na Lista de Espera</span>
                 <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
             </div>
@@ -573,53 +572,55 @@
 
 
 
-    <!-- LOTE FUNDADOR / OFERTA SECTION -->
+    <!-- LOTE FUNDADOR / STATUS DAS VAGAS SECTION -->
     <section class="section fundador-section" id="fundador">
       <div class="container">
         <div class="section-header text-center">
-          <span class="section-pill red-pill"><span class="pill-num">03</span> CONDIÇÃO DE INAUGURAÇÃO</span>
-          <h2 class="section-title">SEJA UM <span class="highlight-red">MEMBRO FUNDADOR</span> DA METAMORFOSE</h2>
+          <span class="section-pill red-pill"><span class="pill-num">03</span> STATUS DAS VAGAS</span>
+          <h2 class="section-title">LOTE FUNDADOR <span class="highlight-red">100% ESGOTADO</span></h2>
           <p class="section-subtitle">
-            Apenas quem se antecipar na pré-matrícula terá direito aos benefícios exclusivos do 1º Lote. Essa condição jamais será comercializada novamente após o dia da abertura.
+            As vagas antecipadas com condição promocional foram totalmente preenchidas em tempo recorde. Cadastre-se gratuitamente na Lista de Espera VIP para ser o primeiro a saber caso surjam desistências ou novas vagas.
           </p>
         </div>
 
         <div class="pricing-comparison-wrapper">
-          <!-- Founder Plan Card (Highlighted) -->
+          <!-- Founder Plan Card (Sold Out / Waitlist) -->
           <div class="plan-card founder-card">
-            <div class="founder-ribbon">VAGAS LIMITADAS</div>
+            <div class="founder-ribbon" style="background: linear-gradient(135deg, #dc2626, #991b1b);">100% ESGOTADO</div>
             <div class="plan-header text-center">
-              <span class="plan-type red-text"><svg class="icon-diamond" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> CONDIÇÃO EXCLUSIVA DE MEMBRO FUNDADOR</span>
-              <h3 class="plan-name">Plano Pré-Matrícula</h3>
-              <p class="plan-desc">Travamento do valor promocional de inauguração com vantagens vitais para seu treino.</p>
+              <span class="plan-type red-text"><svg class="icon-diamond" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> LOTE DE INAUGURAÇÃO ESGOTADO</span>
+              <h3 class="plan-name">Lista de Espera VIP</h3>
+              <p class="plan-desc">Cadastro prioritário para novas vagas antes do público geral. Sem nenhum custo agora.</p>
             </div>
-            <div class="plan-price-box text-center">
-              <div class="price-badge-saving">ECONOMIZE MAIS DE R$ 450 NO ANO</div>
-              <div class="price-flex-row">
-                <div class="price-old-strikethrough">
-                  <span class="old-label">De:</span>
-                  <span class="old-value"><span class="old-value-blur">R$ 229,90</span></span>
-                  <span class="old-period">/mês</span>
-                </div>
-                <div class="price-arrow-divider"><svg class="price-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></div>
-                <div class="price-promo-wrap">
-                  <span class="promo-label">Por:</span>
-                  <div class="price-amount red-price"><span class="currency">R$</span> 129,90<span class="period">/mês</span></div>
-                </div>
+            
+            <div class="plan-price-box text-center" style="padding: 1.75rem 1rem; border-color: rgba(239, 68, 68, 0.3); background: rgba(220, 38, 38, 0.05);">
+              <div class="price-badge-saving" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+                🚨 TODAS AS VAGAS PREENCHIDAS
               </div>
-              <div class="price-lock-tag"><svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DESCONTO PROPORCIONAL VITALÍCIO • ZERO TAXA DE MATRÍCULA (SEMPRE R$ 0,00)</div>
+              <div style="margin: 0.75rem 0;">
+                <div style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; color: #ef4444; letter-spacing: -0.02em;">
+                  VAGAS ESGOTADAS
+                </div>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 4px;">
+                  Inscrições gratuitas abertas para a <strong>Lista de Espera Oficial</strong>
+                </p>
+              </div>
+              <div class="price-lock-tag" style="background: rgba(255, 255, 255, 0.05); color: #e2e8f0; border-color: rgba(255, 255, 255, 0.1);">
+                <svg class="lock-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> CADASTRO 100% GRATUITO • SEM TAXAS OU PAGAMENTO AGORA
+              </div>
             </div>
+
             <ul class="plan-perks">
-              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Taxa de Matrícula R$ 0,00:</strong> Nunca cobramos taxa de matrícula ou adesão. Pague apenas a mensalidade</div></li>
-              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Passe Livre Total:</strong> Musculação, Treinamento Funcional e Estúdio de Dança</div></li>
-              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Desconto Vitalício Proporcional:</strong> Mesma proporção mantida mesmo após reajustes (perde apenas se inativo por 30 dias).</div></li>
-              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Acesso Exclusivo 3 Dias Antes:</strong> Soft Opening VIP para os primeiros pioneiros</div></li>
-              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Espaço Coworking Incluso:</strong> Wi-Fi de alta velocidade e mesas com tomadas</div></li>
-              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Estacionamento Exclusivo:</strong> Vagas próprias e monitoramento de segurança 24h</div></li>
+              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Prioridade Máxima na Fila:</strong> Quem se cadastrar na lista de espera será chamado primeiro em caso de desistências.</div></li>
+              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Taxa de Matrícula R$ 0,00:</strong> No CT Metamorfose nunca cobramos taxa de matrícula nem taxa de adesão.</div></li>
+              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Passe Livre Total:</strong> Musculação, Treinamento Funcional e Estúdio de Dança em um só lugar.</div></li>
+              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Atendimento VIP via WhatsApp:</strong> Consultor dedicado para tirar dúvidas sobre horários e inauguração.</div></li>
+              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Espaço Coworking & Kids:</strong> Acesso a toda a estrutura de 15.000m² com Espaço Kids monitorado.</div></li>
+              <li class="perk-item"><span class="perk-star"><svg class="icon-check-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span> <div><strong>Estacionamento Privativo:</strong> Vagas próprias e monitoramento de segurança 24h.</div></li>
             </ul>
             <div class="plan-footer">
               <a href="#matricula" class="btn btn-red btn-block btn-lg pulse-glow-red" id="btn-card-fundador">
-                <span>Garantir Meu Lote Fundador Agora</span>
+                <span>Entrar na Lista de Espera VIP</span>
                 <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
             </div>
@@ -628,7 +629,7 @@
       </div>
     </section>
 
-    <!-- FORMULÁRIO DE PRÉ-MATRÍCULA SECTION -->
+    <!-- FORMULÁRIO DE LISTA DE ESPERA SECTION -->
     <section class="section matricula-section" id="matricula">
       <div class="container">
         <div class="matricula-wrapper">
@@ -638,21 +639,21 @@
                 <img src="/logo-metamorfose.png" alt="Logo Icon" class="mini-logo">
                 <span class="brand-badge-text">CT METAMORFOSE</span>
               </div>
-              <span class="section-pill"><span class="pill-num">04</span> PRÉ-CADASTRO EXCLUSIVO</span>
+              <span class="section-pill"><span class="pill-num">04</span> LISTA DE ESPERA VIP</span>
             </div>
-            <h2 class="form-title">TRAVE SEU LUGAR ENTRE OS PRIMEIROS.</h2>
+            <h2 class="form-title">GARANTA SUA PRIORIDADE NA FILA.</h2>
             <p class="form-description">
-              Preencha seus dados abaixo para garantir sua matrícula no <strong>Lote Membro Fundador</strong>. 
+              As vagas do Lote Fundador foram 100% preenchidas. Preencha seus dados abaixo para entrar na <strong>Lista de Espera VIP</strong> e ter prioridade máxima caso surjam desistências ou novas vagas.
             </p>
             <p class="form-subtext">
-              Nossa equipe de consultoria entrará em contato via WhatsApp com os detalhes do seu passaporte de inauguração e agendamento da visita VIP.
+              O cadastro é <strong>100% gratuito</strong> e nossa equipe entrará em contato via WhatsApp com todas as orientações.
             </p>
 
             <div class="guarantee-box">
               <div class="guarantee-icon"><svg class="icon-guarantee-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
               <div>
-                <strong>VALOR VITALÍCIO COM DESCONTO • ZERO MATRÍCULA</strong>
-                <p>Garanta para sempre seu desconto sobre o valor vigente, mantendo a mesma proporção mesmo após reajustes. Benefício válido enquanto o aluno não ficar 30 dias sem frequentar.</p>
+                <strong>FILA DE PRIORIDADE VIP • CADASTRO GRATUITO</strong>
+                <p>Nenhum valor é cobrado no cadastro da lista de espera. Você garante prioridade cronológica de atendimento e suporte exclusivo da nossa equipe.</p>
               </div>
             </div>
 
@@ -663,14 +664,14 @@
                 <span class="avatar-circle">J</span>
                 <span class="avatar-circle">+</span>
               </div>
-              <span class="leads-text"><strong>142 pessoas</strong> já garantiram a pré-matrícula</span>
+              <span class="leads-text"><strong>+2.000 pessoas</strong> já se cadastraram no CT Metamorfose</span>
             </div>
           </div>
 
           <div class="matricula-form-col" id="formulario">
             <div class="form-card" id="form-card-box">
               <div class="form-card-header">
-                <h3>Formulário de Pré-Matrícula</h3>
+                <h3>Formulário de Lista de Espera VIP</h3>
               </div>
 
               <form id="pre-matricula-form" novalidate>
@@ -802,12 +803,12 @@
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-red btn-block btn-lg pulse-glow-red" id="btn-submit-matricula">
-                  <span class="btn-text">GARANTIR MINHA VAGA NO LOTE FUNDADOR</span>
+                  <span class="btn-text">ENTRAR NA LISTA DE ESPERA VIP</span>
                   <svg class="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </button>
 
                 <p class="form-legal">
-                  <svg class="icon-lock-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Seus dados estão seguros e protegidos pela LGPD. Não enviamos spam.
+                  <svg class="icon-lock-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Seus dados estão seguros e protegidos pela LGPD. Não cobramos nada e não enviamos spam.
                 </p>
               </form>
             </div>
@@ -912,48 +913,37 @@
               <span class="faq-chevron"></span>
             </button>
             <div class="faq-answer">
-              <p>A inauguração oficial será no dia <strong>17 de Outubro de 2026 às 18h00</strong>. Os inscritos no <strong>Lote Fundador</strong> terão acesso prioritário 1 dia antes da abertura oficial para conhecerem o espaço em um evento exclusivo de Soft Opening.</p>
+              <p>A inauguração oficial será no dia <strong>17 de Outubro de 2026 às 18h00</strong>. Quem estiver cadastrado na Lista de Espera terá prioridade máxima no preenchimento de vagas excedentes ou eventuais desistências.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-trigger" aria-expanded="false">
-              <span class="faq-question">Preciso pagar algum valor agora na pré-matrícula?</span>
+              <span class="faq-question">Preciso pagar algum valor agora para entrar na Lista de Espera?</span>
               <span class="faq-chevron"></span>
             </button>
             <div class="faq-answer">
-              <p><strong>Sim!</strong> Para garantir sua vaga oficial na <strong>Pré-Matrícula</strong> e congelar o valor promocional, você realiza o pagamento da 1ª mensalidade de <strong>R$ 129,90</strong> (no CT Metamorfose você <strong>nunca paga taxa de matrícula</strong>). O seu período de 30 dias de treino <strong>só começa a contar a partir do dia da inauguração oficial</strong>.</p>
+              <p><strong>Não!</strong> As vagas do Lote Fundador foram 100% esgotadas. Ao preencher o formulário, o seu cadastro na <strong>Lista de Espera VIP é 100% gratuito</strong>, sem qualquer taxa ou cobrança antecipada. Nossa equipe entrará em contato caso novas vagas sejam liberadas.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-trigger" aria-expanded="false">
-              <span class="faq-question">Quando começam a contar os 30 dias da minha mensalidade?</span>
+              <span class="faq-question">Como serei avisado caso uma vaga seja liberada?</span>
               <span class="faq-chevron"></span>
             </button>
             <div class="faq-answer">
-              <p>Os seus 30 dias de treino <strong>só começam a valer a partir da abertura oficial das portas</strong>. Mesmo garantindo a sua vaga antecipada agora no Lote Fundador, você não perde nenhum dia de treino antes da inauguração.</p>
+              <p>Nossa equipe comercial entrará em contato diretamente pelo <strong>WhatsApp informado no seu cadastro</strong> seguindo a ordem cronológica de inscrição na Lista de Espera.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-trigger" aria-expanded="false">
-              <span class="faq-question">Como funciona o desconto vitalício e os reajustes futuros?</span>
+              <span class="faq-question">O CT Metamorfose cobra taxa de matrícula ou adesão?</span>
               <span class="faq-chevron"></span>
             </button>
             <div class="faq-answer">
-              <p><strong>VALOR VITALÍCIO COM DESCONTO:</strong> Garanta para sempre seu desconto sobre o valor vigente, mantendo a mesma proporção mesmo após reajustes. Benefício válido enquanto o aluno não ficar 30 dias sem frequentar.</p>
-              <p>Você inicia pagando apenas <strong>R$ 129,90/mês</strong>. Caso a mensalidade padrão da academia sofra reajustes futuros de mercado, a sua proporção de desconto exclusivo de Membro Fundador é preservada permanentemente, desde que o aluno não fique 30 dias consecutivos sem frequentar.</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-trigger" aria-expanded="false">
-              <span class="faq-question">Preciso pagar taxa de matrícula ou taxa de adesão?</span>
-              <span class="faq-chevron"></span>
-            </button>
-            <div class="faq-answer">
-              <p><strong>Não!</strong> No CT Metamorfose nós <strong>nunca cobramos taxa de matrícula nem taxa de adesão</strong> — não é apenas uma isenção da pré-matrícula, é uma política permanente da nossa casa. A taxa de matrícula é <strong>sempre R$ 0,00</strong> e você investe exclusivamente no seu plano mensal para treinar.</p>
+              <p><strong>Não!</strong> No CT Metamorfose nós <strong>nunca cobramos taxa de matrícula nem taxa de adesão</strong> — é uma política permanente da nossa casa. A taxa de matrícula é <strong>sempre R$ 0,00</strong> e você investe exclusivamente no seu plano mensal para treinar.</p>
             </div>
           </div>
 
@@ -967,9 +957,9 @@
         <div class="final-cta-box">
           <img src="/logo-metamorfose.png" alt="Metamorfose Logo" class="cta-logo">
           <h2 class="cta-title">A MELHOR VERSÃO DO SEU CORPO E DA SUA MENTE TE ESPERA.</h2>
-          <p class="cta-desc">Não espere a academia inaugurar para pagar mais caro. Trave agora sua condição de Membro Fundador.</p>
+          <p class="cta-desc">Vagas do Lote de Abertura 100% esgotadas! Não fique de fora da inauguração: entre agora na Lista de Espera VIP.</p>
           <a href="#matricula" class="btn btn-red btn-lg pulse-glow-red" id="btn-final-cta">
-            Garantir Vaga na Pré-Matrícula
+            Entrar na Lista de Espera VIP
           </a>
         </div>
       </div>
@@ -1027,12 +1017,12 @@
       </div>
 
       <div class="footer-col">
-        <h4>Membro Fundador</h4>
+        <h4>Lista de Espera</h4>
         <ul class="footer-links">
-          <li><a href="#fundador">Desconto Vitalício</a></li>
+          <li><a href="#fundador">Lote 100% Esgotado</a></li>
           <li><a href="#fundador">Taxa de Matrícula R$ 0,00</a></li>
           <li><a href="#modalidades-3em1">Passe Livre Vários em 1</a></li>
-          <li><a href="#matricula">Vagas Limitadas</a></li>
+          <li><a href="#matricula">Lista de Espera VIP</a></li>
         </ul>
       </div>
 
@@ -1040,7 +1030,7 @@
         <h4>Atendimento Pré-Inauguração</h4>
         <p class="footer-contact">Central de Reservas VIP</p>
         <p class="footer-contact">Segunda a Sábado, das 08h às 20h</p>
-        <a href="#matricula" class="btn btn-primary btn-sm btn-footer-cta">Quero Me Inscrever</a>
+        <a href="#matricula" class="btn btn-primary btn-sm btn-footer-cta">Lista de Espera</a>
       </div>
     </div>
 
@@ -1052,321 +1042,63 @@
     </div>
   </footer>
 
-  <!-- MODAL DE CHECKOUT & PAGAMENTO ASAAS (PIX E CARTÃO À VISTA) -->
+  <!-- MODAL DE CONFIRMAÇÃO DA LISTA DE ESPERA (SEM PAGAMENTO, SEM VALORES) -->
   <div class="checkout-modal-overlay" id="payment-modal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="checkout-modal-card">
-      <button class="checkout-close-btn" id="btn-close-checkout" aria-label="Fechar janela de pagamento">
+      <button class="checkout-close-btn" id="btn-close-checkout" aria-label="Fechar janela">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
 
-      <!-- TELA 1: CHECKOUT / ESCOLHA DO PAGAMENTO -->
-      <div class="checkout-view" id="checkout-view">
-        <div class="checkout-header">
-          <div class="checkout-brand-row">
-            <div class="checkout-brand">
-              <img src="/logo-metamorfose.png" alt="CT Metamorfose" class="checkout-logo">
-              <span>CT METAMORFOSE</span>
-            </div>
-          </div>
-          <h3 class="checkout-title">PAGAMENTO DA PRÉ-MATRÍCULA</h3>
-          <p class="checkout-subtitle">Olá, <span id="checkout-lead-name">Atleta</span>! Complete o pagamento para travar seu <strong>Lote Fundador</strong>.</p>
-        </div>
-
-        <!-- RESUMO DO PEDIDO -->
-        <div class="checkout-order-summary">
-          <div class="order-summary-header">
-            <span class="summary-plan-name">Plano Membro Fundador</span>
-            <span class="summary-badge-status">DESCONTO VITALÍCIO</span>
-          </div>
-          <div class="order-summary-body">
-            <div class="order-summary-row">
-              <span>1ª Mensalidade (Desconto Proporcional Vitalício)</span>
-              <strong class="order-price-val">R$ 129,90</strong>
-            </div>
-            <div class="order-summary-row highlight-zero">
-              <span>Taxa de Matrícula (Sempre Zero)</span>
-              <strong class="text-green">R$ 0,00</strong>
-            </div>
-          </div>
-          <div class="order-summary-total">
-            <span>Total a pagar agora:</span>
-            <strong class="total-amount">R$ 129,90</strong>
-          </div>
-          <div class="order-summary-rule-hint" style="font-size: 0.74rem; color: #94a3b8; margin-top: 10px; line-height: 1.4; text-align: center; background: rgba(255, 255, 255, 0.03); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.06);">
-            <strong style="display: block; color: #ff3333; font-size: 0.72rem; letter-spacing: 0.5px; margin-bottom: 2px;">VALOR VITALÍCIO COM DESCONTO</strong>
-            Garanta para sempre seu desconto sobre o valor vigente, mantendo a mesma proporção mesmo após reajustes. Benefício válido enquanto o aluno não ficar 30 dias sem frequentar.
-          </div>
-        </div>
-
-        <!-- ETAPA 1: ESCOLHA DA FORMA DE PAGAMENTO -->
-        <div class="payment-method-selector-view" id="payment-method-selector-view">
-          <div class="payment-method-heading">
-            <span class="selection-step-tag">SELECIONE A FORMA DE PAGAMENTO</span>
-            <h4 class="payment-selection-title">Como você prefere pagar?</h4>
-            <p class="payment-selection-subtitle">Escolha uma opção para continuar. O QR Code do Pix só será gerado após sua seleção.</p>
-          </div>
-
-          <div class="payment-options-grid">
-            <!-- Opção 1: Pix -->
-            <button type="button" class="payment-option-card option-pix" id="btn-select-pix">
-              <div class="option-icon-wrap pix">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.002 4.293a.998.998 0 0 0-.707.293L8.14 7.74a4.484 4.484 0 0 0-1.318 3.182v2.156c0 1.192.474 2.336 1.318 3.18l3.155 3.155a.999.999 0 0 0 1.414 0l3.155-3.155a4.484 4.484 0 0 0 1.318-3.18v-2.156c0-1.192-.474-2.336-1.318-3.182l-3.155-3.154a.998.998 0 0 0-.707-.293zm0 2.414 2.448 2.448a2.49 2.49 0 0 1 .732 1.767v2.156c0 .662-.263 1.298-.732 1.767L12.002 17.29l-2.448-2.447a2.49 2.49 0 0 1-.732-1.767v-2.156c0-.662.263-1.298.732-1.767l2.448-2.448z"/>
-                </svg>
-              </div>
-              <div class="option-content">
-                <div class="option-title-row">
-                  <span class="option-name">Pix Instantâneo</span>
-                  <span class="option-badge-pix">Imediato</span>
-                </div>
-                <div class="option-meta-row">
-                  <span class="option-price">R$ 129,90</span>
-                  <span class="option-meta-bullet">•</span>
-                  <span class="option-meta-highlight">Liberação instantânea</span>
-                </div>
-              </div>
-              <div class="option-chevron-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </button>
-
-            <!-- Opção 2: Cartão -->
-            <button type="button" class="payment-option-card option-card" id="btn-select-card">
-              <div class="option-icon-wrap card">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
-                </svg>
-              </div>
-              <div class="option-content">
-                <div class="option-title-row">
-                  <span class="option-name">Cartão de Crédito ou Débito</span>
-                  <span class="option-badge-card">3D Secure</span>
-                </div>
-                <div class="option-meta-row">
-                  <span class="option-price">R$ 129,90</span>
-                  <span class="option-meta-bullet">•</span>
-                  <span class="option-meta-highlight">Visa, Master e outros</span>
-                </div>
-              </div>
-              <div class="option-chevron-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- ETAPA 2: TELA DE DETALHE DO PAGAMENTO (PIX OU CARTÃO) -->
-        <div class="payment-detail-view" id="payment-detail-view" style="display: none;">
-          <!-- Barra superior com botão para trocar forma de pagamento -->
-          <div class="payment-nav-header">
-            <button type="button" class="btn-back-to-methods" id="btn-back-to-methods">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-              <span>Alterar forma de pagamento</span>
-            </button>
-          </div>
-
-          <!-- SELETOR DE ABAS -->
-          <div class="payment-tabs-nav" role="tablist">
-            <button type="button" class="payment-tab-btn" id="tab-btn-pix" role="tab" aria-selected="false">
-              <svg class="tab-icon-pix" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.002 4.293a.998.998 0 0 0-.707.293L8.14 7.74a4.484 4.484 0 0 0-1.318 3.182v2.156c0 1.192.474 2.336 1.318 3.18l3.155 3.155a.999.999 0 0 0 1.414 0l3.155-3.155a4.484 4.484 0 0 0 1.318-3.18v-2.156c0-1.192-.474-2.336-1.318-3.182l-3.155-3.154a.998.998 0 0 0-.707-.293zm0 2.414 2.448 2.448a2.49 2.49 0 0 1 .732 1.767v2.156c0 .662-.263 1.298-.732 1.767L12.002 17.29l-2.448-2.447a2.49 2.49 0 0 1-.732-1.767v-2.156c0-.662.263-1.298.732-1.767l2.448-2.448z"/>
-              </svg>
-              <span>Pix Instantâneo</span>
-              <span class="tab-badge-rec">Mais Rápido</span>
-            </button>
-            
-            <button type="button" class="payment-tab-btn" id="tab-btn-card" role="tab" aria-selected="false">
-              <svg class="tab-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
-              </svg>
-              <span>Cartão (Crédito ou Débito)</span>
-            </button>
-          </div>
-
-          <!-- ABA PIX -->
-          <div class="payment-tab-content" id="tab-content-pix">
-            <div class="pix-checkout-box">
-              <!-- Radar de Status em Tempo Real -->
-              <div class="pix-status-radar-pill" id="pix-status-badge">
-                <span class="radar-dot"></span>
-                <span id="pix-status-badge-text">Aguardando leitura do QR Code...</span>
-              </div>
-
-              <div class="pix-qrcode-wrapper">
-                <div class="pix-qrcode-card">
-                  <div id="pix-qrcode-container" class="pix-qr-img-box">
-                    <div class="qr-loading-placeholder">
-                      <div class="spinner-radial"></div>
-                      <span>Gerando Pix seguro...</span>
-                    </div>
-                  </div>
-                  <div class="pix-qr-scan-hint">
-                    <svg class="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    <span>Abra o app do banco e aponte a câmera</span>
-                  </div>
-                </div>
-
-                <div class="pix-info-side">
-                  <div class="pix-timer-alert">
-                    <svg class="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>Expira em <strong id="pix-countdown-timer">15:00</strong></span>
-                  </div>
-
-                  <label class="pix-copia-cola-label" for="pix-copia-cola-input">Ou copie o código Pix Copia e Cola:</label>
-                  <div class="pix-copy-input-group">
-                    <input type="text" id="pix-copia-cola-input" readonly value="">
-                    <button type="button" class="btn-copy-pix" id="btn-copy-pix" title="Copiar código Pix">
-                      <svg class="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                      <span id="btn-copy-text">Copiar</span>
-                    </button>
-                  </div>
-                  <div class="copy-success-toast" id="copy-success-toast">✓ Código Pix copiado com sucesso!</div>
-
-                  <div class="pix-steps-list">
-                    <div class="step-item">
-                      <span class="step-num">1</span>
-                      <div class="step-text">Copie o código ou escaneie o QR Code</div>
-                    </div>
-                    <div class="step-item">
-                      <span class="step-num">2</span>
-                      <div class="step-text">No app do seu banco, cole na opção <strong>Pix Copia e Cola</strong></div>
-                    </div>
-                    <div class="step-item">
-                      <span class="step-num">3</span>
-                      <div class="step-text">Confirme o valor de <strong>R$ 129,90</strong> para Academia Metamorfose</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ABA CARTÃO (FATURA SEGURA) -->
-          <div class="payment-tab-content" id="tab-content-card">
-            <div class="card-checkout-box">
-              <div class="card-invoice-promo-card">
-                <div class="card-invoice-header">
-                  <div class="card-invoice-badge">
-                    <svg class="icon-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      <path d="m9 12 2 2 4-4"/>
-                    </svg>
-                    <span>CHECKOUT PROTEGIDO</span>
-                  </div>
-                  <h4 class="card-invoice-title">Pague com Cartão de Crédito ou Débito</h4>
-                  <p class="card-invoice-desc">Você será conectado ao ambiente seguro e criptografado oficial para preencher seu cartão com autenticação bancária 3D Secure sem riscos.</p>
-                </div>
-
-                <!-- Bandeiras Aceitas -->
-                <div class="accepted-cards-row">
-                  <span class="cards-label">Bandeiras aceitas:</span>
-                  <div class="card-badges-grid">
-                    <span class="card-brand-pill">VISA</span>
-                    <span class="card-brand-pill">MASTERCARD</span>
-                    <span class="card-brand-pill">ELO</span>
-                    <span class="card-brand-pill">HIPERCARD</span>
-                    <span class="card-brand-pill">AMEX</span>
-                  </div>
-                </div>
-
-                <!-- Vantagens do Checkout -->
-                <div class="card-security-bullets">
-                  <div class="sec-bullet">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span><strong>Crédito à Vista:</strong> R$ 129,90 no lote vitalício</span>
-                  </div>
-                  <div class="sec-bullet">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span><strong>Cartão de Débito:</strong> Autenticação bancária 3DS direta com seu banco</span>
-                  </div>
-                  <div class="sec-bullet">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span><strong>Zero Risco:</strong> Seus dados financeiros protegidos com tecnologia antifraude</span>
-                  </div>
-                </div>
-
-                <!-- Botão Principal de Ação -->
-                <div class="card-action-wrap">
-                  <button type="button" class="btn btn-red btn-block btn-modal-action pulse-glow-red" id="btn-open-card-invoice">
-                    <svg class="icon-card-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="2" y="5" width="20" height="14" rx="2"/>
-                      <line x1="2" x2="22" y1="10" y2="10"/>
-                    </svg>
-                    <span id="btn-card-text">ABRIR FATURA SEGURA</span>
-                    <svg class="icon-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                      <polyline points="15 3 21 3 21 9"/>
-                      <line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                  </button>
-
-                  <p class="card-wait-note">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span>Esta tela monitora seu pagamento em tempo real. Assim que o pagamento for aprovado, sua vaga será confirmada aqui automaticamente.</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RODAPÉ DE SEGURANÇA -->
-        <div class="checkout-footer-security">
-          <div class="security-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>Criptografia SSL 256-bit</span>
-          </div>
-          <div class="security-divider"></div>
-          <div class="security-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-            <span>Pagamento seguro</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- TELA 2: PAGAMENTO APROVADO -->
-      <div class="payment-success-view" id="payment-success-view" style="display: none;">
-        <div class="success-trophy-ring">
-          <svg class="icon-check-animated" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+      <div class="waitlist-success-view text-center" style="padding: 1.5rem 0.5rem;">
+        <div class="success-trophy-ring" style="width: 72px; height: 72px; margin: 0 auto 1.25rem; background: rgba(34, 197, 94, 0.15); border: 2px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 25px rgba(34, 197, 94, 0.35);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" style="width: 38px; height: 38px;">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
-        <h3 class="success-title">PAGAMENTO CONFIRMADO!</h3>
-        <p class="success-subtitle">PARABÉNS! SUA VAGA DE MEMBRO FUNDADOR ESTÁ OFICIALMENTE TRAVADA</p>
 
-        <div class="receipt-card">
-          <div class="receipt-row">
-            <span>Titular:</span>
-            <strong id="receipt-lead-name">-</strong>
+        <span class="badge-status-pill" style="display: inline-block; background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem;">
+          LOTE FUNDADOR 100% ESGOTADO
+        </span>
+
+        <h3 class="success-title" style="font-size: 1.5rem; font-weight: 900; color: #ffffff; margin-bottom: 0.5rem; font-family: var(--font-heading);">
+          VOCÊ ESTÁ NA LISTA DE ESPERA! 🎉
+        </h3>
+
+        <p class="success-subtitle" style="font-size: 0.92rem; color: #cbd5e1; max-width: 440px; margin: 0 auto 1.5rem; line-height: 1.45;">
+          Parabéns, <strong id="waitlist-lead-name" style="color: #ffffff;">Atleta</strong>! Seus dados foram salvos com sucesso e você garantiu prioridade máxima na fila do CT Metamorfose.
+        </p>
+
+        <div class="receipt-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1rem 1.25rem; text-align: left; margin-bottom: 1.5rem;">
+          <div class="receipt-row" style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.85rem;">
+            <span style="color: #94a3b8;">Candidato(a):</span>
+            <strong id="waitlist-summary-name" style="color: #f8fafc;">-</strong>
           </div>
-          <div class="receipt-row">
-            <span>CPF:</span>
-            <strong id="receipt-lead-cpf">-</strong>
+          <div class="receipt-row" style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.85rem;">
+            <span style="color: #94a3b8;">WhatsApp Cadastrado:</span>
+            <strong id="waitlist-summary-phone" style="color: #f8fafc;">-</strong>
           </div>
-          <div class="receipt-row">
-            <span>1ª Mensalidade:</span>
-            <strong class="text-green">R$ 129,90 (Pago à vista)</strong>
+          <div class="receipt-row" style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.85rem;">
+            <span style="color: #94a3b8;">Status da Inscrição:</span>
+            <strong style="color: #38bdf8; font-weight: 800;">Lista de Espera VIP (Ativo)</strong>
           </div>
-          <div class="receipt-row">
-            <span>Taxa de Matrícula:</span>
-            <strong class="text-green">R$ 0,00 (Isento Permanente)</strong>
-          </div>
-          <div class="receipt-row">
-            <span>Status do Plano:</span>
-            <strong class="text-red">Membro Fundador (Vitalício)</strong>
+          <div class="receipt-row" style="display: flex; justify-content: space-between; padding: 0.4rem 0; font-size: 0.85rem;">
+            <span style="color: #94a3b8;">Taxa de Inscrição:</span>
+            <strong style="color: #34d399; font-weight: 800;">R$ 0,00 (Gratuito)</strong>
           </div>
         </div>
 
-        <p class="receipt-instructions">
-          Apresente este comprovante na recepção ou fale agora com nosso consultor no WhatsApp para receber o seu passe VIP:
+        <p style="font-size: 0.82rem; color: #94a3b8; line-height: 1.45; margin-bottom: 1.25rem;">
+          Assim que uma vaga for liberada ou caso seja aberto um lote extraordinário, entraremos em contato prioritariamente pelo seu WhatsApp.
         </p>
 
-        <a href="#" id="btn-success-whatsapp" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block btn-modal-action">
-          <svg class="icon-whats" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-          <span>Confirmar Vaga e Retirar Passe no WhatsApp</span>
+        <a href="#" id="btn-waitlist-whatsapp" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block btn-modal-action" style="margin-bottom: 0.75rem;">
+          <svg class="icon-whats" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>Falar com a Equipe no WhatsApp</span>
         </a>
 
-        <button type="button" class="btn-modal-close" id="btn-finish-checkout">Concluir e Fechar</button>
+        <button type="button" class="btn-modal-close" id="btn-finish-checkout" style="background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 0.5rem; text-decoration: underline;">
+          Concluir e Fechar
+        </button>
       </div>
     </div>
   </div>

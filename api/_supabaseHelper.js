@@ -88,9 +88,9 @@ export async function insertOrUpdateLead(leadData) {
     data_nascimento: leadData.dataNascimento || leadData.data_nascimento || '',
     modalidades: leadData.modalidades || [],
     periodo: leadData.periodo || '',
-    status: leadData.status || 'AGUARDANDO_PAGAMENTO',
+    status: leadData.status || 'LISTA_ESPERA',
     metodo_pagamento: leadData.metodo_pagamento || leadData.metodoPagamento || '',
-    valor: leadData.valor || 129.90,
+    valor: typeof leadData.valor === 'number' ? leadData.valor : (leadData.valor !== undefined ? Number(leadData.valor) : 0),
     asaas_payment_id: leadData.asaas_payment_id || leadData.asaasPaymentId || null,
     asaas_customer_id: leadData.asaas_customer_id || leadData.asaasCustomerId || null,
     asaas_invoice_url: leadData.asaas_invoice_url || leadData.asaasInvoiceUrl || null,
@@ -454,17 +454,22 @@ export async function getLeadsStats() {
     const aguardando = leads.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
     const emAtendimento = leads.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
     const cancelados = leads.filter(l => l.status === 'CANCELADO');
+    const listaEspera = leads.filter(l => l.status === 'LISTA_ESPERA');
 
     return {
       totalLeads,
       vagasOcupadas: pagos.length,
       metaLoteFundador: 50,
-      percentualMeta: Math.min(100, Math.round((pagos.length / 50) * 100)),
-      receitaTotal: pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0),
-      receitaEstimada: leads.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0),
+      percentualMeta: 100,
+      receitaTotal: pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0),
+      receitaEstimada: leads.reduce((acc, curr) => {
+        if (curr.status === 'CANCELADO' || curr.status === 'LISTA_ESPERA') return acc;
+        return acc + (Number(curr.valor) || 129.90);
+      }, 0),
       aguardandoTotal: aguardando.length,
       emAtendimentoTotal: emAtendimento.length,
       canceladosTotal: cancelados.length,
+      listaEsperaTotal: listaEspera.length,
       isSupabase: false
     };
   }
@@ -512,9 +517,13 @@ export async function getLeadsStats() {
     const aguardando = all.filter(l => l.status === 'AGUARDANDO_PAGAMENTO');
     const emAtendimento = all.filter(l => l.status === 'EM_CONTATO' || l.status === 'EM_ATENDIMENTO');
     const cancelados = all.filter(l => l.status === 'CANCELADO');
+    const listaEspera = all.filter(l => l.status === 'LISTA_ESPERA');
 
     const receitaTotal = pagos.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
-    const receitaEstimada = all.reduce((acc, curr) => acc + (Number(curr.valor) || 129.90), 0);
+    const receitaEstimada = all.reduce((acc, curr) => {
+      if (curr.status === 'CANCELADO' || curr.status === 'LISTA_ESPERA') return acc;
+      return acc + (Number(curr.valor) || 129.90);
+    }, 0);
     const vagasOcupadas = pagos.length;
     const metaLoteFundador = 50;
 
@@ -522,12 +531,13 @@ export async function getLeadsStats() {
       totalLeads,
       vagasOcupadas,
       metaLoteFundador,
-      percentualMeta: Math.min(100, Math.round((vagasOcupadas / metaLoteFundador) * 100)),
+      percentualMeta: 100, // Vagas 100% preenchidas
       receitaTotal,
       receitaEstimada,
       aguardandoTotal: aguardando.length,
       emAtendimentoTotal: emAtendimento.length,
       canceladosTotal: cancelados.length,
+      listaEsperaTotal: listaEspera.length,
       isSupabase: true
     };
   } catch (err) {

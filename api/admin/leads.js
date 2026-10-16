@@ -80,7 +80,7 @@ export default async function handler(req, res) {
 
       const updatePayload = {};
       if (status) {
-        const allowedStatuses = ['NOVO_LEAD', 'AGUARDANDO_PAGAMENTO', 'PAGO', 'EM_CONTATO', 'EM_ATENDIMENTO', 'CANCELADO'];
+        const allowedStatuses = ['NOVO_LEAD', 'AGUARDANDO_PAGAMENTO', 'PAGO', 'EM_CONTATO', 'EM_ATENDIMENTO', 'CANCELADO', 'LISTA_ESPERA'];
         if (!allowedStatuses.includes(status)) {
           return res.status(400).json({ error: 'Status informado é inválido.' });
         }

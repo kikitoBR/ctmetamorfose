@@ -41,8 +41,8 @@ export default async function handler(req, res) {
         telefone: sanitizedPhone,
         modalidades: Array.isArray(modalidades) ? modalidades : [],
         periodo: periodo || '',
-        status: 'AGUARDANDO_PAGAMENTO',
-        valor: 129.90
+        status: body.status || 'LISTA_ESPERA',
+        valor: body.valor !== undefined ? Number(body.valor) : 0
       });
 
       return res.status(200).json({ success: true, lead });
