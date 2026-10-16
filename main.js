@@ -576,8 +576,6 @@ function abrirModalListaEspera(lead) {
   const nameEl = document.getElementById('waitlist-lead-name');
   const summaryName = document.getElementById('waitlist-summary-name');
   const summaryPhone = document.getElementById('waitlist-summary-phone');
-  const btnWhats = document.getElementById('btn-waitlist-whatsapp');
-
   const primeiroNome = (lead && lead.nome) ? lead.nome.trim().split(' ')[0] : 'Atleta';
   if (nameEl) nameEl.textContent = primeiroNome;
   if (summaryName) summaryName.textContent = lead && lead.nome ? lead.nome : '-';
@@ -587,12 +585,6 @@ function abrirModalListaEspera(lead) {
       ? '(' + raw.slice(0, 2) + ') ' + raw.slice(2, 7) + '-' + raw.slice(7)
       : (lead ? lead.telefone : '-');
     summaryPhone.textContent = formatted;
-  }
-
-  if (btnWhats) {
-    const whatsNum = appConfig.whatsapp || '5522998449106';
-    const msg = 'Olá, equipe do CT Metamorfose! Meu nome é ' + (lead ? lead.nome : 'Atleta') + ' e acabei de me cadastrar na Lista de Espera VIP. Gostaria de confirmar se receberam meus dados! 💪🏼';
-    btnWhats.href = 'https://wa.me/' + whatsNum + '?text=' + encodeURIComponent(msg);
   }
 
   if (modal) {
